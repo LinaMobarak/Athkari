@@ -3,9 +3,12 @@ import { Image, StyleSheet, View, Text ,TouchableOpacity} from 'react-native';
 import ParallaxScrollView from '../../components/ParallaxScrollView'
 import React from 'react';
 import Feather from '@expo/vector-icons/Feather';
+import { useRouter } from 'expo-router';
 
 const img = require("@/assets/images/HeaderImage.jpeg");
-export default function HomeScreen() {
+export default function HomeScreen(){
+  const route = useRouter();
+  
   return (
     <ParallaxScrollView
       headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
@@ -16,7 +19,8 @@ export default function HomeScreen() {
             style={styles.imgg}
           />
           <Feather name="sun" size={24} color="white" style={styles.themeIcon}/>
-          <View style={{
+          <View 
+          style={{
             backgroundColor: 'rgba(3, 3, 3, 0.76)', 
             position: 'absolute',
             bottom: 0,
@@ -25,7 +29,8 @@ export default function HomeScreen() {
             height: 40,
             backdropFilter: 'blur(20px)',
             }}>
-                <View style={{
+                <View
+                style={{
                 backgroundColor: 'rgb(35, 35, 35)',
                 position: 'absolute',
                 bottom: 15,
@@ -48,10 +53,14 @@ export default function HomeScreen() {
         
       }>
 
-      <View style={styles.containerText} ><Text style={styles.text}>أذكار المسلم</Text></View>
-      <View style={styles.containerText}><Text style={styles.text}>أدعية</Text></View>
-      <View style={styles.containerText}><Text style={styles.text}>التسبيح</Text></View>
-      <View style={styles.containerText}><Text style={styles.text}>أسماء الله</Text></View>
+      <TouchableOpacity onPress={()=> route.navigate('/pages/azkar')} style={styles.containerText}>
+            <Text style={styles.text}>أذكار المسلم</Text>
+        </TouchableOpacity>
+
+
+      <TouchableOpacity style={styles.containerText}  onPress={()=> route.navigate('/pages/dua')} ><Text style={styles.text}>أدعية</Text></TouchableOpacity>
+      <TouchableOpacity style={styles.containerText} onPress={()=> route.navigate('/pages/tasbeeh')} ><Text style={styles.text}>التسبيح</Text></TouchableOpacity>
+      <TouchableOpacity style={styles.containerText} onPress={()=> route.navigate('/pages/namesOfallah')} ><Text style={styles.text}>أسماء الله</Text></TouchableOpacity>
     
       
 
@@ -117,6 +126,6 @@ const styles = StyleSheet.create({
     borderRadius: 50,
   },
   themeIcon: {
-    position: 'absolute',top: 15,left: 15
+    position: 'absolute',top: 20,left: 20
   }
 });
