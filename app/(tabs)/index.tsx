@@ -1,72 +1,118 @@
-import { Image, StyleSheet, View, Text ,TouchableOpacity} from 'react-native';
-
+import { Image, StyleSheet, View, Text ,TouchableOpacity, Button} from 'react-native'
+import { IconSymbol } from '@/components/ui/IconSymbol'
 import ParallaxScrollView from '../../components/ParallaxScrollView'
-import React from 'react';
-import Feather from '@expo/vector-icons/Feather';
-import { useRouter } from 'expo-router';
+import React, { useState } from 'react'
+import Feather from '@expo/vector-icons/Feather'
+import { useRouter } from 'expo-router'
+import { MaterialCommunityIcons } from '@expo/vector-icons'
+import { ThemedView } from '@/components/ThemedView'
+import { useTheme } from '@react-navigation/native';
+import { ThemedText } from '@/components/ThemedText'
+import { BlurView } from 'expo-blur';
+import { LinearGradient } from 'expo-linear-gradient';
+import { useColorScheme } from 'react-native';
 
-const img = require("@/assets/images/HeaderImage.jpeg");
+const img = require("@/assets/images/HeaderImage.jpeg")
 export default function HomeScreen(){
-  const route = useRouter();
-  
+  const route = useRouter()
+  const { colors } = useTheme();
+
   return (
     <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <View style={styles.headerContainer}>
+    headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
+    headerImage={
+      <ThemedView style={styles.headerContainer}>
           <Image
             source={img}
             style={styles.imgg}
-          />
-          <Feather name="sun" size={24} color="white" style={styles.themeIcon}/>
+            />
+            
+          <TouchableOpacity>
+            <Feather name="sun" size={24} color="white" style={styles.themeIcon}/>
+          </TouchableOpacity>
+          <TouchableOpacity>
+            <Feather name="settings" size={24} color="white" style={styles.settingsIcon}/>
+          </TouchableOpacity>
           <View 
           style={{
-            backgroundColor: 'rgba(3, 3, 3, 0.76)', 
+            backgroundColor: 'rgba(3, 3, 3, 0.5)', 
+            borderColor: 'white',
+            borderWidth: 0.5,
             position: 'absolute',
             bottom: 0,
             left: 0,
             width: '100%',
             height: 40,
-            backdropFilter: 'blur(20px)',
-            }}>
+            // backdropFilter: 'blur(20px)',
+          }}>
+          <BlurView intensity={20} style={{position: 'relative', bottom: 0, left: 0, width: '100%', height: 250}} />
+          </View>
+
                 <View
                 style={{
-                backgroundColor: 'rgb(35, 35, 35)',
+                backgroundColor: '#151718',
                 position: 'absolute',
                 bottom: 15,
-                left: '43%',
-                width: '15%',
-                height: 50,
+                left: '40%',
+                width: '20%',
+                height: 60,
                 justifyContent: 'center',
                 alignItems: 'center',
                 borderRadius: 10,
                 borderWidth: 0.5,
                 borderColor: 'white',
-
               }}>
-                <Text style={{color: 'white', fontWeight: 'bold'}}>7</Text>
-                <Text style={{color: 'white', fontWeight: 'bold'}}>شوال</Text>
+                <ThemedText style={{ fontWeight: 'bold'}}>7</ThemedText>
+                <Text style={{color: '#fff', fontWeight: 'bold'}}>شوال</Text>
               </View>
-            </View>
+
       
-        </View>
+        </ThemedView>
         
       }>
 
-      <TouchableOpacity onPress={()=> route.navigate('/pages/azkar')} style={styles.containerText}>
-            <Text style={styles.text}>أذكار المسلم</Text>
-        </TouchableOpacity>
+        <TouchableOpacity style={styles.containerText}  onPress={()=> route.navigate('/pages/azkar')} >
+          <MaterialCommunityIcons color={colors.text} size={20} name="book-outline"/>
+        <ThemedText style={styles.text}>
+          أذكار المسلم 
+        </ThemedText>
+      </TouchableOpacity>
 
+      <TouchableOpacity style={styles.containerText}  onPress={()=> route.navigate('/pages/dua')} >
+          <MaterialCommunityIcons color={colors.text} size={20} name="hands-pray"/>
+        <ThemedText style={styles.text}>
+          أدعية 
+        </ThemedText>
+      </TouchableOpacity>
 
-      <TouchableOpacity style={styles.containerText}  onPress={()=> route.navigate('/pages/dua')} ><Text style={styles.text}>أدعية</Text></TouchableOpacity>
-      <TouchableOpacity style={styles.containerText} onPress={()=> route.navigate('/pages/tasbeeh')} ><Text style={styles.text}>التسبيح</Text></TouchableOpacity>
-      <TouchableOpacity style={styles.containerText} onPress={()=> route.navigate('/pages/namesOfallah')} ><Text style={styles.text}>أسماء الله</Text></TouchableOpacity>
-    
+      <TouchableOpacity style={styles.containerText}  onPress={()=> route.navigate('/pages/tasbeeh')} >
+          <MaterialCommunityIcons color={colors.text} size={20} name="circle-double"/>
+        <ThemedText style={styles.text}>
+          التسبيح  
+        </ThemedText>
+      </TouchableOpacity>
       
-
+      <TouchableOpacity style={styles.containerText}  onPress={()=> route.navigate('/pages/namesOfallah')} >
+          <MaterialCommunityIcons color={colors.text} size={20} name="star-four-points-outline"/>
+        <ThemedText style={styles.text}>
+          أسماء الله الحسنى  
+        </ThemedText>
+      </TouchableOpacity>
       
+      {/* <TouchableOpacity 
+        onPress={toggleTheme} 
+        style={{
+          backgroundColor: colors.primary,
+          padding: 10,
+          borderRadius: 5,
+        }}
+      >
+        <Text style={{ color: colors.text }}>Switch Theme</Text>
+      </TouchableOpacity> */}
     </ParallaxScrollView>
-  );
+
+    
+  )
 }
 
 const styles = StyleSheet.create({
@@ -94,13 +140,12 @@ const styles = StyleSheet.create({
   
   containerText:{
     flex: 1,
-    justifyContent: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
-    // backgroundColor: 'rgb(60, 115, 128)',
-    
+    width: '100%',
     padding: 20,
     borderRadius: 20,
-    
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
@@ -109,14 +154,13 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,  
     borderColor: '#3c7280',
     borderWidth: 2,
-    height: 60,
- 
-   },
+    height: 70,
+
+  },
   text: {
     fontSize: 13,
     fontWeight: 'bold',
-    color: 'white',
-
+    // color: 'white',
   }
   ,
   button: {
@@ -126,6 +170,13 @@ const styles = StyleSheet.create({
     borderRadius: 50,
   },
   themeIcon: {
-    position: 'absolute',top: 20,left: 20
-  }
-});
+    position: 'absolute',
+    top: 60,
+    left: 30,
+  },
+  settingsIcon: {
+    position: 'absolute',
+    top: 60,
+    right: 30,
+  },
+})
