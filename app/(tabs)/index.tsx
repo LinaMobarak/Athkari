@@ -16,6 +16,7 @@ const img = require("@/assets/images/HeaderImage.jpeg")
 export default function HomeScreen(){
   const route = useRouter()
   const { colors } = useTheme();
+  // Hello Lina
 
   return (
     <ParallaxScrollView
