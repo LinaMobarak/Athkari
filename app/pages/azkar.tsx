@@ -39,7 +39,7 @@ export default function Azkar() {
                   <ThemedView 
                   style={styles.count}>
                     <TouchableOpacity 
-                      onPress={}
+                      // onPress={}
                       >
                       <ThemedText 
                         style={{ 
