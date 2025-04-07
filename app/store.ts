@@ -15,6 +15,7 @@ export type ElementStore = {
     element: ElementType[];
     favourites: thekrType[];
     addToFavourites: (element: thekrType) => void;
+    // counterForAzkar: (element: thekrType) => void;
 };
 
 const useElementStore = create<ElementStore>((set) => ({
@@ -172,6 +173,8 @@ const useElementStore = create<ElementStore>((set) => ({
         set((state) => ({
             favourites: [...state.favourites, thekr],
         })),
+
+    
 }));
 
 export default useElementStore;
