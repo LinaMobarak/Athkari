@@ -79,7 +79,7 @@ const [loaded, error] = useFonts({
             left: 0,
             width: '100%',
             height: 50,
-            borderTopColor: Colors.primary,
+            borderTopColor: '#B0C4A1',
             // backdropFilter: 'blur(20px)',
           }}>
           <BlurView intensity={20} style={{position: 'relative', bottom: 0, left: 0, width: '100%', height: 250}} />
@@ -97,10 +97,10 @@ const [loaded, error] = useFonts({
                 alignItems: 'center',
                 borderRadius: 10,
                 borderWidth: 1,
-                borderColor: Colors.primary,
+                borderColor: Colors.secondaryColor,
               }}>
-                <Text style={{ color: Colors.primary, fontFamily: 'Cairo', fontSize: 16, marginBottom: -10 }}>9</Text>
-                <Text style={{ color: Colors.primary, fontFamily: 'Cairo', fontSize: 16, }}>شوال</Text>
+                <Text style={{ color: Colors.secondaryColor, fontFamily: 'Cairo', fontSize: 16, marginBottom: -10 }}>9</Text>
+                <Text style={{ color: Colors.secondaryColor, fontFamily: 'Cairo', fontSize: 16, }}>شوال</Text>
               </View>
         </ThemedView>
       }>
@@ -171,13 +171,13 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     shadowColor: Colors.primary,
     shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 1,
+    shadowOpacity: 5,
     shadowRadius: 5,
-    elevation: 5,
+    // elevation: 5,
     marginBottom: 10,
     borderColor: Colors.primary,
     borderWidth: 2,
-    height: 70,
+    // height: 70,
 
   },
   text: {
