@@ -8,7 +8,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons'
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { ThemedText } from '@/components/ThemedText'
-
+import ShareFunction from '../ShareFunction'
 
 
 
@@ -28,40 +28,24 @@ export default function Azkar() {
     }));
     addToFavorites(item); 
   };
-  const onShare = async(item: any) => {
-    try {
-      const result = await Share.share({
-        message: item,
-        url: 
 
-      });
 
-      if(result.action === Share.sharedAction) {
-        if(result.activityType) {
-          alert('Shared with activity')
-        }
-        else {
-          alert('shared')
-
-        }
-      }else if (result.action === Share.dismissedAction){
-          alert('sharedDismiss')
-      }
-    }
-    catch (error) {
-      if (error instanceof Error) {
-        alert(error.message);
-      } else {
-        alert('An unknown error occurred.');
-      }
-    }
-
-  }
+  
 
   return (
     <>
     <ScrollView keyboardShouldPersistTaps="handled">
-      <Stack.Screen options={{ headerTitle: 'الأذكار'}}/>
+      <Stack.Screen 
+          options={{
+          headerTitle: 'أذكار المسلم',
+          
+          headerTitleAlign: 'center',
+          headerTitleStyle: {
+            fontWeight: 'bold',
+            fontSize: 20,
+          },
+        }} 
+      />
       <ThemedView >
         {element.map((e , idx) => (
           <ThemedView key={idx}>
@@ -75,20 +59,27 @@ export default function Azkar() {
                 style={{
                   margin:5,
                   borderRadius: 10,
-                  // borderColor: '#3c7380',
-                  // borderWidth: 1,
-                  // backgroundColor: Colors.dark.second
                 }}>
                   <ThemedText style={styles.text}>{p.text}</ThemedText>
 
+                  <ThemedView style={{
+                      display: 'flex',
+                      flexDirection: 'row', 
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      margin: 10,
+                  }} >
+
                   <TouchableOpacity
-                  onPress={()=>{onShare(p.text)}}>
+                  onPress={()=>{ShareFunction(p.text)}}>
                   <MaterialCommunityIcons
                         name= "share-variant-outline"
                         size={25}
                         weight="medium"
-                        style={{position: 'absolute', right: 20 , bottom: 15, color: 'rgb(243, 158, 158)'}}/>
+                        style={{ color: 'rgb(243, 158, 158)'}}/>
                   </TouchableOpacity>
+
+                  
 
                   <TouchableOpacity 
                     style={styles.btn}
@@ -104,17 +95,19 @@ export default function Azkar() {
                     </ThemedView>
                     
                     </TouchableOpacity>
+
                     <TouchableOpacity
                       onPress={()=>{
                         toggleFavorite(p);
                         }} >
                       <MaterialCommunityIcons
-                        name={favorites[p.textId] ? 'heart' : 'heart-outline'} // Check the favorite status for the specific item
+                        name={favorites[p.textId] ? 'heart' : 'heart-outline'} 
                         size={25}
                         weight="medium"
-                        style={{position: 'absolute', left: 20 , bottom: 15, color: 'rgb(243, 158, 158)'}}/>
+                        style={{ color: 'rgb(243, 158, 158)'}}/>
                       </TouchableOpacity>
-                    
+
+                      </ThemedView>
                   </ThemedView>
                 </ThemedView>
             ))}
@@ -135,12 +128,8 @@ export const styles = StyleSheet.create({
   text: {
     fontSize: 15,
     fontWeight: 'bold',
-    // marginTop: 10,
-    marginBottom: 30,
     padding: 10,
     lineHeight: 30,
-    // color: Colors.light.text,
-    // direction: 'rtl',
     textAlign: 'left'
     
   },
@@ -157,13 +146,13 @@ export const styles = StyleSheet.create({
     padding:10,
     color:"white",
     textAlign:"center",
-    borderRadius: 10
+    borderRadius: 10,
+    fontWeight: 'bold'
 
   },
   btn:{
-    maxWidth:"50%",
-    marginRight:"25%",
-    marginBottom:10
+    width:'60%',
+    
   }
 
 })
