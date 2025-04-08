@@ -3,7 +3,7 @@ import { create } from 'zustand';
 export type thekrType = {
     textId: number | string;
     text: string;
-    counter: number 
+    counter: number;
 }
 export type ElementType = {
     id: number | string;
@@ -16,6 +16,7 @@ export type ElementStore = {
     favourites: thekrType[];
     addToFavourites: (element: thekrType) => void;
     // counterForAzkar: (element: thekrType) => void;
+    namesOfAllah: { id: number; text: string; color: string }[];
 };
 
 const useElementStore = create<ElementStore>((set) => ({
@@ -168,6 +169,18 @@ const useElementStore = create<ElementStore>((set) => ({
             ],
         },
     ],
+
+    namesOfAllah: [
+        { id: 1, text: 'الرَّحْمَـٰنُ', color: 'red' },
+        { id: 2, text: 'الرَّحِيمُ', color: 'blue' },
+        { id: 3, text: 'الْمَلِكُ', color: 'green' },
+        { id: 4, text: 'الْقُدُّوسُ', color: 'yellow' },
+        { id: 5, text: 'السَّلاَمُ', color: 'purple' },
+        { id: 6, text: 'الْمُؤْمِنُ', color: 'orange' },
+        { id: 7, text: 'الْمُهَيْمِنُ', color: 'pink' },
+        { id: 8, text: 'الْعَزِيزُ', color: 'brown' },
+    ],
+    
     favourites: [],
     addToFavourites: (thekr: thekrType) =>
         set((state) => ({

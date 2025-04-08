@@ -23,6 +23,13 @@
       "favicon": "./assets/images/favicon.png"
     },
     "plugins": [
+      [
+        "expo-font",
+        {
+          "fonts": "/assets/fonts/Lateef-Bold.ttf"
+
+        }
+      ],
       "expo-router",
       [
         "expo-splash-screen",
@@ -30,7 +37,7 @@
           "image": "./assets/images/splash-icon.png",
           "imageWidth": 200,
           "resizeMode": "contain",
-          "backgroundColor": "#ffffff"
+          "backgroundColor": "#ffffff",
         }
       ]
     ],

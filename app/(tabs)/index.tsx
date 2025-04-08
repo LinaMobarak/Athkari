@@ -3,32 +3,68 @@ import { IconSymbol } from '@/components/ui/IconSymbol'
 import ParallaxScrollView from '../../components/ParallaxScrollView'
 import React, { useState } from 'react'
 import Feather from '@expo/vector-icons/Feather'
-import { useRouter } from 'expo-router'
+import { Stack, useRouter } from 'expo-router'
 import { MaterialCommunityIcons } from '@expo/vector-icons'
 import { ThemedView } from '@/components/ThemedView'
 import { useTheme } from '@react-navigation/native';
 import { ThemedText } from '@/components/ThemedText'
 import { BlurView } from 'expo-blur';
+// import Lateef from '@/assets/fonts/Lateef-Bold.ttf'
+import { useFonts } from 'expo-font';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useColorScheme } from 'react-native';
+import { useColorScheme, Appearance } from 'react-native';
+// import Lateef from '@/assets/fonts/Lateef-Bold.ttf'
 
 const img = require("@/assets/images/HeaderImage.jpeg")
 export default function HomeScreen(){
   const route = useRouter()
-  const { colors } = useTheme();
-  // Hello Lina
+  const { colors } = useTheme()
+// Hello Lina
+const [loaded, error] = useFonts({
+  'Lateef': require('@/assets/fonts/Lateef-Bold.ttf'),
+  'Mada': require('@/assets/fonts/Mada.ttf')
+})
+  const [theme, setTheme] = useState(Appearance.getColorScheme())
+
+  const toggleTheme = () => {
+    const newTheme = theme === 'light' ? 'dark' : 'light'
+    setTheme(newTheme)
+    Appearance.setColorScheme(newTheme)
+  }
+
+  
 
   return (
-    <ParallaxScrollView
+    <>
+    <Stack.Screen options={{
+      // showHeader: false,
+      headerShown: false,
+      // showHeader: false,
+      // headerTitle: "أذكار المسلم",}}
+      }}
+      />
+      
+      {/* <Stack.Screen 
+        options={{
+          headerTitle: "أذكاري",
+          headerTitleAlign: 'center',
+          headerTitleStyle: {
+            fontWeight: 'bold',
+            fontSize: 20,
+          },
+        }} 
+      /> */}
+      <ParallaxScrollView
     headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
     headerImage={
+
       <ThemedView style={styles.headerContainer}>
           <Image
             source={img}
             style={styles.imgg}
             />
             
-          <TouchableOpacity>
+          <TouchableOpacity onPress={toggleTheme} >
             <Feather name="sun" size={24} color="white" style={styles.themeIcon}/>
           </TouchableOpacity>
           <TouchableOpacity>
@@ -37,13 +73,14 @@ export default function HomeScreen(){
           <View 
           style={{
             backgroundColor: 'rgba(3, 3, 3, 0.5)', 
-            borderColor: 'white',
+            // borderColor: 'white',
             borderWidth: 0.5,
             position: 'absolute',
             bottom: 0,
             left: 0,
             width: '100%',
-            height: 40,
+            height: 50,
+            borderTopColor: 'white',
             // backdropFilter: 'blur(20px)',
           }}>
           <BlurView intensity={20} style={{position: 'relative', bottom: 0, left: 0, width: '100%', height: 250}} />
@@ -63,8 +100,8 @@ export default function HomeScreen(){
                 borderWidth: 0.5,
                 borderColor: 'white',
               }}>
-                <ThemedText style={{ fontWeight: 'bold'}}>7</ThemedText>
-                <Text style={{color: '#fff', fontWeight: 'bold'}}>شوال</Text>
+                <Text style={{ color: '#fff', fontFamily: 'Mada', fontSize: '20', }}>9</Text>
+                <Text style={{ color: '#fff', fontFamily: 'Mada', fontSize: '20', }}>شوال</Text>
               </View>
 
       
@@ -100,19 +137,8 @@ export default function HomeScreen(){
         </ThemedText>
       </TouchableOpacity>
       
-      {/* <TouchableOpacity 
-        onPress={toggleTheme} 
-        style={{
-          backgroundColor: colors.primary,
-          padding: 10,
-          borderRadius: 5,
-        }}
-      >
-        <Text style={{ color: colors.text }}>Switch Theme</Text>
-      </TouchableOpacity> */}
     </ParallaxScrollView>
-
-    
+    </>
   )
 }
 
@@ -129,7 +155,7 @@ const styles = StyleSheet.create({
   },
   stepContainer: {
     gap: 8,
-    marginBottom: 8,
+    marginBottom: 0,
   },
   imgg: {
     height: '100%',
@@ -147,21 +173,27 @@ const styles = StyleSheet.create({
     width: '100%',
     padding: 20,
     borderRadius: 20,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,  
+    shadowColor: '#00ffff',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.5,
+    shadowRadius: 5,
+    elevation: 5,
+    marginBottom: 10,
     borderColor: '#3c7280',
     borderWidth: 2,
     height: 70,
 
   },
   text: {
-    fontSize: 13,
-    fontWeight: 'bold',
-    // color: 'white',
+    fontSize: 20,
+    fontWeight: '400',
+    fontFamily: 'Mada',
+//
+    // shadowColor: '#fff',
+    // shadowOffset: { width: 0, height: 0 },
+    // shadowOpacity: 5,
+    // shadowRadius: 1,
+    // elevation: 5,
   }
   ,
   button: {
