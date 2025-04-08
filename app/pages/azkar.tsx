@@ -2,13 +2,13 @@ import { Collapsible } from '@/components/Collapsible'
 import { ThemedView } from '@/components/ThemedView'
 import { Stack } from 'expo-router'
 import React, { useState } from 'react'
-import { Text,ScrollView ,  StyleSheet, TouchableOpacity, View } from 'react-native'
+import { Text,ScrollView ,  StyleSheet, TouchableOpacity, View ,Share} from 'react-native'
 import useElementStore from '../store'
 import { MaterialCommunityIcons } from '@expo/vector-icons'
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { ThemedText } from '@/components/ThemedText'
-import { Directions } from 'react-native-gesture-handler'
+
 
 
 
@@ -28,6 +28,35 @@ export default function Azkar() {
     }));
     addToFavorites(item); 
   };
+  const onShare = async(item: any) => {
+    try {
+      const result = await Share.share({
+        message: item,
+        url: 
+
+      });
+
+      if(result.action === Share.sharedAction) {
+        if(result.activityType) {
+          alert('Shared with activity')
+        }
+        else {
+          alert('shared')
+
+        }
+      }else if (result.action === Share.dismissedAction){
+          alert('sharedDismiss')
+      }
+    }
+    catch (error) {
+      if (error instanceof Error) {
+        alert(error.message);
+      } else {
+        alert('An unknown error occurred.');
+      }
+    }
+
+  }
 
   return (
     <>
@@ -51,13 +80,16 @@ export default function Azkar() {
                   // backgroundColor: Colors.dark.second
                 }}>
                   <ThemedText style={styles.text}>{p.text}</ThemedText>
-               
+
+                  <TouchableOpacity
+                  onPress={()=>{onShare(p.text)}}>
                   <MaterialCommunityIcons
                         name= "share-variant-outline"
                         size={25}
                         weight="medium"
                         style={{position: 'absolute', right: 20 , bottom: 15, color: 'rgb(243, 158, 158)'}}/>
-                  
+                  </TouchableOpacity>
+
                   <TouchableOpacity 
                     style={styles.btn}
                       onPress={()=>{
@@ -68,7 +100,7 @@ export default function Azkar() {
                       <ThemedView>
                 
                       <Text 
-                       style={styles.touchable} >{p.counter}</Text>
+                        style={styles.touchable} >{p.counter}</Text>
                     </ThemedView>
                     
                     </TouchableOpacity>
