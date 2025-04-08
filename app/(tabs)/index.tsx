@@ -39,9 +39,9 @@ const [loaded, error] = useFonts({
     <Stack.Screen options={{
       // showHeader: false,
       headerShown: false,
-      // showHeader: false,
-      // headerTitle: "أذكار المسلم",}}
-      }}
+      // showHeader: true,
+      headerTitle: "أذكار المسلم"}}
+      
       />
       
       {/* <Stack.Screen 
@@ -99,8 +99,8 @@ const [loaded, error] = useFonts({
                 borderWidth: 1,
                 borderColor: Colors.primary,
               }}>
-                <Text style={{ color: '#fff', fontFamily: 'Cairo', fontSize: 16, marginBottom: -10 }}>9</Text>
-                <Text style={{ color: '#fff', fontFamily: 'Cairo', fontSize: 16, }}>شوال</Text>
+                <Text style={{ color: Colors.primary, fontFamily: 'Cairo', fontSize: 16, marginBottom: -10 }}>9</Text>
+                <Text style={{ color: Colors.primary, fontFamily: 'Cairo', fontSize: 16, }}>شوال</Text>
               </View>
         </ThemedView>
       }>
@@ -115,7 +115,7 @@ const [loaded, error] = useFonts({
       <TouchableOpacity style={styles.containerText}  onPress={()=> route.navigate('/pages/dua')} >
           <MaterialCommunityIcons color={colors.text} size={20} name="hands-pray"/>
         <ThemedText style={styles.text}>
-          أدعية 
+          الأدعية 
         </ThemedText>
       </TouchableOpacity>
 
