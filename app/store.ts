@@ -1,5 +1,12 @@
 import { create } from 'zustand';
 
+export type duaType ={
+    id: number | string 
+    title: string;
+    description: string;
+ 
+}
+
 export type thekrType = {
     textId: number | string;
     text: string;
@@ -9,13 +16,17 @@ export type ElementType = {
     id: number | string;
     title: string;
     content: thekrType[];
+
 };
+
+
 
 export type ElementStore = {
     element: ElementType[];
     favourites: thekrType[];
-    addToFavourites: (element: thekrType) => void;
-    // counterForAzkar: (element: thekrType) => void;
+    dua: duaType[];
+    addToFavourites: (ele: thekrType) => void;
+    decrementCounter: (itemId: number | string, contentId: number | string) => void 
 };
 
 const useElementStore = create<ElementStore>((set) => ({
@@ -26,7 +37,7 @@ const useElementStore = create<ElementStore>((set) => ({
             content: [
                 {
                     textId: 1,
-                    text: 'أَعُوذُ بِاللهِ مِنْ الشَّيْطَانِ الرَّجِيمِ اللّهُ لاَ إِلَـهَ إِلاَّ هُوَ الْحَيُّ الْقَيُّومُ لاَ تَأْخُذُهُ سِنَةٌ وَلاَ نَوْمٌ لَّهُ مَا فِي السَّمَاوَاتِ وَمَا فِي الأَرْضِ مَن ذَا الَّذِي يَشْفَعُ عِنْدَهُ إِلاَّ بِإِذْنِهِ يَعْلَمُ مَا بَيْنَ أَيْدِيهِمْ وَمَا خَلْفَهُمْ وَلاَ يُحِيطُونَ بِشَيْءٍ مِّنْ عِلْمِهِ إِلاَّ بِمَا شَاء وَسِعَ كُرْسِيُّهُ السَّمَاوَاتِ وَالأَرْضَ وَلاَ يَؤُودُهُ حِفْظُهُمَا وَهُوَ الْعَلِيُّ الْعَظِيمُ. [آية الكرسى - البقرة 255].',
+                    text: `اللّهُ لاَ إِلَـهَ إِلاَّ هُوَ الْحَيُّ الْقَيُّومُ لاَ تَأْخُذُهُ سِنَةٌ وَلاَ نَوْمٌ لَّهُ مَا فِي السَّمَاوَاتِ وَمَا فِي الأَرْضِ مَن ذَا الَّذِي يَشْفَعُ عِنْدَهُ إِلاَّ بِإِذْنِهِ يَعْلَمُ مَا بَيْنَ أَيْدِيهِمْ وَمَا خَلْفَهُمْ وَلاَ يُحِيطُونَ بِشَيْءٍ مِّنْ عِلْمِهِ إِلاَّ بِمَا شَاء وَسِعَ كُرْسِيُّهُ السَّمَاوَاتِ وَالأَرْضَ وَلاَ يَؤُودُهُ حِفْظُهُمَا وَهُوَ الْعَلِيُّ الْعَظِيمُ. [آية الكرسى - البقرة 255].`,
                     counter: 1
                 },
                 {
@@ -168,11 +179,44 @@ const useElementStore = create<ElementStore>((set) => ({
             ],
         },
     ],
+    dua: [
+        {   
+            id: 1,
+            title: "دعاء دخول الجنة ",
+            description: "اللَّهمَّ إنِّي أسألُكَ الجنَّةَ وما قرَّبَ إليها من قَولٍ أو عملٍ، وأعوذُ بِكَ منَ النَّارِ وما قرَّبَ إليها من قولٍ أو عملٍ، وأسألُكَ أن تجعلَ كلَّ قَضاءٍ قضيتَهُ لي خيرًا",
+            
+        },
+        {
+            id: 2,
+            title: "دعاء السفر",
+            description: "اللهم إنا نسألك في سفرنا هذا البر والتقوى ومن العمل ما ترضى اللهم هون علينا سفرنا هذا واطو عنا بعده اللهم أنت الصاحب في السفر والخليفة في الأهل اللهم إني أعوذ بك من وعثاء السفر وكآبة المنقلب وسوء المنظر في الأهل والمال آيبون تائبون عابدون ولربنا حامدون",
+            
+        }
+        
+    ],
     favourites: [],
+    
     addToFavourites: (thekr: thekrType) =>
         set((state) => ({
             favourites: [...state.favourites, thekr],
         })),
+
+
+        decrementCounter: (itemId: number | string, contentId: number | string) =>
+            set((state) => ({
+                element: state.element.map((item) =>
+                    item.id === itemId
+                        ? {
+                                ...item,
+                                content: item.content.map((content) =>
+                                    content.textId === contentId
+                                      ? { ...content, counter: Math.max(content.counter - 1, 0) } // Ensure counter doesn't go below 0
+                                        : content
+                                ),
+                            }
+                        : item
+                ),
+            })),
 
     
 }));

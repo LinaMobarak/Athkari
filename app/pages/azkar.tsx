@@ -8,58 +8,78 @@ import { MaterialCommunityIcons } from '@expo/vector-icons'
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { ThemedText } from '@/components/ThemedText'
+import { Directions } from 'react-native-gesture-handler'
 
 
 
 export default function Azkar() { 
   const theme = useColorScheme() ?? 'light';
-  const [isFavo, setIsFavo] = useState(false);
+  const [favorites, setFavorites] = useState<{ [key: string]: boolean }>({});
   const addToFavorites = useElementStore((state) => state.addToFavourites);
   const element = useElementStore((state) => state.element);
+  const decrementCounter = useElementStore((state) => state.decrementCounter);
+
+
+  
+  const toggleFavorite = (item: any) => {
+    setFavorites((prev) => ({
+      ...prev,
+      [item.textId]: !prev[item.textId], 
+    }));
+    addToFavorites(item); 
+  };
 
   return (
     <>
-    <ScrollView >
-      <Stack.Screen options={{ headerTitle: 'Azkar' }}/>
-      <ThemedView>
+    <ScrollView keyboardShouldPersistTaps="handled">
+      <Stack.Screen options={{ headerTitle: 'الأذكار'}}/>
+      <ThemedView >
         {element.map((e , idx) => (
           <ThemedView key={idx}>
             <Collapsible title={e.title}>
             {element[idx].content.map((p ,indx)=>(
               <ThemedView key={indx} 
                 style={{
-                  margin: 5
+                  // margin: 5,
+                  backgroundColor: Colors.dark.primary
                 }}>
                 <ThemedView 
                 style={{
-                  borderColor: '#3c7380',
-                  borderWidth: 1
+                  margin:5,
+                  borderRadius: 10,
+                  // borderColor: '#3c7380',
+                  // borderWidth: 1,
+                  // backgroundColor: Colors.dark.second
                 }}>
                   <ThemedText style={styles.text}>{p.text}</ThemedText>
+                  <TouchableOpacity 
+                    disabled={false}
+                      onPress={()=>{
+                        decrementCounter(e.id, p.textId);
+                        
+                      }}
+                      >
                   <ThemedView 
                   style={styles.count}>
-                    <TouchableOpacity 
-                      // onPress={}
-                      >
+                
                       <ThemedText 
                         style={{ 
-                        color: 'white',
+                        color: Colors.dark.text,
                         fontWeight: 'bold',
-                        fontSize: 20,
+                        fontSize: 15,
                         }}>{p.counter}</ThemedText>
-                    </TouchableOpacity>
+                    
                     </ThemedView>
+                    </TouchableOpacity>
                     <TouchableOpacity
                       onPress={()=>{
-                        addToFavorites(p);
-                        setIsFavo((prev) => !prev)
+                        toggleFavorite(p);
                         }} >
                       <MaterialCommunityIcons
-                        name={isFavo ? 'heart' : 'heart-outline' }
-                        size={20}
+                        name={favorites[p.textId] ? 'heart' : 'heart-outline'} // Check the favorite status for the specific item
+                        size={25}
                         weight="medium"
-                        color={theme === 'light' ? Colors.light.icon : Colors.dark.icon} 
-                        style={{position: 'absolute', left: 5 , bottom: 5}}/>
+                        style={{position: 'absolute', left: 20 , bottom: 15, color: 'rgb(243, 158, 158)'}}/>
                       </TouchableOpacity>
                     
                   </ThemedView>
@@ -80,24 +100,27 @@ export default function Azkar() {
 export const styles = StyleSheet.create({
 
   text: {
-    fontSize: 20,
+    fontSize: 15,
     fontWeight: 'bold',
-    textAlign: 'center',
     marginTop: 10,
     marginBottom: 10,
-    padding: 5
+    padding: 10,
+    lineHeight: 30,
+    // color: Colors.light.text,
+    // direction: 'rtl',
+    textAlign: 'left'
+    
   },
   count: {
-    backgroundColor: '#3c7380' , 
-    marginRight: 'auto' , 
+    backgroundColor: Colors.dark.primary , 
+    marginRight: 10 , 
     width: '70%' ,
     borderRadius: 10, 
     marginLeft: 'auto', 
     marginBottom: 10,
-    height: 40 ,
+    height: 35 ,
     alignItems: 'center',
     justifyContent: 'center',
-    
     alignContent: 'center'
   }
 
