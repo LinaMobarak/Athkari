@@ -7,6 +7,7 @@ import { Stack, useRouter } from 'expo-router'
 import { MaterialCommunityIcons } from '@expo/vector-icons'
 import { ThemedView } from '@/components/ThemedView'
 import { useTheme } from '@react-navigation/native';
+import { Colors } from '@/constants/Colors'
 import { ThemedText } from '@/components/ThemedText'
 import { BlurView } from 'expo-blur';
 // import Lateef from '@/assets/fonts/Lateef-Bold.ttf'
@@ -21,15 +22,14 @@ export default function HomeScreen(){
   const { colors } = useTheme()
 // Hello Lina
 const [loaded, error] = useFonts({
-  'Lateef': require('@/assets/fonts/Lateef-Bold.ttf'),
-  'Mada': require('@/assets/fonts/Mada.ttf')
+  'Cairo': require('@/assets/fonts/Cairo.ttf'),
 })
   const [theme, setTheme] = useState(Appearance.getColorScheme())
 
   const toggleTheme = () => {
     const newTheme = theme === 'light' ? 'dark' : 'light'
     setTheme(newTheme)
-    Appearance.setColorScheme(newTheme)
+    Appearance.setColorScheme(newTheme) 
   }
 
   
@@ -73,13 +73,13 @@ const [loaded, error] = useFonts({
           <View 
           style={{
             backgroundColor: 'rgba(3, 3, 3, 0.5)', 
-            borderWidth: 0.5,
+            borderWidth: 1,
             position: 'absolute',
             bottom: 0,
             left: 0,
             width: '100%',
             height: 50,
-            borderTopColor: 'white',
+            borderTopColor: Colors.primary,
             // backdropFilter: 'blur(20px)',
           }}>
           <BlurView intensity={20} style={{position: 'relative', bottom: 0, left: 0, width: '100%', height: 250}} />
@@ -96,11 +96,11 @@ const [loaded, error] = useFonts({
                 justifyContent: 'center',
                 alignItems: 'center',
                 borderRadius: 10,
-                borderWidth: 0.5,
-                borderColor: 'white',
+                borderWidth: 1,
+                borderColor: Colors.primary,
               }}>
-                <Text style={{ color: '#fff', fontFamily: 'Mada', fontSize: '20', }}>9</Text>
-                <Text style={{ color: '#fff', fontFamily: 'Mada', fontSize: '20', }}>شوال</Text>
+                <Text style={{ color: '#fff', fontFamily: 'Cairo', fontSize: 16, marginBottom: -10 }}>9</Text>
+                <Text style={{ color: '#fff', fontFamily: 'Cairo', fontSize: 16, }}>شوال</Text>
               </View>
         </ThemedView>
       }>
@@ -169,21 +169,21 @@ const styles = StyleSheet.create({
     width: '100%',
     padding: 20,
     borderRadius: 20,
-    shadowColor: '#00ffff',
+    shadowColor: Colors.primary,
     shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.5,
+    shadowOpacity: 1,
     shadowRadius: 5,
     elevation: 5,
     marginBottom: 10,
-    borderColor: '#3c7280',
+    borderColor: Colors.primary,
     borderWidth: 2,
     height: 70,
 
   },
   text: {
-    fontSize: 20,
+    fontSize: 16,
     fontWeight: '400',
-    fontFamily: 'Mada',
+    fontFamily: 'Cairo',
   }
   ,
   button: {
