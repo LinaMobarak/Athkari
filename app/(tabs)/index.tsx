@@ -11,9 +11,9 @@ import { ThemedText } from '@/components/ThemedText'
 import { BlurView } from 'expo-blur';
 // import Lateef from '@/assets/fonts/Lateef-Bold.ttf'
 import { useFonts } from 'expo-font';
-import { LinearGradient } from 'expo-linear-gradient';
-import { useColorScheme, Appearance } from 'react-native';
+import { Appearance } from 'react-native';
 // import Lateef from '@/assets/fonts/Lateef-Bold.ttf'
+
 
 const img = require("@/assets/images/HeaderImage.jpeg")
 export default function HomeScreen(){
@@ -57,7 +57,6 @@ const [loaded, error] = useFonts({
       <ParallaxScrollView
     headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
     headerImage={
-
       <ThemedView style={styles.headerContainer}>
           <Image
             source={img}
@@ -65,6 +64,7 @@ const [loaded, error] = useFonts({
             />
             
           <TouchableOpacity onPress={toggleTheme} >
+
             <Feather name="sun" size={24} color="white" style={styles.themeIcon}/>
           </TouchableOpacity>
           <TouchableOpacity>
@@ -73,7 +73,6 @@ const [loaded, error] = useFonts({
           <View 
           style={{
             backgroundColor: 'rgba(3, 3, 3, 0.5)', 
-            // borderColor: 'white',
             borderWidth: 0.5,
             position: 'absolute',
             bottom: 0,
@@ -103,10 +102,7 @@ const [loaded, error] = useFonts({
                 <Text style={{ color: '#fff', fontFamily: 'Mada', fontSize: '20', }}>9</Text>
                 <Text style={{ color: '#fff', fontFamily: 'Mada', fontSize: '20', }}>شوال</Text>
               </View>
-
-      
         </ThemedView>
-        
       }>
 
         <TouchableOpacity style={styles.containerText}  onPress={()=> route.navigate('/pages/azkar')} >
@@ -188,12 +184,6 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: '400',
     fontFamily: 'Mada',
-//
-    // shadowColor: '#fff',
-    // shadowOffset: { width: 0, height: 0 },
-    // shadowOpacity: 5,
-    // shadowRadius: 1,
-    // elevation: 5,
   }
   ,
   button: {
