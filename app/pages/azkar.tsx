@@ -2,7 +2,7 @@ import { Collapsible } from '@/components/Collapsible'
 import { ThemedView } from '@/components/ThemedView'
 import { Stack } from 'expo-router'
 import React, { useState } from 'react'
-import { Text,ScrollView ,  StyleSheet, TouchableOpacity } from 'react-native'
+import { Text,ScrollView ,  StyleSheet, TouchableOpacity, View } from 'react-native'
 import useElementStore from '../store'
 import { MaterialCommunityIcons } from '@expo/vector-icons'
 import { Colors } from '@/constants/Colors';
@@ -40,8 +40,7 @@ export default function Azkar() {
             {element[idx].content.map((p ,indx)=>(
               <ThemedView key={indx} 
                 style={{
-                  // margin: 5,
-                  backgroundColor: Colors.dark.primary
+                  backgroundColor: Colors.primary
                 }}>
                 <ThemedView 
                 style={{
@@ -52,24 +51,26 @@ export default function Azkar() {
                   // backgroundColor: Colors.dark.second
                 }}>
                   <ThemedText style={styles.text}>{p.text}</ThemedText>
+               
+                  <MaterialCommunityIcons
+                        name= "share-variant-outline"
+                        size={25}
+                        weight="medium"
+                        style={{position: 'absolute', right: 20 , bottom: 15, color: 'rgb(243, 158, 158)'}}/>
+                  
                   <TouchableOpacity 
-                    disabled={false}
+                    style={styles.btn}
                       onPress={()=>{
                         decrementCounter(e.id, p.textId);
                         
                       }}
                       >
-                  <ThemedView 
-                  style={styles.count}>
+                      <ThemedView>
                 
-                      <ThemedText 
-                        style={{ 
-                        color: Colors.dark.text,
-                        fontWeight: 'bold',
-                        fontSize: 15,
-                        }}>{p.counter}</ThemedText>
-                    
+                      <Text 
+                       style={styles.touchable} >{p.counter}</Text>
                     </ThemedView>
+                    
                     </TouchableOpacity>
                     <TouchableOpacity
                       onPress={()=>{
@@ -102,8 +103,8 @@ export const styles = StyleSheet.create({
   text: {
     fontSize: 15,
     fontWeight: 'bold',
-    marginTop: 10,
-    marginBottom: 10,
+    // marginTop: 10,
+    marginBottom: 30,
     padding: 10,
     lineHeight: 30,
     // color: Colors.light.text,
@@ -112,16 +113,25 @@ export const styles = StyleSheet.create({
     
   },
   count: {
-    backgroundColor: Colors.dark.primary , 
-    marginRight: 10 , 
-    width: '70%' ,
-    borderRadius: 10, 
-    marginLeft: 'auto', 
-    marginBottom: 10,
-    height: 35 ,
-    alignItems: 'center',
-    justifyContent: 'center',
-    alignContent: 'center'
+    backgroundColor: Colors.primary,
+    marginBottom: 5,
+    color: Colors.dark.text,
+    fontWeight: 'bold',
+    fontSize: 15,
+    
+  },
+  touchable: {
+    backgroundColor:Colors.primary,
+    padding:10,
+    color:"white",
+    textAlign:"center",
+    borderRadius: 10
+
+  },
+  btn:{
+    maxWidth:"50%",
+    marginRight:"25%",
+    marginBottom:10
   }
 
 })
