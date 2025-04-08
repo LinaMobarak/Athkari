@@ -51,7 +51,7 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
       },
       content: {
-        color: Colors.dark.primary,
+        color: Colors.primary,
         marginTop: 6,
         position: 'relative',
         justifyContent: 'space-around',  
@@ -64,7 +64,7 @@ const styles = StyleSheet.create({
         marginTop: 10,
         borderRadius: 10,
         width: '90%',
-        backgroundColor: Colors.dark.primary,
+        backgroundColor: Colors.primary,
         // direction: 'rtl'
       }
 });
