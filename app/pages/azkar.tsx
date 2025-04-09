@@ -1,159 +1,184 @@
-import { Collapsible } from '@/components/Collapsible'
-import { ThemedView } from '@/components/ThemedView'
-import { Stack } from 'expo-router'
-import React, { useState } from 'react'
-import { Text,ScrollView ,  StyleSheet, TouchableOpacity, View ,Share} from 'react-native'
-import useElementStore from '../store'
-import { MaterialCommunityIcons } from '@expo/vector-icons'
-import { Colors } from '@/constants/Colors';
-import { useColorScheme } from '@/hooks/useColorScheme';
-import { ThemedText } from '@/components/ThemedText'
-import ShareFunction from '../ShareFunction'
+import { Collapsible } from "@/components/Collapsible";
+import { ThemedView } from "@/components/ThemedView";
+import { Stack } from "expo-router";
+import React from "react";
+import {
+  Text,
+  ScrollView,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import useElementStore, { thekrType } from "../store";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { Colors } from "@/constants/Colors";
+import { useColorScheme } from "@/hooks/useColorScheme";
+import { ThemedText } from "@/components/ThemedText";
+import ShareFunction from "@/app/shareFunction";
+import { FlatList } from "react-native";
 
+function Mycomponents({
+  id,
+  title,
+  content,
+}: {
+  id: number | string;
+  title: string;
+  content: thekrType[];
+}) {
+  // const decrementCounter = useElementStore((state) => state.decrementCounter);
+  const { favourites } = useElementStore();
 
+  const toggleFavorite = async (item: thekrType) => {
+    const fav = useElementStore.getState().favourites;
 
-export default function Azkar() { 
-  const theme = useColorScheme() ?? 'light';
-  const [favorites, setFavorites] = useState<{ [key: string]: boolean }>({});
-  const addToFavorites = useElementStore((state) => state.addToFavourites);
-  const element = useElementStore((state) => state.element);
-  const decrementCounter = useElementStore((state) => state.decrementCounter);
+    let newFav = [];
 
+    if (fav.includes(item)) {
+      newFav = fav.filter((f) => (f as thekrType).textId !== item.textId);
+    } else {
+      newFav = fav.concat([item]);
+    }
 
-  
-  const toggleFavorite = (item: any) => {
-    setFavorites((prev) => ({
-      ...prev,
-      [item.textId]: !prev[item.textId], 
-    }));
-    addToFavorites(item); 
+    useElementStore.setState({ favourites: newFav });
   };
-
-
-  
 
   return (
     <>
-    <ScrollView keyboardShouldPersistTaps="handled">
-      <Stack.Screen 
-          options={{
-          headerTitle: 'أذكار المسلم',
-          
-          headerTitleAlign: 'center',
-          headerTitleStyle: {
-            fontWeight: 'bold',
-            fontSize: 20,
-          },
-        }} 
-      />
-      <ThemedView >
-        {element.map((e , idx) => (
-          <ThemedView key={idx}>
-            <Collapsible title={e.title}>
-            {element[idx].content.map((p ,indx)=>(
-              <ThemedView key={indx} 
+      <Collapsible title={title}>
+        <View style={{ backgroundColor: Colors.primary }}>
+          <FlatList
+            data={content}
+            renderItem={({ item }) => (
+              <ThemedView
                 style={{
-                  backgroundColor: Colors.primary
-                }}>
-                <ThemedView 
-                style={{
-                  margin:5,
+                  margin: 5,
                   borderRadius: 10,
-                }}>
-                  <ThemedText style={styles.text}>{p.text}</ThemedText>
+                }}
+              >
+                <ThemedText style={styles.text}>{item.text}</ThemedText>
 
-                  <ThemedView style={{
-                      display: 'flex',
-                      flexDirection: 'row', 
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                      margin: 10,
-                  }} >
-
+                <ThemedView style={styles.icon}>
                   <TouchableOpacity
-                  onPress={()=>{ShareFunction(p.text)}}>
-                  <MaterialCommunityIcons
-                        name= "share-variant-outline"
-                        size={25}
-                        weight="medium"
-                        style={{ color: 'rgb(243, 158, 158)'}}/>
+                    onPress={() => {
+                      ShareFunction(item);
+                    }}
+                  >
+                    <MaterialCommunityIcons
+                      name="share-variant-outline"
+                      size={25}
+                      weight="medium"
+                      style={{ color: "rgb(243, 158, 158)" }}
+                    />
                   </TouchableOpacity>
 
-                  
-
-                  <TouchableOpacity 
+                  <TouchableOpacity
                     style={styles.btn}
-                      onPress={()=>{
-                        decrementCounter(e.id, p.textId);
-                        
-                      }}
-                      >
-                      <ThemedView>
-                
-                      <Text 
-                        style={styles.touchable} >{p.counter}</Text>
+                    onPress={() => {
+                      // item.counter--;
+                      // useElementStore.setState({});
+                    }}
+                  >
+                    <ThemedView>
+                      <Text style={styles.touchable}>{item.counter}</Text>
                     </ThemedView>
-                    
-                    </TouchableOpacity>
+                  </TouchableOpacity>
 
-                    <TouchableOpacity
-                      onPress={()=>{
-                        toggleFavorite(p);
-                        }} >
-                      <MaterialCommunityIcons
-                        name={favorites[p.textId] ? 'heart' : 'heart-outline'} 
-                        size={25}
-                        weight="medium"
-                        style={{ color: 'rgb(243, 158, 158)'}}/>
-                      </TouchableOpacity>
-
-                      </ThemedView>
-                  </ThemedView>
+                  <TouchableOpacity
+                    onPress={() => {
+                      toggleFavorite(item);
+                    }}
+                  >
+                    <MaterialCommunityIcons
+                      name={
+                        favourites.find(
+                          (fav) => (fav as thekrType)?.textId === item.textId
+                        )
+                          ? "heart"
+                          : "heart-outline"
+                      }
+                      size={25}
+                      weight="medium"
+                      style={{ color: "rgb(243, 158, 158)" }}
+                    />
+                  </TouchableOpacity>
                 </ThemedView>
-            ))}
-          
-              
-            </Collapsible>
-          </ThemedView>
-        
-      ))}
-      </ThemedView>
-      </ScrollView>
+              </ThemedView>
+            )}
+            keyExtractor={(item) => item.textId.toString()}
+          />
+        </View>
+      </Collapsible>
     </>
-  )
+  );
+}
+
+export default function Azkar() {
+  const theme = useColorScheme() ?? "light";
+  const element = useElementStore((state) => state.element);
+
+  return (
+    <>
+      <Stack.Screen
+        options={{
+          headerTitle: "أذكار المسلم",
+
+          headerTitleAlign: "center",
+          headerTitleStyle: {
+            fontWeight: "bold",
+            fontSize: 20,
+          },
+        }}
+      />
+      <FlatList
+        contentContainerStyle={{ paddingBottom: 200 }}
+        data={element}
+        renderItem={({ item }) => (
+          <Mycomponents
+            id={item.id}
+            title={item.title}
+            content={item.content}
+          />
+        )}
+        keyExtractor={(item) => item.id.toString()}
+      />
+    </>
+  );
 }
 
 export const styles = StyleSheet.create({
-
   text: {
     fontSize: 15,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     padding: 10,
     lineHeight: 30,
-    textAlign: 'left'
-    
+    // textAlign: "right",
+    direction: "rtl",
   },
   count: {
     backgroundColor: Colors.primary,
     marginBottom: 5,
     color: Colors.dark.text,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     fontSize: 15,
-    
   },
   touchable: {
-    backgroundColor:Colors.primary,
-    padding:10,
-    color:"white",
-    textAlign:"center",
+    backgroundColor: Colors.primary,
+    padding: 10,
+    color: "white",
+    textAlign: "center",
     borderRadius: 10,
-    fontWeight: 'bold'
-
+    fontWeight: "bold",
   },
-  btn:{
-    width:'60%',
-    
-  }
+  btn: {
+    width: "60%",
+  },
 
-})
-
+  icon: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    margin: 10,
+  },
+});
