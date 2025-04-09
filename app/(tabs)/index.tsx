@@ -41,7 +41,6 @@ const [loaded, error] = useFonts({
       headerShown: false,
       // showHeader: true,
       headerTitle: "أذكار المسلم"}}
-      
       />
       
       {/* <Stack.Screen 
@@ -122,7 +121,7 @@ const [loaded, error] = useFonts({
       <TouchableOpacity style={styles.containerText}  onPress={()=> route.navigate('/pages/tasbeeh')} >
           <MaterialCommunityIcons color={colors.text} size={20} name="circle-double"/>
         <ThemedText style={styles.text}>
-          التسبيح  
+          مسبحة  
         </ThemedText>
       </TouchableOpacity>
       

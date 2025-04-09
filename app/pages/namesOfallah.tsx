@@ -2,22 +2,26 @@ import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { Stack } from 'expo-router';
 import React, { useState } from 'react';
-import { StyleSheet, useColorScheme, View, ScrollView, Text, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, ScrollView, Text, TouchableOpacity } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
 import useElementStore from '../store';
 import Modal from 'react-native-modal';
 
-export default function Azkar() {
-    const systemTheme = useColorScheme();
-    const store = useElementStore((state) => state.namesOfAllah); // Directly fetch the store
+export default function namesOfAllah() {
+    // const systemTheme = useColorScheme();
     const [isModalVisible, setIsModalVisible] = useState(false)
-
+    const store = useElementStore((state) => state.namesOfAllah)
+    const [selectedId, setSelectedId] = useState<number | null>(null)
+    const selectedItem = store.find((namesOfAllah) => namesOfAllah.id === selectedId);    
+    
     function handleModalClose() {
         setIsModalVisible(!isModalVisible)
     }
 
     return (
-        <ScrollView keyboardShouldPersistTaps="handled">
+        <ScrollView 
+            keyboardShouldPersistTaps="handled"
+            >
             <Stack.Screen options={{ 
                 headerTitle: 'أسماء الله الحسنى',
                 headerTitleAlign: 'center',
@@ -32,22 +36,27 @@ export default function Azkar() {
             </TouchableOpacity>
 
             <Modal isVisible={isModalVisible}>
-                <View style={{ justifyContent: 'center', alignItems: 'center', backgroundColor: '#fff', borderRadius: 20, padding: 20 }}>
+                <ThemedView style={{ justifyContent: 'center', alignItems: 'center', borderRadius: 20, padding: 20 }}>
 
-                    <Text>{store.find((namesOfAllah) => namesOfAllah.description)?.description || 'No description available'}</Text>
+                    <ThemedText style={{ fontSize: 20, fontWeight: 'bold', fontFamily: 'Cairo', margin: 10, }}>{selectedItem?.text}</ThemedText>
+                    <ThemedText style={{ fontSize: 20,textAlign: 'right', }}>{selectedItem?.description || 'No description available'}</ThemedText>
                     <TouchableOpacity onPress={handleModalClose}>
-                    <Text>Close</Text>
+                    <ThemedText style={{ marginTop: 20, fontWeight: 'bold', fontFamily: 'Cairo', }}>إغلاق</ThemedText>
                     </TouchableOpacity>
-                </View>
+                </ThemedView>
             </Modal>
+
             <ThemedView style={styles.container}>
                 <View style={styles.gridContainer}>
                     {store.map((namesOfAllah) => (
-                        <TouchableOpacity onPress={handleModalClose} >
-                            <View
-                                key={namesOfAllah.id}
-                                style={[styles.itemContainer, { backgroundColor: namesOfAllah.color }]}
-                            >
+                        <TouchableOpacity 
+                            key={namesOfAllah.id}
+                            style={[styles.itemContainer, { backgroundColor: namesOfAllah.color }]}
+                            onPress={() => {
+                                setSelectedId(namesOfAllah.id);
+                                setIsModalVisible(true);
+                            }}
+                        >
                                 <Svg
                                     height="50"
                                     width="150%"
@@ -56,13 +65,12 @@ export default function Azkar() {
                                 >
                                     <Path
                                         fill="#000"
-                                        fillOpacity="0.1"
+                                        fillOpacity="0.05"
                                         d="M0,96L48,106.7C96,117,192,139,288,160C384,181,480,203,576,192C672,181,768,139,864,122.7C960,107,1056,117,1152,138.7C1248,160,1344,192,1392,208L1440,224L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"
                                     />
                                 </Svg>
-                                    <ThemedText style={styles.itemText}>{namesOfAllah.text}</ThemedText>
-                            </View>
-                            </TouchableOpacity>
+                                <ThemedText style={styles.itemText}>{namesOfAllah.text}</ThemedText>
+                        </TouchableOpacity>
                     ))}
                 </View>
             </ThemedView>
@@ -94,6 +102,7 @@ const styles = StyleSheet.create({
     itemText: {
         fontSize: 16,
         fontWeight: 'bold',
+        fontFamily: 'Cairo',
         color: '#000',
     },
     wavyPattern: {
@@ -103,5 +112,3 @@ const styles = StyleSheet.create({
     },
 });
 
-
-// share feature.
