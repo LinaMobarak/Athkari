@@ -1,11 +1,15 @@
 import { create } from 'zustand';
+import { createJSONStorage, persist } from 'zustand/middleware'
 
+import AsyncStorage from '@react-native-async-storage/async-storage';
 export type duaType ={
     id: number | string 
     title: string;
     description: string;
- 
+
 }
+
+
 
 export type thekrType = {
     textId: number | string;
@@ -16,38 +20,38 @@ export type ElementType = {
     id: number | string;
     title: string;
     content: thekrType[];
-
 };
 
 
+
+export type favType = duaType | thekrType;
 
 export type ElementStore = {
     element: ElementType[];
-    favourites: thekrType[];
+    favourites: favType[];
     dua: duaType[];
-    addToFavourites: (ele: thekrType) => void;
-    decrementCounter: (itemId: number | string, contentId: number | string) => void 
-    namesOfAllah: { id: number; text: string; color: string, description: string }[];
+    decrementCounter: (itemId: number | string, contentId: number | string) => void;
+    namesOfAllah: { id: number; text: string; color: string; description: string }[];
 };
 
-const useElementStore = create<ElementStore>((set) => ({
+const useElementStore = create<ElementStore>()(persist((set, get) => ({
     element: [
         {
             id: 1,
             title: 'أذكـار الصباح',
             content: [
                 {
-                    textId: 1,
+                    textId: '11',
                     text: `اللّهُ لاَ إِلَـهَ إِلاَّ هُوَ الْحَيُّ الْقَيُّومُ لاَ تَأْخُذُهُ سِنَةٌ وَلاَ نَوْمٌ لَّهُ مَا فِي السَّمَاوَاتِ وَمَا فِي الأَرْضِ مَن ذَا الَّذِي يَشْفَعُ عِنْدَهُ إِلاَّ بِإِذْنِهِ يَعْلَمُ مَا بَيْنَ أَيْدِيهِمْ وَمَا خَلْفَهُمْ وَلاَ يُحِيطُونَ بِشَيْءٍ مِّنْ عِلْمِهِ إِلاَّ بِمَا شَاء وَسِعَ كُرْسِيُّهُ السَّمَاوَاتِ وَالأَرْضَ وَلاَ يَؤُودُهُ حِفْظُهُمَا وَهُوَ الْعَلِيُّ الْعَظِيمُ. [آية الكرسى - البقرة 255].`,
                     counter: 1
                 },
                 {
-                    textId: 2,
+                    textId: '12',
                     text: 'اللهم إني أسألك العفو والعافية في الدنيا والآخرة.',
                     counter: 4
                 },
                 {
-                    textId: 3,
+                    textId: '13',
                     text: 'اللهم إني أسألك علمًا نافعًا ورزقًا طيبًا وعملًا متقبلًا.',
                     counter: 3
                 },
@@ -58,17 +62,17 @@ const useElementStore = create<ElementStore>((set) => ({
             title: 'أذكـار المساء',
             content: [
                 {
-                    textId: 1,
+                    textId: '21',
                     text: ' أَعُوذُ بِاللهِ مِنْ الشَّيْطَانِ الرَّجِيمِ - اللّهُ لاَ إِلَـهَ إِلاَّ هُوَ الْحَيُّ الْقَيُّومُ لاَ تَأْخُذُهُ سِنَةٌ وَلاَ نَوْمٌ لَّهُ مَا فِي السَّمَاوَاتِ وَمَا فِي الأَرْضِ مَن ذَا الَّذِي يَشْفَعُ عِنْدَهُ إِلاَّ بِإِذْنِهِ يَعْلَمُ مَا بَيْنَ أَيْدِيهِمْ وَمَا خَلْفَهُمْ وَلاَ يُحِيطُونَ بِشَيْءٍ مِّنْ عِلْمِهِ إِلاَّ بِمَا شَاء وَسِعَ كُرْسِيُّهُ السَّمَاوَاتِ وَالأَرْضَ وَلاَ يَؤُودُهُ حِفْظُهُمَا وَهُوَ الْعَلِيُّ الْعَظِيمُ. [آية الكرسى - البقرة 255].',
                     counter: 1
                 },
                 {
-                    textId: 2,
+                    textId: '22',
                     text: 'اللهم إني أسألك العفو والعافية في الدنيا والآخرة.',
                     counter: 1
                 },
                 {
-                    textId: 3,
+                    textId: '23',
                     text: 'اللهم إني أسألك علمًا نافعًا ورزقًا طيبًا وعملًا متقبلًا.',
                     counter: 1
                 },
@@ -79,17 +83,17 @@ const useElementStore = create<ElementStore>((set) => ({
             title: 'أذكـار بعد الصلاة',
             content: [
                 {
-                    textId: 1,
+                    textId: '31',
                     text: ' أَعُوذُ بِاللهِ مِنْ الشَّيْطَانِ الرَّجِيمِ - اللّهُ لاَ إِلَـهَ إِلاَّ هُوَ الْحَيُّ الْقَيُّومُ لاَ تَأْخُذُهُ سِنَةٌ وَلاَ نَوْمٌ لَّهُ مَا فِي السَّمَاوَاتِ وَمَا فِي الأَرْضِ مَن ذَا الَّذِي يَشْفَعُ عِنْدَهُ إِلاَّ بِإِذْنِهِ يَعْلَمُ مَا بَيْنَ أَيْدِيهِمْ وَمَا خَلْفَهُمْ وَلاَ يُحِيطُونَ بِشَيْءٍ مِّنْ عِلْمِهِ إِلاَّ بِمَا شَاء وَسِعَ كُرْسِيُّهُ السَّمَاوَاتِ وَالأَرْضَ وَلاَ يَؤُودُهُ حِفْظُهُمَا وَهُوَ الْعَلِيُّ الْعَظِيمُ. [آية الكرسى - البقرة 255].',
                     counter: 1
                 },
                 {
-                    textId: 2,
+                    textId: '32',
                     text: 'اللهم إني أسألك العفو والعافية في الدنيا والآخرة.',
                     counter: 1
                 },
                 {
-                    textId: 3,
+                    textId: '33',
                     text: 'اللهم إني أسألك علمًا نافعًا ورزقًا طيبًا وعملًا متقبلًا.',
                     counter: 1
                 },
@@ -100,17 +104,17 @@ const useElementStore = create<ElementStore>((set) => ({
             title: 'أذكـار النوم',
             content: [
                 {
-                    textId: 1,
+                    textId: '41',
                     text: ' أَعُوذُ بِاللهِ مِنْ الشَّيْطَانِ الرَّجِيمِ - اللّهُ لاَ إِلَـهَ إِلاَّ هُوَ الْحَيُّ الْقَيُّومُ لاَ تَأْخُذُهُ سِنَةٌ وَلاَ نَوْمٌ لَّهُ مَا فِي السَّمَاوَاتِ وَمَا فِي الأَرْضِ مَن ذَا الَّذِي يَشْفَعُ عِنْدَهُ إِلاَّ بِإِذْنِهِ يَعْلَمُ مَا بَيْنَ أَيْدِيهِمْ وَمَا خَلْفَهُمْ وَلاَ يُحِيطُونَ بِشَيْءٍ مِّنْ عِلْمِهِ إِلاَّ بِمَا شَاء وَسِعَ كُرْسِيُّهُ السَّمَاوَاتِ وَالأَرْضَ وَلاَ يَؤُودُهُ حِفْظُهُمَا وَهُوَ الْعَلِيُّ الْعَظِيمُ. [آية الكرسى - البقرة 255].',
                     counter: 1
                 },
                 {
-                    textId: 2,
+                    textId: '42',
                     text: 'اللهم إني أسألك العفو والعافية في الدنيا والآخرة.',
                     counter: 1
                 },
                 {
-                    textId: 3,
+                    textId: '43',
                     text: 'اللهم إني أسألك علمًا نافعًا ورزقًا طيبًا وعملًا متقبلًا.',
                     counter: 1
                 },
@@ -121,64 +125,23 @@ const useElementStore = create<ElementStore>((set) => ({
             title: 'أذكـار الاستيقاظ',
             content: [
                 {
-                    textId: 1,
+                    textId: '51',
                     text: ' أَعُوذُ بِاللهِ مِنْ الشَّيْطَانِ الرَّجِيمِ - اللّهُ لاَ إِلَـهَ إِلاَّ هُوَ الْحَيُّ الْقَيُّومُ لاَ تَأْخُذُهُ سِنَةٌ وَلاَ نَوْمٌ لَّهُ مَا فِي السَّمَاوَاتِ وَمَا فِي الأَرْضِ مَن ذَا الَّذِي يَشْفَعُ عِنْدَهُ إِلاَّ بِإِذْنِهِ يَعْلَمُ مَا بَيْنَ أَيْدِيهِمْ وَمَا خَلْفَهُمْ وَلاَ يُحِيطُونَ بِشَيْءٍ مِّنْ عِلْمِهِ إِلاَّ بِمَا شَاء وَسِعَ كُرْسِيُّهُ السَّمَاوَاتِ وَالأَرْضَ وَلاَ يَؤُودُهُ حِفْظُهُمَا وَهُوَ الْعَلِيُّ الْعَظِيمُ. [آية الكرسى - البقرة 255].',
                     counter: 1
                 },
                 {
-                    textId: 2,
+                    textId: '52',
                     text: 'اللهم إني أسألك العفو والعافية في الدنيا والآخرة.',
                     counter: 1
                 },
                 {
-                    textId: 3,
+                    textId: '53',
                     text: 'اللهم إني أسألك علمًا نافعًا ورزقًا طيبًا وعملًا متقبلًا.',
                     counter: 1
                 },
             ],
         },
-        {
-            id: 6,
-            title: 'أذكـار الآذان',
-            content: [
-                {
-                    textId: 1,
-                    text: ' أَعُوذُ بِاللهِ مِنْ الشَّيْطَانِ الرَّجِيمِ - اللّهُ لاَ إِلَـهَ إِلاَّ هُوَ الْحَيُّ الْقَيُّومُ لاَ تَأْخُذُهُ سِنَةٌ وَلاَ نَوْمٌ لَّهُ مَا فِي السَّمَاوَاتِ وَمَا فِي الأَرْضِ مَن ذَا الَّذِي يَشْفَعُ عِنْدَهُ إِلاَّ بِإِذْنِهِ يَعْلَمُ مَا بَيْنَ أَيْدِيهِمْ وَمَا خَلْفَهُمْ وَلاَ يُحِيطُونَ بِشَيْءٍ مِّنْ عِلْمِهِ إِلاَّ بِمَا شَاء وَسِعَ كُرْسِيُّهُ السَّمَاوَاتِ وَالأَرْضَ وَلاَ يَؤُودُهُ حِفْظُهُمَا وَهُوَ الْعَلِيُّ الْعَظِيمُ. [آية الكرسى - البقرة 255].',
-                    counter: 1
-                },
-                {
-                    textId: 2,
-                    text: 'اللهم إني أسألك العفو والعافية في الدنيا والآخرة.',
-                    counter: 1
-                },
-                {
-                    textId: 3,
-                    text: 'اللهم إني أسألك علمًا نافعًا ورزقًا طيبًا وعملًا متقبلًا.',
-                    counter: 1
-                },
-            ],
-        },
-        {
-            id: 7,
-            title: 'أذكـار خروج الـمنزل ودخولـه',
-            content: [
-                {
-                    textId: 1,
-                    text: ' أَعُوذُ بِاللهِ مِنْ الشَّيْطَانِ الرَّجِيمِ - اللّهُ لاَ إِلَـهَ إِلاَّ هُوَ الْحَيُّ الْقَيُّومُ لاَ تَأْخُذُهُ سِنَةٌ وَلاَ نَوْمٌ لَّهُ مَا فِي السَّمَاوَاتِ وَمَا فِي الأَرْضِ مَن ذَا الَّذِي يَشْفَعُ عِنْدَهُ إِلاَّ بِإِذْنِهِ يَعْلَمُ مَا بَيْنَ أَيْدِيهِمْ وَمَا خَلْفَهُمْ وَلاَ يُحِيطُونَ بِشَيْءٍ مِّنْ عِلْمِهِ إِلاَّ بِمَا شَاء وَسِعَ كُرْسِيُّهُ السَّمَاوَاتِ وَالأَرْضَ وَلاَ يَؤُودُهُ حِفْظُهُمَا وَهُوَ الْعَلِيُّ الْعَظِيمُ. [آية الكرسى - البقرة 255].',
-                    counter: 1
-                },
-                {
-                    textId: 2,
-                    text: 'اللهم إني أسألك العفو والعافية في الدنيا والآخرة.',
-                    counter: 1
-                },
-                {
-                    textId: 3,
-                    text: 'اللهم إني أسألك علمًا نافعًا ورزقًا طيبًا وعملًا متقبلًا.',
-                    counter: 1
-                },
-            ],
-        },
+       
     ],
 
     dua: [
@@ -196,8 +159,6 @@ const useElementStore = create<ElementStore>((set) => ({
         }
         
     ],
-
-
     namesOfAllah: [
         { id: 1, text: 'اللَّهُ', color: '#c5e3e9', description: '111111111111111' },
         { id: 2, text: 'الرَّحْمَنُ', color: '#d8e9c5', description: '222222222222' },
@@ -299,32 +260,14 @@ const useElementStore = create<ElementStore>((set) => ({
         // { id: 98, text: 'مَالِكُ الْمُلْكِ', color: '#ffe0b2' },
         // { id: 99, text: 'ذُو الْجَلَالِ وَالْإِكْرَامِ', color: '#bbdefb' }
     ],
-
     favourites: [],
-    
-    addToFavourites: (thekr: thekrType) =>
-        set((state) => ({
-            favourites: [...state.favourites, thekr],
-        })),
-
-
-        decrementCounter: (itemId: number | string, contentId: number | string) =>
-            set((state) => ({
-                element: state.element.map((item) =>
-                    item.id === itemId
-                        ? {
-                                ...item,
-                                content: item.content.map((content) =>
-                                    content.textId === contentId
-                                      ? { ...content, counter: Math.max(content.counter - 1, 0) } // Ensure counter doesn't go below 0
-                                        : content
-                                ),
-                            }
-                        : item
-                ),
-            })),
-
-    
+    decrementCounter: (itemId: number | string, contentId: number | string) =>
+    {
+        set({"element": [...get().element]})
+    }
+}),{
+    name: 'food-storage',
+    storage: createJSONStorage(() => AsyncStorage), 
 }));
 
 export default useElementStore;

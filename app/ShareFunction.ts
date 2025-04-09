@@ -1,12 +1,17 @@
 import { Share } from "react-native";
-
-export default async function onShare(item: any) {
-    try {
-      const result = await Share.share({
-        message: item,
-      });
-
+async function share(item: any) {
+  try{
+    await Share.share({message: item});
+  }catch{
     
+      alert('An unknown error occurred.');
+    
+  }
+}
+
+export default function onShare(item: any) {
+    try {
+      share(item)
     }
     catch (error) {
       if (error instanceof Error) {
