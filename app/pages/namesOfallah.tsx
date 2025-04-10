@@ -13,31 +13,27 @@ export default function NamesOfAllah() {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const store = useNamesOfAllahStore((state) => state.namesOfAllah);
   const [selectedId, setSelectedId] = useState<number | null>(null);
-  // const [isSearching, setIsSearching] = useState(false)
   const [searchQuery, setSearchQuery] = useState('');
   const selectedItem = store.find((name) => name.id === selectedId) || null;
+  const [filteredData, setFilteredData] = useState(store);
 
   function handleModalClose() {
     setIsModalVisible(false);
   }
 
-  function handleFilter() {
-    const filteredData = store.filter((item) => item.text.includes(searchQuery));
-    return filteredData;
-  }
+  // function handleFilter() {
+  //   const filteredData = store.filter((item) => item.text.includes(searchQuery));
+  //   return filteredData;
+  // }
 
   
-  // function handleFilter(searchText: string) {
-  //     store.filter((item) => {
-  //       if (item.text.includes(searchText)) {
-  //         return (
-  //           // setIsSearching(true),
-  //           console.log(item.text) 
-  //         )
-  //       }
-  //       return null;
-  //     });
-  //   }
+function handleFilter(searchText: string) {
+  setSearchQuery(searchText)
+  const filtered = store.filter((item) =>
+    item.text.includes(searchText) 
+  );
+  setFilteredData(filtered)
+}
 
   return (
     <>
@@ -75,7 +71,7 @@ export default function NamesOfAllah() {
 
       <FlatList
         contentContainerStyle={styles.gridContainer}
-        data={handleFilter()}
+        data={filteredData}
         // renderScrollComponent={(props) => <ScrollView {...props} />}
         keyExtractor={(item) => item.id.toString()}
         numColumns={2}
