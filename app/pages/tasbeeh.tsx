@@ -96,11 +96,11 @@ export default function Tasbeeh() {
                 
                 <View style={styles.statusContainer}>
                     <View style={styles.glassCard}>
-                        <Text style={styles.statusLabel}>الجولات</Text>
+                        <ThemedText style={styles.statusLabel}>الجولات</ThemedText>
                         <Text style={styles.statusValue}>{rounds}</Text>
                     </View>
                     <View style={styles.glassCard}>
-                        <Text style={styles.statusLabel}>العدد</Text>
+                        <ThemedText style={styles.statusLabel}>العدد</ThemedText>
                         <Text style={styles.statusValue}>{maxCount}</Text>
                     </View>
                 </View>
@@ -156,7 +156,9 @@ const styles = StyleSheet.create({
         marginTop: 25,
     },
     glassCard: {
-        backgroundColor: '#fff',
+        // backgroundColor: '#323232',
+        borderColor: Colors.primary,
+        borderWidth: 1,
         borderRadius: 15,
         paddingVertical: 15,
         paddingHorizontal: 20,
@@ -170,7 +172,6 @@ const styles = StyleSheet.create({
     statusLabel: {
         fontFamily: 'Cairo',
         fontSize: 14,
-        color: '#555',
         marginBottom: 5,
     },
     statusValue: {
