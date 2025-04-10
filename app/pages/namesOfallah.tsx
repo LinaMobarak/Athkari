@@ -7,23 +7,51 @@ import Svg, { Path } from 'react-native-svg';
 import Modal from 'react-native-modal';
 import useNamesOfAllahStore from '../stores/namesOfAllah-store';
 import { FlatList } from 'react-native';
+import { Directions } from 'react-native-gesture-handler';
 
 export default function NamesOfAllah() {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const store = useNamesOfAllahStore((state) => state.namesOfAllah);
   const [selectedId, setSelectedId] = useState<number | null>(null);
+  // const [isSearching, setIsSearching] = useState(false)
+  const [searchQuery, setSearchQuery] = useState('');
   const selectedItem = store.find((name) => name.id === selectedId) || null;
 
   function handleModalClose() {
     setIsModalVisible(false);
   }
 
+  function handleFilter() {
+    const filteredData = store.filter((item) => item.text.includes(searchQuery));
+    return filteredData;
+  }
+
+  
+  // function handleFilter(searchText: string) {
+  //     store.filter((item) => {
+  //       if (item.text.includes(searchText)) {
+  //         return (
+  //           // setIsSearching(true),
+  //           console.log(item.text) 
+  //         )
+  //       }
+  //       return null;
+  //     });
+  //   }
+
   return (
-    <View style={{ flex: 1 }}>
+    <>
       <Stack.Screen
+        name='ابحث عن اسم من أسماء الله الحسنى' // this is for the search bar title 
         options={{
           headerTitle: 'أسماء الله الحسنى',
           headerTitleAlign: 'center',
+          headerBlurEffect: 'light',
+          headerSearchBarOptions : {
+            placeholder: 'ابحث',
+            inputType: 'text',
+            onChangeText: (e) => handleFilter(e.nativeEvent.text),
+          },
           headerTitleStyle: {
             fontWeight: 'bold',
             fontSize: 20,
@@ -31,19 +59,24 @@ export default function NamesOfAllah() {
         }}
       />
 
+      <View style={{ backgroundColor: 'transparent', paddingTop: 150}} />
+
       <Modal isVisible={isModalVisible}>
         <ThemedView style={styles.modal}>
           <ThemedText style={styles.modalTitle}>{selectedItem?.text}</ThemedText>
           <ThemedText style={styles.modalDescription}>{selectedItem?.description}</ThemedText>
           <TouchableOpacity onPress={handleModalClose}>
-            <ThemedText style={styles.closeText}>إغلاق</ThemedText>
+            <View>
+              <ThemedText style={styles.closeText}>إغلاق</ThemedText>
+            </View>
           </TouchableOpacity>
         </ThemedView>
       </Modal>
 
       <FlatList
         contentContainerStyle={styles.gridContainer}
-        data={store}
+        data={handleFilter()}
+        // renderScrollComponent={(props) => <ScrollView {...props} />}
         keyExtractor={(item) => item.id.toString()}
         numColumns={2}
         columnWrapperStyle={{ justifyContent: 'space-between' }}
@@ -71,8 +104,8 @@ export default function NamesOfAllah() {
           </TouchableOpacity>
         )}
       />
-    </View>
-  );
+    </>
+  )
 }
 
 const styles = StyleSheet.create({

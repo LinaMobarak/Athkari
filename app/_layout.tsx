@@ -1,6 +1,6 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native'
+import { DarkTheme, DefaultTheme, ThemeProvider, useTheme } from '@react-navigation/native'
 import { useFonts } from 'expo-font'
-import { Stack } from 'expo-router'
+import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen'
 import { StatusBar } from 'expo-status-bar'
 import { useEffect } from 'react'
@@ -13,6 +13,7 @@ SplashScreen.preventAutoHideAsync()
 
 export default function RootLayout() {
   const colorScheme = useColorScheme()
+  const colors = useTheme().colors
   const [loaded] = useFonts({
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
   })
@@ -34,7 +35,7 @@ export default function RootLayout() {
           headerBackTitle: 'رجوع',
           headerTintColor: Colors[colorScheme ?? 'light']?.text,
           contentStyle: {
-        backgroundColor: colorScheme === 'dark' ? DarkTheme : '#f7f6f2',
+        backgroundColor: Colors[colorScheme ?? 'light']?.background,
           },
         }}
       > 

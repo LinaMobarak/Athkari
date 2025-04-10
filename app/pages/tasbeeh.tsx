@@ -7,18 +7,17 @@ import { useEffect, useState } from 'react';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import { FlatList } from 'react-native';
+import { ThemedView } from '@/components/ThemedView';
 
 export default function Tasbeeh() {
-    const theme = useTheme(); // from @react-navigation/native
-    const colors = theme.colors;
+    const colors = useTheme().colors;
     const [count, setCount] = useState(0);
     const [maxCount, setMaxCount] = useState(33);
     const [rounds, setRounds] = useState(0);
     const [selectedDhikr, setSelectedDhikr] = useState(0);
-    const [isPressed, setIsPressed] = useState(false);
 
     const dhikrOptions = [
-        { count: 3, dhikr: 'سبحان الله' },
+        { count: 33, dhikr: 'سبحان الله' },
         { count: 33, dhikr: 'الحمد لله' },
         { count: 33, dhikr: 'الله أكبر' },
         { count: 100, dhikr: 'لا إله إلا الله' },
@@ -33,7 +32,8 @@ export default function Tasbeeh() {
     };
 
     const resetCounter = () => {
-        setCount(0);
+        setCount(0)
+        setRounds(0)
     };
     
     const selectDhikr = (index: number) => {
@@ -41,22 +41,21 @@ export default function Tasbeeh() {
         setMaxCount(dhikrOptions[index].count);
         resetCounter();
         setRounds(0);
-        setIsPressed(true);
     };
 
     useEffect(() => {
         // setCount({dhikrOptions.[selectedDhikr].count})
         if (count === maxCount) {
-            Vibration.vibrate(1000); // Vibrate for 1 second
-            setRounds(prev => prev + 1);
-            resetCounter();
+            Vibration.vibrate(1000)
+            setRounds(prev => prev + 1)
+            setCount(0)
         }
     }, [count, maxCount]);
 
     return (
         <ScrollView
         keyboardShouldPersistTaps="handled"
-        contentContainerStyle={{ flexGrow: 1 }}
+        // contentContainerStyle={{ flexGrow: 1 }}
     >
             <Stack.Screen options={{ 
                 headerTitle: 'المسبحة',
@@ -68,12 +67,12 @@ export default function Tasbeeh() {
                 },
             }} />
 
-            <View style={styles.container}>
-
+            <ThemedView style={styles.container}>
                     <FlatList 
                         data={dhikrOptions}
                         keyExtractor={(item) => item.dhikr}
                         horizontal
+                        inverted
                         showsHorizontalScrollIndicator={false}
                         contentContainerStyle={styles.dhikrList}
                         renderItem={({ item, index }) => (
@@ -102,7 +101,7 @@ export default function Tasbeeh() {
                     </View>
                     <View style={styles.glassCard}>
                         <Text style={styles.statusLabel}>العدد</Text>
-                        <Text style={styles.statusValue}>{count}</Text>
+                        <Text style={styles.statusValue}>{maxCount}</Text>
                     </View>
                 </View>
                 
@@ -110,13 +109,13 @@ export default function Tasbeeh() {
                     onPress={handleCount}
                     style={styles.counterButton}
                     >
-                        <Text style={styles.counterText}>{dhikrOptions[selectedDhikr].count}</Text>
+                        <Text style={styles.counterText}>{count}</Text>
                     </TouchableOpacity>
 
                     <TouchableOpacity onPress={resetCounter} style={styles.resetCircle}>
                         <MaterialCommunityIcons name="refresh" size={24} color="#fff" />
                     </TouchableOpacity>
-            </View>
+            </ThemedView>
         </ScrollView>
     );
 }
@@ -126,23 +125,18 @@ const styles = StyleSheet.create({
     container: {
         padding: 20,
         alignItems: 'center',
-        backgroundColor: '#f7f6f2',
     },
     dhikrList: {
         paddingVertical: 10,
     },
     dhikrButton: {
-        backgroundColor: '#fff',
+        // backgroundColor: '#fff',
         borderWidth: 2,
         borderColor: Colors.primary,
         borderRadius: 30,
         paddingVertical: 10,
         paddingHorizontal: 18,
         marginHorizontal: 5,
-        shadowColor: '#000',
-        shadowOpacity: 0.1,
-        shadowOffset: { width: 0, height: 3 },
-        elevation: 2,
     },
     selectedDhikrButton: {
         backgroundColor: Colors.primary,
@@ -162,7 +156,7 @@ const styles = StyleSheet.create({
         marginTop: 25,
     },
     glassCard: {
-        backgroundColor: '#ffffffcc',
+        backgroundColor: '#fff',
         borderRadius: 15,
         paddingVertical: 15,
         paddingHorizontal: 20,
@@ -193,14 +187,9 @@ const styles = StyleSheet.create({
         backgroundColor: Colors.secondaryColor,
         justifyContent: 'center',
         alignItems: 'center',
-        shadowColor: Colors.primary,
-        shadowOpacity: 0.3,
-        shadowOffset: { width: 0, height: 6 },
-        // elevation: 8,
     },
     counterText: {
         fontSize: 60,
-         
         fontWeight: 'bold',
         color: Colors.primary,
     },
