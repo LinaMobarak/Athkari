@@ -14,7 +14,7 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { Colors } from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { ThemedText } from "@/components/ThemedText";
-import ShareFunction from "@/app/shareFunction";
+import ShareFunction from "@/app/ShareFunction";
 import { FlatList } from "react-native";
 
 function Mycomponents({
@@ -61,7 +61,7 @@ function Mycomponents({
                 <ThemedView style={styles.icon}>
                   <TouchableOpacity
                     onPress={() => {
-                      ShareFunction(item);
+                      ShareFunction(item.text);
                     }}
                   >
                     <MaterialCommunityIcons
@@ -75,8 +75,25 @@ function Mycomponents({
                   <TouchableOpacity
                     style={styles.btn}
                     onPress={() => {
-                      // item.counter--;
-                      // useElementStore.setState({});
+                      if (item.counter > 0) {
+                        const updatedContent = content.map((contentItem) =>
+                          contentItem.textId === item.textId
+                            ? {
+                                ...contentItem,
+                                counter: contentItem.counter - 1,
+                              }
+                            : contentItem
+                        );
+
+                        useElementStore.setState((state) => ({
+                          element: state.element.map((elementItem) =>
+                            elementItem.id === id
+                              ? { ...elementItem, content: updatedContent }
+                              : elementItem
+                          ),
+                        }));
+                        console.log(item.counter);
+                      }
                     }}
                   >
                     <ThemedView>
