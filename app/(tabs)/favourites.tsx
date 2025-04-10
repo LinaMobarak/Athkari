@@ -10,7 +10,7 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import { Stack } from "expo-router";
-import ShareFunction from "@/app/shareFunction";
+import ShareFunction from "@/app/ShareFunction";
 import { Colors } from "@/constants/Colors";
 
 export default function Favourites() {
@@ -109,6 +109,7 @@ export default function Favourites() {
           <ThemedView
             style={{
               alignItems: "center",
+              paddingTop: 50,
               flex: 1,
             }}
           >
@@ -132,7 +133,7 @@ export default function Favourites() {
 const styles = StyleSheet.create({
   container: {
     padding: 10,
-    paddingTop: 50,
+    paddingTop: 0,
     flex: 1,
   },
   favouriteItem: {
