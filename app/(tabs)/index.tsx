@@ -25,14 +25,14 @@ const [loaded, error] = useFonts({
   'Cairo': require('@/assets/fonts/Cairo.ttf'),
 })
   const [theme, setTheme] = useState(Appearance.getColorScheme())
+  const [newIcon, setNewIcon] = useState(false)
 
   const toggleTheme = () => {
     const newTheme = theme === 'light' ? 'dark' : 'light'
     setTheme(newTheme)
+    setNewIcon(!newIcon)
     Appearance.setColorScheme(newTheme) 
-  }
-
-  
+  }  
 
   return (
     <>
@@ -64,7 +64,7 @@ const [loaded, error] = useFonts({
             
           <TouchableOpacity onPress={toggleTheme} >
 
-            <Feather name="sun" size={24} color="white" style={styles.themeIcon}/>
+            <Feather name={newIcon ? "sun" : "moon"} size={24} color="white" style={styles.themeIcon}/>
           </TouchableOpacity>
           <TouchableOpacity>
             <Feather name="settings" size={24} color="white" style={styles.settingsIcon}/>
@@ -121,7 +121,7 @@ const [loaded, error] = useFonts({
       <TouchableOpacity style={styles.containerText}  onPress={()=> route.navigate('/pages/tasbeeh')} >
           <MaterialCommunityIcons color={colors.text} size={20} name="circle-double"/>
         <ThemedText style={styles.text}>
-          مسبحة  
+          المسبحة
         </ThemedText>
       </TouchableOpacity>
       
@@ -132,6 +132,11 @@ const [loaded, error] = useFonts({
         </ThemedText>
       </TouchableOpacity>
       
+        {/* Placeholder for future feature */}
+        <TouchableOpacity>
+            <Text style={styles.shareText}>شارك التطبيق واكسب الأجر 💫</Text>
+        </TouchableOpacity>
+        
     </ParallaxScrollView>
     </>
   )
@@ -201,4 +206,12 @@ const styles = StyleSheet.create({
     top: 60,
     right: 30,
   },
+  shareText: {
+    fontSize: 16,
+    textAlign: 'center',
+    color: Colors.primary,
+    fontFamily: 'Cairo',
+    marginTop: 15,
+    textDecorationLine: 'underline',
+},
 })

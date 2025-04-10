@@ -8,7 +8,7 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { ThemedText } from "@/components/ThemedText";
 
-import ShareFunction from "@/app/shareFunction";
+import ShareFunction from "@/app/ShareFunction";
 import { FlatList } from "react-native";
 
 function MyComponent({ item }: any) {

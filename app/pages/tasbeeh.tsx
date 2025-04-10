@@ -1,19 +1,29 @@
 import { ThemedText } from '@/components/ThemedText';
 import { Stack } from 'expo-router';
-import { StyleSheet, useColorScheme, View, ScrollView, Vibration, TouchableOpacity } from 'react-native';
+import { StyleSheet, useColorScheme, View, ScrollView, Vibration, TouchableOpacity, Text } from 'react-native';
 import { useTheme } from '@react-navigation/native';
 import { Colors } from '@/constants/Colors'
 import { useEffect, useState } from 'react';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
-
+import { FlatList } from 'react-native';
 
 export default function Tasbeeh() {
-    const { colors } = useColorScheme();
+    const theme = useTheme(); // from @react-navigation/native
+    const colors = theme.colors;
     const [count, setCount] = useState(0);
     const [maxCount, setMaxCount] = useState(33);
     const [rounds, setRounds] = useState(0);
-    
+    const [selectedDhikr, setSelectedDhikr] = useState(0);
+    const [isPressed, setIsPressed] = useState(false);
+
+    const dhikrOptions = [
+        { count: 3, dhikr: 'سبحان الله' },
+        { count: 33, dhikr: 'الحمد لله' },
+        { count: 33, dhikr: 'الله أكبر' },
+        { count: 100, dhikr: 'لا إله إلا الله' },
+        { count: 100, dhikr: 'أستغفر الله' },
+    ]
             
     const handleCount = () => {
         if (count < maxCount) {
@@ -26,8 +36,18 @@ export default function Tasbeeh() {
         setCount(0);
     };
     
+    const selectDhikr = (index: number) => {
+        setSelectedDhikr(index);
+        setMaxCount(dhikrOptions[index].count);
+        resetCounter();
+        setRounds(0);
+        setIsPressed(true);
+    };
+
     useEffect(() => {
+        // setCount({dhikrOptions.[selectedDhikr].count})
         if (count === maxCount) {
+            Vibration.vibrate(1000); // Vibrate for 1 second
             setRounds(prev => prev + 1);
             resetCounter();
         }
@@ -35,93 +55,163 @@ export default function Tasbeeh() {
 
     return (
         <ScrollView
-            keyboardShouldPersistTaps="handled">
+        keyboardShouldPersistTaps="handled"
+        contentContainerStyle={{ flexGrow: 1 }}
+    >
             <Stack.Screen options={{ 
                 headerTitle: 'المسبحة',
                 headerTitleAlign: 'center',
                 headerTitleStyle: {
                     fontWeight: 'bold',
-                    fontSize: 18,
+                    fontSize: 20,
                     fontFamily: 'Cairo',
                 },
             }} />
+
             <View style={styles.container}>
-                <View style={styles.counterContainer}>
-                    <TouchableOpacity
-                    // onPress={handleCount}
-                    style={styles.targetButton}
-                    >
-                        <ThemedText>الهدف : {maxCount}</ThemedText>
-                    </TouchableOpacity>
 
-                    <ThemedText style={styles.rounds}>{rounds}</ThemedText>
-
-                    <TouchableOpacity 
-                        onPress={handleCount}
-                        style={[
-                            styles.counterButton,
-                        ]}
-                    >
-                        <ThemedText style={styles.counterText}>{count}</ThemedText>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity onPress={resetCounter} style={styles.resetButton}>
-                        <MaterialCommunityIcons
-                            name="refresh" 
-                            size={30} 
-                            color={Colors.primary}
-                        />
-                        <ThemedText style={styles.resetText}>إعادة تعيين</ThemedText>
-                    </TouchableOpacity>
+                    <FlatList 
+                        data={dhikrOptions}
+                        keyExtractor={(item) => item.dhikr}
+                        horizontal
+                        showsHorizontalScrollIndicator={false}
+                        contentContainerStyle={styles.dhikrList}
+                        renderItem={({ item, index }) => (
+                            <TouchableOpacity 
+                            onPress={() => selectDhikr(index)} // Use the selectDhikr function
+                            style={[
+                                styles.dhikrButton,
+                                selectedDhikr === index && styles.selectedDhikrButton, // Highlight selected item
+                            ]}
+                            >
+                                <ThemedText
+                                    style={[
+                                        styles.dhikrText,
+                                        selectedDhikr === index && styles.selectedDhikrText
+                                    ]}>
+                                    {item.dhikr}
+                                </ThemedText>
+                            </TouchableOpacity>
+                        )}
+                    />
+                
+                <View style={styles.statusContainer}>
+                    <View style={styles.glassCard}>
+                        <Text style={styles.statusLabel}>الجولات</Text>
+                        <Text style={styles.statusValue}>{rounds}</Text>
+                    </View>
+                    <View style={styles.glassCard}>
+                        <Text style={styles.statusLabel}>العدد</Text>
+                        <Text style={styles.statusValue}>{count}</Text>
+                    </View>
                 </View>
+                
+                    <TouchableOpacity
+                    onPress={handleCount}
+                    style={styles.counterButton}
+                    >
+                        <Text style={styles.counterText}>{dhikrOptions[selectedDhikr].count}</Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity onPress={resetCounter} style={styles.resetCircle}>
+                        <MaterialCommunityIcons name="refresh" size={24} color="#fff" />
+                    </TouchableOpacity>
             </View>
         </ScrollView>
     );
 }
+// share feature from link and counter to how many people joined through you and shared the app
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
         padding: 20,
-        // backgroundColor: Colors.dark.background,
-    },
-    counterContainer: {
         alignItems: 'center',
-        marginTop: 20,
+        backgroundColor: '#f7f6f2',
     },
-    targetButton: {
-        padding: 10,
-        marginBottom: 20,
+    dhikrList: {
+        paddingVertical: 10,
     },
-    counterButton: {
-        width: 200,
-        height: 200,
-        borderRadius: 100,
-        justifyContent: 'center',
-        alignItems: 'center',
-        padding: 0,
-        backgroundColor: Colors.secondaryColor,
+    dhikrButton: {
+        backgroundColor: '#fff',
+        borderWidth: 2,
+        borderColor: Colors.primary,
+        borderRadius: 30,
+        paddingVertical: 10,
+        paddingHorizontal: 18,
+        marginHorizontal: 5,
+        shadowColor: '#000',
+        shadowOpacity: 0.1,
+        shadowOffset: { width: 0, height: 3 },
+        elevation: 2,
     },
-    counterText: {
-        fontSize: 48,
-        fontWeight: 'bold',
+    selectedDhikrButton: {
+        backgroundColor: Colors.primary,
+    },
+    dhikrText: {
+        fontSize: 16,
+        fontFamily: 'Cairo',
         color: Colors.primary,
     },
-    resetButton: {
+    selectedDhikrText: {
+        color: '#fff',
+    },
+    statusContainer: {
         flexDirection: 'row',
+        justifyContent: 'space-between',
+        width: '90%',
+        marginTop: 25,
+    },
+    glassCard: {
+        backgroundColor: '#ffffffcc',
+        borderRadius: 15,
+        paddingVertical: 15,
+        paddingHorizontal: 20,
         alignItems: 'center',
-        padding: 15,
-        marginTop: 20,
+        width: '45%',
+        shadowColor: '#000',
+        shadowOpacity: 0.1,
+        shadowOffset: { width: 0, height: 2 },
+        elevation: 3,
     },
-    resetText: {
-        fontSize: 16,
-        marginLeft: 8,
+    statusLabel: {
         fontFamily: 'Cairo',
+        fontSize: 14,
+        color: '#555',
+        marginBottom: 5,
     },
-    rounds: {
+    statusValue: {
         fontSize: 20,
         fontWeight: 'bold',
         color: Colors.primary,
-        marginBottom: 20,
+    },
+    counterButton: {
+        marginTop: 30,
+        width: 220,
+        height: 220,
+        borderRadius: 110,
+        textAlign: 'center',
+        backgroundColor: Colors.secondaryColor,
+        justifyContent: 'center',
+        alignItems: 'center',
+        shadowColor: Colors.primary,
+        shadowOpacity: 0.3,
+        shadowOffset: { width: 0, height: 6 },
+        // elevation: 8,
+    },
+    counterText: {
+        fontSize: 60,
+         
+        fontWeight: 'bold',
+        color: Colors.primary,
+    },
+    resetCircle: {
+        marginTop: 25,
+        backgroundColor: Colors.primary,
+        width: 50,
+        height: 50,
+        borderRadius: 25,
+        justifyContent: 'center',
+        alignItems: 'center',
+        elevation: 5,
     },
 });

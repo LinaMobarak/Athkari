@@ -34,7 +34,7 @@ export default function RootLayout() {
           headerBackTitle: 'رجوع',
           headerTintColor: Colors[colorScheme ?? 'light']?.text,
           contentStyle: {
-        backgroundColor: colorScheme === 'dark' ? 'red' : 'orange',
+        backgroundColor: colorScheme === 'dark' ? DarkTheme : '#f7f6f2',
           },
         }}
       > 
