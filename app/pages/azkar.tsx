@@ -1,21 +1,17 @@
 import { Collapsible } from "@/components/Collapsible";
 import { ThemedView } from "@/components/ThemedView";
 import { Stack } from "expo-router";
-import React from "react";
-import {
-  Text,
-  ScrollView,
-  StyleSheet,
-  TouchableOpacity,
-  View,
-} from "react-native";
-import useElementStore, { thekrType } from "../store";
+import React, { useEffect } from "react";
+import { Text, StyleSheet, TouchableOpacity, View } from "react-native";
+import * as Haptics from "expo-haptics";
+import { useAzkarStore, ThekrType } from "@/app/stores/azkarStore";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { Colors } from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { ThemedText } from "@/components/ThemedText";
-import ShareFunction from "@/app/ShareFunction";
+import ShareFunction from "@/app/functions/ShareFunction";
 import { FlatList } from "react-native";
+import useElementStore from "../stores/store";
 
 function Mycomponents({
   id,
@@ -24,18 +20,36 @@ function Mycomponents({
 }: {
   id: number | string;
   title: string;
-  content: thekrType[];
+  content: ThekrType[];
 }) {
-  // const decrementCounter = useElementStore((state) => state.decrementCounter);
-  const { favourites } = useElementStore();
+  const decrementcounter = async (item: ThekrType) => {
+    if (item.counter > 0) {
+      const updatedContent = content.map((contentItem) =>
+        contentItem.textId === item.textId
+          ? {
+              ...contentItem,
+              counter: contentItem.counter - 1,
+            }
+          : contentItem
+      );
 
-  const toggleFavorite = async (item: thekrType) => {
+      useAzkarStore.setState((state) => ({
+        element: state.element.map((elementItem) =>
+          elementItem.id === id
+            ? { ...elementItem, content: updatedContent }
+            : elementItem
+        ),
+      }));
+    }
+  };
+  const { favourites } = useElementStore();
+  const toggleFavorite = async (item: ThekrType) => {
     const fav = useElementStore.getState().favourites;
 
     let newFav = [];
 
     if (fav.includes(item)) {
-      newFav = fav.filter((f) => (f as thekrType).textId !== item.textId);
+      newFav = fav.filter((f) => (f as ThekrType).textId !== item.textId);
     } else {
       newFav = fav.concat([item]);
     }
@@ -43,96 +57,88 @@ function Mycomponents({
     useElementStore.setState({ favourites: newFav });
   };
 
+  const counterFunctions = (item: ThekrType) => {
+    decrementcounter(item);
+    if (item.counter > 0) {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    }
+  };
+
   return (
     <>
-      <Collapsible title={title}>
-        <View style={{ backgroundColor: Colors.primary }}>
-          <FlatList
-            data={content}
-            renderItem={({ item }) => (
-              <ThemedView
-                style={{
-                  margin: 5,
-                  borderRadius: 10,
-                }}
-              >
-                <ThemedText style={styles.text}>{item.text}</ThemedText>
+      <View style={{ position: "relative" }}>
+        <Collapsible title={title}>
+          <View style={{ backgroundColor: Colors.primary }}>
+            <FlatList
+              data={content}
+              renderItem={({ item }) => (
+                <ThemedView
+                  style={{
+                    margin: 5,
+                    borderRadius: 10,
+                  }}
+                >
+                  <ThemedText style={styles.text}>{item.text}</ThemedText>
 
-                <ThemedView style={styles.icon}>
-                  <TouchableOpacity
-                    onPress={() => {
-                      ShareFunction(item.text);
-                    }}
-                  >
-                    <MaterialCommunityIcons
-                      name="share-variant-outline"
-                      size={25}
-                      weight="medium"
-                      style={{ color: "rgb(243, 158, 158)" }}
-                    />
-                  </TouchableOpacity>
+                  <ThemedView style={styles.icon}>
+                    <TouchableOpacity
+                      onPress={() => {
+                        ShareFunction(item.text);
+                      }}
+                    >
+                      <MaterialCommunityIcons
+                        name="share-variant-outline"
+                        size={25}
+                        weight="medium"
+                        style={{ color: "rgb(243, 158, 158)" }}
+                      />
+                    </TouchableOpacity>
 
-                  <TouchableOpacity
-                    style={styles.btn}
-                    onPress={() => {
-                      if (item.counter > 0) {
-                        const updatedContent = content.map((contentItem) =>
-                          contentItem.textId === item.textId
-                            ? {
-                                ...contentItem,
-                                counter: contentItem.counter - 1,
-                              }
-                            : contentItem
-                        );
+                    <TouchableOpacity
+                      style={styles.btn}
+                      onPress={() => {
+                        counterFunctions(item);
+                      }}
+                      disabled={item.counter <= 0}
+                    >
+                      <ThemedView>
+                        <Text style={styles.touchable}>{item.counter}</Text>
+                      </ThemedView>
+                    </TouchableOpacity>
 
-                        useElementStore.setState((state) => ({
-                          element: state.element.map((elementItem) =>
-                            elementItem.id === id
-                              ? { ...elementItem, content: updatedContent }
-                              : elementItem
-                          ),
-                        }));
-                        console.log(item.counter);
-                      }
-                    }}
-                  >
-                    <ThemedView>
-                      <Text style={styles.touchable}>{item.counter}</Text>
-                    </ThemedView>
-                  </TouchableOpacity>
-
-                  <TouchableOpacity
-                    onPress={() => {
-                      toggleFavorite(item);
-                    }}
-                  >
-                    <MaterialCommunityIcons
-                      name={
-                        favourites.find(
-                          (fav) => (fav as thekrType)?.textId === item.textId
-                        )
-                          ? "heart"
-                          : "heart-outline"
-                      }
-                      size={25}
-                      weight="medium"
-                      style={{ color: "rgb(243, 158, 158)" }}
-                    />
-                  </TouchableOpacity>
+                    <TouchableOpacity
+                      onPress={() => {
+                        toggleFavorite(item);
+                      }}
+                    >
+                      <MaterialCommunityIcons
+                        name={
+                          favourites.find(
+                            (fav) => (fav as ThekrType)?.textId === item.textId
+                          )
+                            ? "heart"
+                            : "heart-outline"
+                        }
+                        size={25}
+                        weight="medium"
+                        style={{ color: "rgb(243, 158, 158)" }}
+                      />
+                    </TouchableOpacity>
+                  </ThemedView>
                 </ThemedView>
-              </ThemedView>
-            )}
-            keyExtractor={(item) => item.textId.toString()}
-          />
-        </View>
-      </Collapsible>
+              )}
+              keyExtractor={(item) => item.textId.toString()}
+            />
+          </View>
+        </Collapsible>
+      </View>
     </>
   );
 }
 
 export default function Azkar() {
   const theme = useColorScheme() ?? "light";
-  const element = useElementStore((state) => state.element);
+  const { element } = useAzkarStore();
 
   return (
     <>

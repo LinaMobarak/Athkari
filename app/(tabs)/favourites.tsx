@@ -5,24 +5,26 @@ import {
   StyleSheet,
   useColorScheme,
 } from "react-native";
-import useElementStore, { duaType, favType, thekrType } from "../store";
+import { ThekrType } from "../stores/azkarStore";
+import { DuaType } from "../stores/duaStore";
+import useFavouriteStore, { favType } from "../stores/store";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import { Stack } from "expo-router";
-import ShareFunction from "@/app/ShareFunction";
+import ShareFunction from "@/app/functions/ShareFunction";
 import { Colors } from "@/constants/Colors";
 
 export default function Favourites() {
   const theme = useColorScheme() ?? "light";
-  const favourites = useElementStore((state) => state.favourites);
+  const favourites = useFavouriteStore((state) => state.favourites);
   // console.log(favourites);
 
   const toggleFavorite = (item: favType) => {
     // console.log(item);
 
     const updatedFav = favourites.filter((fav) => fav !== item);
-    useElementStore.setState({ favourites: updatedFav });
+    useFavouriteStore.setState({ favourites: updatedFav });
   };
 
   const renderFavouriteItem = (fav: favType, idx: number) => {
@@ -30,7 +32,7 @@ export default function Favourites() {
 
     if (Object.keys(fav).includes("text")) {
       // Handle `thekrType`
-      const tempFav = fav as thekrType;
+      const tempFav = fav as ThekrType;
       return (
         <ThemedView key={idx} style={styles.favouriteItem}>
           <ThemedText style={styles.text}>{tempFav.text}</ThemedText>
@@ -55,7 +57,7 @@ export default function Favourites() {
       );
     } else if (Object.keys(fav).includes("description")) {
       // Handle `duaType`
-      const tempFav = fav as duaType;
+      const tempFav = fav as DuaType;
       return (
         <ThemedView key={idx} style={styles.favouriteItem}>
           <ThemedText style={styles.duaTitle}>{tempFav.title}</ThemedText>
@@ -118,8 +120,18 @@ export default function Favourites() {
               size={100}
               style={{ color: "rgb(243, 158, 158)", marginBottom: 20 }}
             />
+            <ThemedText
+              style={{
+                fontWeight: "bold",
+                fontSize: 20,
+
+                paddingBottom: 10,
+              }}
+            >
+              لا توجد عناصر في المفضلة حالياً
+            </ThemedText>
             <ThemedText style={{ fontWeight: "bold", fontSize: 20 }}>
-              The Favourite page is empty
+              أضف شئ جديد للتقرب من الله خطوة
             </ThemedText>
           </ThemedView>
         ) : (
