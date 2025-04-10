@@ -1,12 +1,4 @@
-import {
-  Image,
-  StyleSheet,
-  View,
-  Text,
-  TouchableOpacity,
-  Button,
-} from "react-native";
-import { IconSymbol } from "@/components/ui/IconSymbol";
+import { Image, StyleSheet, View, Text, TouchableOpacity } from "react-native";
 import ParallaxScrollView from "../../components/ParallaxScrollView";
 import React, { useEffect, useState } from "react";
 import Feather from "@expo/vector-icons/Feather";
@@ -17,11 +9,9 @@ import { useTheme } from "@react-navigation/native";
 import { Colors } from "@/constants/Colors";
 import { ThemedText } from "@/components/ThemedText";
 import { BlurView } from "expo-blur";
-// import Lateef from '@/assets/fonts/Lateef-Bold.ttf'
 import { useFonts } from "expo-font";
 import { Appearance } from "react-native";
 import { checkIf12HoursPassed } from "@/app/functions/resetCounter";
-// import Lateef from '@/assets/fonts/Lateef-Bold.ttf'
 
 const img = require("@/assets/images/HeaderImage.jpeg");
 export default function HomeScreen() {
@@ -29,9 +19,29 @@ export default function HomeScreen() {
     checkIf12HoursPassed();
   }, []);
 
+  const [hijriDate, setHijriDate] = useState("");
+
+  useEffect(() => {
+    const getHijriDateInArabic = async () => {
+      try {
+        const response = await fetch(
+          "https://api.aladhan.com/v1/gToH?date=10-04-2025"
+        );
+        const json = await response.json();
+        const hijri = json.data.hijri;
+
+        setHijriDate(`${hijri.day} ${hijri.month.ar} ${hijri.year}`);
+      } catch (error) {
+        console.error("Error fetching Hijri date in Arabic:", error);
+      }
+    };
+
+    getHijriDateInArabic();
+  }, []);
+
   const route = useRouter();
   const { colors } = useTheme();
-  // Hello Lina
+
   const [loaded, error] = useFonts({
     Cairo: require("@/assets/fonts/Cairo.ttf"),
   });
@@ -49,23 +59,11 @@ export default function HomeScreen() {
     <>
       <Stack.Screen
         options={{
-          // showHeader: false,
           headerShown: false,
-          // showHeader: true,
           headerTitle: "أذكار المسلم",
         }}
       />
 
-      {/* <Stack.Screen 
-        options={{
-          headerTitle: "أذكاري",
-          headerTitleAlign: 'center',
-          headerTitleStyle: {
-            fontWeight: 'bold',
-            fontSize: 20,
-          },
-        }} 
-      /> */}
       <ParallaxScrollView
         headerBackgroundColor={{ light: "#A1CEDC", dark: "#1D3D47" }}
         headerImage={
@@ -113,40 +111,8 @@ export default function HomeScreen() {
               />
             </View>
 
-            <View
-              style={{
-                backgroundColor: "#151718",
-                position: "absolute",
-                bottom: 15,
-                left: "40%",
-                width: "20%",
-                height: 60,
-                justifyContent: "center",
-                alignItems: "center",
-                borderRadius: 10,
-                borderWidth: 1,
-                borderColor: Colors.secondaryColor,
-              }}
-            >
-              <Text
-                style={{
-                  color: Colors.secondaryColor,
-                  fontFamily: "Cairo",
-                  fontSize: 16,
-                  marginBottom: -10,
-                }}
-              >
-                9
-              </Text>
-              <Text
-                style={{
-                  color: Colors.secondaryColor,
-                  fontFamily: "Cairo",
-                  fontSize: 16,
-                }}
-              >
-                شوال
-              </Text>
+            <View style={styles.date}>
+              <Text style={styles.textOfDate}>{hijriDate}</Text>
             </View>
           </ThemedView>
         }
@@ -277,5 +243,27 @@ const styles = StyleSheet.create({
     fontFamily: "Cairo",
     marginTop: 15,
     textDecorationLine: "underline",
+  },
+
+  date: {
+    backgroundColor: "#151718",
+    position: "absolute",
+    bottom: 15,
+    left: "40%",
+    width: "20%",
+    height: 60,
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: Colors.secondaryColor,
+  },
+
+  textOfDate: {
+    color: Colors.secondaryColor,
+    fontFamily: "Cairo",
+    fontSize: 14,
+    fontWeight: "bold",
+    textAlign: "center",
   },
 });
