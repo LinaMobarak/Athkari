@@ -13,7 +13,7 @@ const scndryColor= '#B0C4A1';
 export const Colors = {
   light: {
     text: '#11181C',
-    background: '#fff',
+    background: '#f7f6f2',
     tint: tintColorLight,
     icon: 'black',
     tabIconDefault: '#687076',
