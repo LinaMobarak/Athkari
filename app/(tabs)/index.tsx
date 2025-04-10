@@ -75,14 +75,6 @@ export default function HomeScreen() {
                 name={newIcon ? "sun" : "moon"}
                 size={24}
                 color="white"
-                style={styles.themeIcon}
-              />
-            </TouchableOpacity>
-            <TouchableOpacity>
-              <Feather
-                name="settings"
-                size={24}
-                color="white"
                 style={styles.settingsIcon}
               />
             </TouchableOpacity>

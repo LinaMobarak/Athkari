@@ -10,9 +10,9 @@ export const checkIf12HoursPassed = async () => {
 
         if (savedTimestamp) {
         const lastTimestamp = parseInt(savedTimestamp);
-        const Passed = (currentTime - lastTimestamp) / (1000* 60*60);
+        const Passed = (currentTime - lastTimestamp) / (1000);
 
-        if (Passed >= 14) {
+        if (Passed >= 10) {
             resetCounters();
             console.log('reseted')
         }
