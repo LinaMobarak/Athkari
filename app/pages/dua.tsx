@@ -3,22 +3,23 @@ import { ThemedView } from "@/components/ThemedView";
 import { Stack } from "expo-router";
 import React from "react";
 import { StyleSheet, TouchableOpacity } from "react-native";
-import useElementStore, { duaType } from "../store";
+import useElementStore from "../stores/store";
+import { DuaType, useDuaStore } from "@/app/stores/duaStore";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { ThemedText } from "@/components/ThemedText";
 
-import ShareFunction from "@/app/ShareFunction";
+import ShareFunction from "@/app/functions/ShareFunction";
 import { FlatList } from "react-native";
 
 function MyComponent({ item }: any) {
   const { favourites } = useElementStore();
 
-  const toggleFavorite = async (item: duaType) => {
+  const toggleFavorite = async (item: DuaType) => {
     const fav = useElementStore.getState().favourites;
     let newFav = [];
     if (fav.includes(item)) {
-      newFav = fav.filter((f) => (f as duaType).id !== item.id);
+      newFav = fav.filter((f) => (f as DuaType).id !== item.id);
     } else {
       newFav = fav.concat([item]);
     }
@@ -55,7 +56,7 @@ function MyComponent({ item }: any) {
           >
             <MaterialCommunityIcons
               name={
-                favourites.find((f) => (f as duaType).id === item.id)
+                favourites.find((f) => (f as DuaType).id === item.id)
                   ? "heart"
                   : "heart-outline"
               }
@@ -72,7 +73,7 @@ function MyComponent({ item }: any) {
 
 export default function Azkar() {
   const theme = useColorScheme() ?? "light";
-  const dua = useElementStore((s) => s.dua);
+  const dua = useDuaStore((s) => s.dua);
 
   return (
     <>

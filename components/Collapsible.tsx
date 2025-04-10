@@ -59,6 +59,7 @@ const styles = StyleSheet.create({
     direction: "rtl",
   },
   container: {
+    position: "sticky",
     marginRight: "auto",
     marginLeft: "auto",
     marginTop: 10,
