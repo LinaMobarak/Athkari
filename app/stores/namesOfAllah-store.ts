@@ -6,11 +6,12 @@ export type NameOfAllah = {
     color: string
     description: string
 }
+// debugging
 
 export type NamesOfAllahStore = {
     namesOfAllah: NameOfAllah[]
 }
-// debugging
+
 const useNamesOfAllahStore = create<NamesOfAllahStore>((set) => ({
     namesOfAllah: [
         { "id": 1, "text": "الله", "color": "#c5e3e9", "description": "الاسم الذي يدلّ على ذات الله -تعالى- الجامعة لصفات ألوهيّته." },
