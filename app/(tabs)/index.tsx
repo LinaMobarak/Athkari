@@ -144,7 +144,7 @@ export default function HomeScreen() {
           </ThemedView>
         }
       >
-        <View style={styles.pagesContainer}>
+        {/* <View style={styles.pagesContainer}> */}
         <TouchableOpacity
           style={styles.containerText}
           onPress={() => route.navigate("/pages/azkar")}
@@ -168,6 +168,7 @@ export default function HomeScreen() {
           />
           <ThemedText style={styles.text}>الأدعية</ThemedText>
         </TouchableOpacity>
+        {/* </View> */}
 
         <TouchableOpacity
           style={styles.containerText}
@@ -194,7 +195,7 @@ export default function HomeScreen() {
         </TouchableOpacity>
         <ThemedText
           style={{
-            paddingTop: 10,
+            paddingTop: 40,
             fontSize: 20,
             fontWeight: "bold",
             fontFamily: "Cairo",
@@ -267,37 +268,33 @@ const styles = StyleSheet.create({
   containerPrayers: {
     width: "48%",
     marginBottom: 10,
+    marginLeft: 5,
     padding: 5,
-    borderRadius: 20,
+    borderRadius: 10,
     alignItems: "center",
     borderWidth: 1,
     borderColor: Colors.primary,
+    
+    shadowColor: Colors.primary,
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 5,
+    shadowRadius: 5,
   },
   containerText: {
-    flex: 1,
     flexDirection: "row",
-    flexWrap: "wrap", // Allows wrapping to create a grid
-    justifyContent: "space-between", // Distributes items evenly with space between
-    alignItems: "center", // Aligns items vertically in the center
-    padding: 0,
-    direction: 'rtl',
-  },
-  containerText: {
-    flexDirection: "column",
     justifyContent: "space-between",
     alignItems: "center",
-    height: 100,
-    width: "48%",
+    // height: '70%',
+    width: "100%",
     padding: 20,
     borderRadius: 10,
     shadowColor: Colors.primary,
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 5,
     shadowRadius: 5,
-
-    marginBottom: 10,
+    marginBottom: 0,
     borderColor: Colors.primary,
-    borderWidth: 2,
+    borderWidth: 1,
   },
   text: {
     fontSize: 16,
