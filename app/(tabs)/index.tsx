@@ -143,6 +143,7 @@ export default function HomeScreen() {
           </ThemedView>
         }
       >
+        <View style={styles.pagesContainer}>
         <TouchableOpacity
           style={styles.containerText}
           onPress={() => route.navigate("/pages/azkar")}
@@ -190,7 +191,7 @@ export default function HomeScreen() {
           />
           <ThemedText style={styles.text}>أسماء الله الحسنى</ThemedText>
         </TouchableOpacity>
-
+        </View>
         <View style={{ padding: 20 }}>
           {Object.entries(prayerTimes || {})
             .filter(([name]) => prayerNames.includes(name))
@@ -240,15 +241,22 @@ const styles = StyleSheet.create({
     left: 0,
     position: "absolute",
   },
-
-  containerText: {
-    flex: 1,
+  pagesContainer: {
     flexDirection: "row",
+    flexWrap: "wrap", // Allows wrapping to create a grid
+    justifyContent: "space-between", // Distributes items evenly with space between
+    alignItems: "center", // Aligns items vertically in the center
+    padding: 0,
+    direction: 'rtl',
+  },
+  containerText: {
+    flexDirection: "column",
     justifyContent: "space-between",
     alignItems: "center",
-    width: "100%",
+    height: 100,
+    width: "48%",
     padding: 20,
-    borderRadius: 20,
+    borderRadius: 10,
     shadowColor: Colors.primary,
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 5,
@@ -290,7 +298,7 @@ const styles = StyleSheet.create({
   },
   dateContainer: {
     backgroundColor: "rgba(3, 3, 3, 0.5)",
-    borderWidth: 1,
+    borderWidth: 0.5,
     position: "absolute",
     bottom: 0,
     left: 0,
@@ -301,14 +309,14 @@ const styles = StyleSheet.create({
   date: {
     backgroundColor: "#151718",
     position: "absolute",
-    bottom: 15,
-    left: "40%",
-    width: "20%",
-    height: 60,
+    bottom: 20,
+    left: "30%",
+    width: "40%",
+    height: 50,
     justifyContent: "center",
     alignItems: "center",
     borderRadius: 10,
-    borderWidth: 1,
+    borderWidth: 0.5,
     borderColor: Colors.secondaryColor,
   },
 
