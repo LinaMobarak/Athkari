@@ -6,7 +6,6 @@ export type NameOfAllah = {
     color: string
     description: string
 }
-// debugging
 
 export type NamesOfAllahStore = {
     namesOfAllah: NameOfAllah[]
