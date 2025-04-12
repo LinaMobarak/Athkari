@@ -175,8 +175,8 @@ export const styles = StyleSheet.create({
     fontWeight: "bold",
     padding: 10,
     lineHeight: 30,
-    textAlign: "left",
-    // direction: "ltr",
+    // textAlign: "right",
+    direction: "rtl",
   },
   count: {
     backgroundColor: Colors.primary,
