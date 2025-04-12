@@ -27,7 +27,6 @@ export default function HomeScreen() {
   const [hijriDate, setHijriDate] = useState("");
 
   const [prayerTimes, setPrayerTimes] = useState(null);
-  const prayerNames = ["Fajr", "Dhuhr", "Asr", "Maghrib", "Isha"];
   const prayerNamesInArabic = {
     Fajr: "الفجر",
     Sunrise: "الشروق",
@@ -35,11 +34,13 @@ export default function HomeScreen() {
     Asr: "العصر",
     Maghrib: "المغرب",
     Isha: "العشاء",
+    Midnight: "منتصف الليل",
+    Lastthird: "الثلث الاخير",
   };
 
   const convertTo12HourFormat = (time: string) => {
     const [hours, minutes] = time.split(":").map(Number);
-    const period = hours >= 12 ? "مساءا" : "صباحا";
+    const period = hours >= 12 ? "مساءً" : "صباحاً";
     const convertedHours = hours % 12 || 12;
     return `${convertedHours}:${minutes.toString().padStart(2, "0")} ${period}`;
   };
@@ -190,21 +191,34 @@ export default function HomeScreen() {
           />
           <ThemedText style={styles.text}>أسماء الله الحسنى</ThemedText>
         </TouchableOpacity>
-
-        <View style={{ padding: 20 }}>
+        <ThemedText
+          style={{
+            paddingTop: 10,
+            fontSize: 20,
+            fontWeight: "bold",
+            fontFamily: "Cairo",
+            textAlign: "center",
+          }}
+        >
+          أوقات الصلاة
+        </ThemedText>
+        <View style={styles.prayer}>
           {Object.entries(prayerTimes || {})
-            .filter(([name]) => prayerNames.includes(name))
+            .filter(([name]) => Object.keys(prayerNamesInArabic).includes(name))
             .map(([name, time]) => {
-              const formattedTime = prayerNames.includes(name)
-                ? convertTo12HourFormat(time as string)
-                : time;
+              const formattedTime = convertTo12HourFormat(time as string);
 
               return (
-                <Text style={{ color: "white" }} key={name}>{`${
-                  prayerNamesInArabic[
-                    name as keyof typeof prayerNamesInArabic
-                  ] || name
-                } : ${formattedTime}`}</Text>
+                <>
+                  <View key={name} style={styles.containerPrayers}>
+                    <ThemedText style={styles.text}>{`${
+                      prayerNamesInArabic[
+                        name as keyof typeof prayerNamesInArabic
+                      ] || name
+                    }`}</ThemedText>
+                    <ThemedText>{formattedTime as string}</ThemedText>
+                  </View>
+                </>
               );
             })}
         </View>
@@ -241,6 +255,22 @@ const styles = StyleSheet.create({
     position: "absolute",
   },
 
+  prayer: {
+    padding: 5,
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "space-between",
+    direction: "rtl",
+  },
+  containerPrayers: {
+    width: "48%",
+    marginBottom: 10,
+    padding: 5,
+    borderRadius: 20,
+    alignItems: "center",
+    borderWidth: 1,
+    borderColor: Colors.primary,
+  },
   containerText: {
     flex: 1,
     flexDirection: "row",
@@ -253,15 +283,14 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 5,
     shadowRadius: 5,
-    // elevation: 5,
+
     marginBottom: 10,
     borderColor: Colors.primary,
     borderWidth: 2,
-    // height: 70,
   },
   text: {
     fontSize: 16,
-    fontWeight: "400",
+    fontWeight: "bold",
     fontFamily: "Cairo",
   },
   button: {
