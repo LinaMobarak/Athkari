@@ -60,7 +60,7 @@ export default function HomeScreen() {
       const lat = location.coords.latitude;
       const long = location.coords.longitude;
 
-      const method = 4; 
+      const method = 4;
 
       const response = await axios.get(
         `https://api.aladhan.com/v1/timings?latitude=${lat}&longitude=${long}&method=${method}`
@@ -205,21 +205,20 @@ export default function HomeScreen() {
           أوقات الصلاة
         </ThemedText>
         <View style={styles.prayer}>
-
           {Object.entries(prayerTimes || {})
             .filter(([name]) => Object.keys(prayerNamesInArabic).includes(name))
             .map(([name, time]) => {
               const formattedTime = convertTo12HourFormat(time as string);
 
               return (
-                  <View key={name} style={styles.containerPrayers}>
-                    <ThemedText style={styles.text}>{`${
-                      prayerNamesInArabic[
-                        name as keyof typeof prayerNamesInArabic
-                      ] || name
-                    }`}</ThemedText>
-                    <ThemedText>{formattedTime as string}</ThemedText>
-                  </View>
+                <View key={name} style={styles.containerPrayers}>
+                  <ThemedText style={styles.text}>{`${
+                    prayerNamesInArabic[
+                      name as keyof typeof prayerNamesInArabic
+                    ] || name
+                  }`}</ThemedText>
+                  <ThemedText>{formattedTime as string}</ThemedText>
+                </View>
               );
             })}
         </View>
@@ -272,7 +271,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderWidth: 1,
     borderColor: Colors.primary,
-    
+
     shadowColor: Colors.primary,
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 5,
@@ -321,7 +320,7 @@ const styles = StyleSheet.create({
     color: Colors.primary,
     fontFamily: "Cairo",
     marginTop: 15,
-    // textDecorationLine: "underline",
+    marginBottom: 75,
   },
   dateContainer: {
     backgroundColor: "rgba(3, 3, 3, 0.5)",

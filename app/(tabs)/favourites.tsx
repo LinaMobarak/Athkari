@@ -169,7 +169,8 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: 400,
     color: "black",
-    direction: "rtl",
+    textAlign: "right",
+    // direction: "rtl",
     marginBottom: 10,
   },
   icon: {
@@ -186,7 +187,8 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
     color: "black",
-    direction: "rtl",
+    textAlign: "right",
+    // direction: "rtl",
     marginBottom: 10,
   },
 });
