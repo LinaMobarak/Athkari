@@ -60,7 +60,7 @@ export default function HomeScreen() {
       const lat = location.coords.latitude;
       const long = location.coords.longitude;
 
-      const method = 2; // islamic society for North America
+      const method = 4; 
 
       const response = await axios.get(
         `https://api.aladhan.com/v1/timings?latitude=${lat}&longitude=${long}&method=${method}`
@@ -212,7 +212,6 @@ export default function HomeScreen() {
               const formattedTime = convertTo12HourFormat(time as string);
 
               return (
-                <>
                   <View key={name} style={styles.containerPrayers}>
                     <ThemedText style={styles.text}>{`${
                       prayerNamesInArabic[
@@ -221,7 +220,6 @@ export default function HomeScreen() {
                     }`}</ThemedText>
                     <ThemedText>{formattedTime as string}</ThemedText>
                   </View>
-                </>
               );
             })}
         </View>
@@ -323,7 +321,7 @@ const styles = StyleSheet.create({
     color: Colors.primary,
     fontFamily: "Cairo",
     marginTop: 15,
-    textDecorationLine: "underline",
+    // textDecorationLine: "underline",
   },
   dateContainer: {
     backgroundColor: "rgba(3, 3, 3, 0.5)",

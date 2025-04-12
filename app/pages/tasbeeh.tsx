@@ -22,6 +22,10 @@ export default function Tasbeeh() {
         { count: 33, dhikr: 'الله أكبر' },
         { count: 100, dhikr: 'لا إله إلا الله' },
         { count: 100, dhikr: 'أستغفر الله' },
+        { count: 100, dhikr: 'سبحان الله وبحمده' },
+        { count: 100, dhikr: 'سبحان الله وبحمده سبحان الله العظيم' },
+        { count: 100, dhikr: 'اللهم صل وسلم على نبينا محمد' },
+        { count: 100, dhikr: 'لا حول ولا قوة إلا بالله' },
     ]
             
     const handleCount = () => {

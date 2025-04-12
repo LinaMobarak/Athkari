@@ -37,8 +37,8 @@ function handleFilter(searchText: string) {
 
   return (
     <>
+    {/* <ScrollView keyboardDismissMode='on-drag'> */}
       <Stack.Screen
-        name='ابحث عن اسم من أسماء الله الحسنى' // this is for the search bar title 
         options={{
           headerTitle: 'أسماء الله الحسنى',
           headerTitleAlign: 'center',
@@ -51,9 +51,12 @@ function handleFilter(searchText: string) {
           headerTitleStyle: {
             fontWeight: 'bold',
             fontSize: 20,
+            // dir: 'rtl',
           },
+          
         }}
       />
+    {/* </ScrollView> */}
 
       <View style={{ backgroundColor: 'transparent', paddingTop: 150}} />
 
