@@ -31,14 +31,14 @@ export default function TabLayout() {
       }}
     >
       <Tabs.Screen
-        name="index"
-        options={{
-          title: "الرئيسية",
-          tabBarIcon: ({ color }) => (
-            <MaterialCommunityIcons size={28} name="home" color={color} />
-          ),
-        }}
-      />
+          name="index"
+          options={{
+            title: "الرئيسية",
+            tabBarIcon: ({ color }) => (
+              <MaterialCommunityIcons size={28} name="home" color={color} />
+            ),
+          }}
+        />
 
       <Tabs.Screen
         name="favourites"
@@ -46,6 +46,16 @@ export default function TabLayout() {
           title: "المفضلة",
           tabBarIcon: ({ color }) => (
             <MaterialCommunityIcons size={28} name="heart" color={color} />
+          ),
+        }}
+      />
+
+      <Tabs.Screen
+        name="navigationMenu"
+        options={{
+          title: "الصفحات",
+          tabBarIcon: ({ color }) => (
+            <MaterialCommunityIcons size={28} name="menu-open" color={color} />
           ),
         }}
       />

@@ -13,12 +13,17 @@ export default function NavigationMenu() {
     
     return (
     <>
-        <Stack.Screen
-        options={{
-            headerShown: false,
-            headerTitle: "أذكار المسلم",
-        }}
-        />
+            <Stack.Screen
+                options={{
+                    headerTitle: 'الصفحات',
+                    headerTitleAlign: 'center',
+                    headerTitleStyle: {
+                        fontWeight: 'bold',
+                        fontSize: 20,
+                        fontFamily: 'Cairo',
+                    },
+                }}
+            />
         <View style={styles.container}>
             <TouchableOpacity
                 style={styles.containerAlQuran}
@@ -88,7 +93,7 @@ export default function NavigationMenu() {
 
 const styles = StyleSheet.create({
     container: {
-        marginTop: 100,
+        marginTop: 25,
         margin: 25,
     },
     containerAlQuran: {
@@ -118,11 +123,11 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         shadowColor: Colors.primary,
         shadowOffset: { width: 0, height: 0 },
-        shadowOpacity: 15,
+        shadowOpacity: 5,
         shadowRadius: 5,
         marginBottom: 15,
         borderColor: Colors.primary,
-        borderWidth: 1,
+        borderWidth: 2,
     },
     text: {
         fontSize: 16,
