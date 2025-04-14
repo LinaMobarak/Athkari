@@ -21,7 +21,15 @@ import { Appearance } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import * as Location from "expo-location";
 import { checkIf12HoursPassed } from "@/app/functions/resetCounter";
-import axios from "axios";
+import axios from "
+// import { I18nManager } from 'react-native';
+import { FlatList } from 'react-native';
+
+
+// I18nManager.allowRTL(true);
+// I18nManager.forceRTL(true);
+
+
 import { withTiming } from "react-native-reanimated";
 import { selectionAsync } from "expo-haptics";
 
@@ -39,15 +47,33 @@ const prayerNamesInArabic = {
 const img = require("@/assets/images/HeaderImage.jpeg");
 
 export default function HomeScreen() {
-  const route = useRouter();
   const { colors } = useTheme();
-  const [loaded, error] = useFonts({
+  const loaded = useFonts({
     Cairo: require("@/assets/fonts/Cairo.ttf"),
-  });
+
+  })
+
   const [date, setDate] = useState(new Date());
   const [showPicker, setShowPicker] = useState(false);
+
   const [theme, setTheme] = useState(Appearance.getColorScheme());
   const [newIcon, setNewIcon] = useState(false);
+  const [selectedNavigation, setSelectedNavigation] = useState(0);
+
+  const navigationMenu = [
+    // {name: 'الرئيسية' },
+    {name: 'القران', route: 'alQuran' },
+    {name: 'أذكار المسلم', route: 'azkar' },
+    {name: 'التسبيح', route: 'tasbeeh' },
+    {name: 'ادعية', route: 'dua' },
+  ]
+  const router = useRouter();
+  
+  const selectNavigation = (index: number) => {
+    setSelectedNavigation(index);
+    // router.push(`./pages/name=${navigationMenu[index].route}`);
+  }
+  
   const [hijriDate, setHijriDate] = useState("");
   const [datey, setDatey] = useState(false);
   const [prayerTimes, setPrayerTimes] = useState(null);
@@ -221,17 +247,35 @@ export default function HomeScreen() {
           </ThemedView>
         }
       >
-        {/* <ThemedText
-          style={{
-            paddingTop: 40,
-            fontSize: 20,
-            fontWeight: "bold",
-            fontFamily: "Cairo",
-            textAlign: "center",
-          }}
-        >
-          أوقات الصلاة
-        </ThemedText> */}
+
+                    <FlatList
+                        data={navigationMenu}
+                        keyExtractor={(item) => item.name}
+                        horizontal
+                        inverted
+                        showsHorizontalScrollIndicator={false}
+                        contentContainerStyle={styles.dhikrList}
+                        renderItem={({ item, index }) => (
+                            <TouchableOpacity 
+                            onPress={() => router.navigate(`./pages/${navigationMenu[index].route}`)}
+                            // onPress={() => route.navigate("/pages/namesOfallah")}
+                            style={[
+                                styles.dhikrButton,
+                                // selectedNavigation === index && styles.selectedDhikrButton, 
+                            ]}
+                            >
+                                <ThemedText
+                                    style={[
+                                        styles.dhikrText,
+                                        // selectedNavigation === index && styles.selectedDhikrText
+                                    ]}>
+                                    {item.name}
+                                </ThemedText>
+                            </TouchableOpacity>
+                        )}
+                    />
+        <ThemedText
+
         <View style={styles.nextPrayer}>
           <ThemedText>الصلاة القادمة</ThemedText>
           <ThemedText></ThemedText>
@@ -262,7 +306,7 @@ export default function HomeScreen() {
         </TouchableOpacity>
       </ParallaxScrollView>
     </>
-  );
+  );                                        
 }
 
 const styles = StyleSheet.create({
@@ -310,19 +354,25 @@ const styles = StyleSheet.create({
     shadowOpacity: 5,
     shadowRadius: 5,
   },
-  nextPrayer: {
+
+  containerAlQuran: {
     flexDirection: "row",
-    justifyContent: "center",
+    justifyContent: "space-between",
     alignItems: "center",
-    borderColor: Colors.primary,
+    height: '10%',
+    width: "100%",
+    padding: 20,
+    borderRadius: 10,
+    backgroundColor: Colors.primary,
+    shadowColor: Colors.primary,
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.5,
+    shadowRadius: 5,
+    marginBottom: 0,
+    borderColor: Colors.dark.maincolor,
     borderWidth: 1,
-    borderTopLeftRadius: 100,
-    borderTopRightRadius: 100,
-    height: 150,
-    overflow: "hidden",
-    width: "70%",
-    marginLeft: "15%",
   },
+
   text: {
     fontSize: 16,
     fontWeight: "bold",
@@ -392,4 +442,27 @@ const styles = StyleSheet.create({
     left: 0,
     width: "100%",
   },
+  dhikrList: {
+    paddingVertical: 10,
+},
+dhikrButton: {
+    // backgroundColor: '#fff',
+    borderWidth: 2,
+    borderColor: Colors.primary,
+    borderRadius: 30,
+    paddingVertical: 10,
+    paddingHorizontal: 18,
+    marginHorizontal: 5,
+},
+selectedDhikrButton: {
+    backgroundColor: Colors.primary,
+},
+dhikrText: {
+    fontSize: 16,
+    fontFamily: 'Cairo',
+    color: Colors.primary,
+},
+selectedDhikrText: {
+    color: '#fff',
+},
 });
