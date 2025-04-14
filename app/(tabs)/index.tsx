@@ -14,16 +14,38 @@ import { Appearance } from "react-native";
 import * as Location from "expo-location";
 import { checkIf12HoursPassed } from "@/app/functions/resetCounter";
 import axios from "axios";
+// import { I18nManager } from 'react-native';
+import { FlatList } from 'react-native';
+
+
+// I18nManager.allowRTL(true);
+// I18nManager.forceRTL(true);
+
 
 const img = require("@/assets/images/HeaderImage.jpeg");
 export default function HomeScreen() {
-  const route = useRouter();
   const { colors } = useTheme();
-  const [loaded, error] = useFonts({
+  const loaded = useFonts({
     Cairo: require("@/assets/fonts/Cairo.ttf"),
-  });
+  })
   const [theme, setTheme] = useState(Appearance.getColorScheme());
   const [newIcon, setNewIcon] = useState(false);
+  const [selectedNavigation, setSelectedNavigation] = useState(0);
+
+  const navigationMenu = [
+    // {name: 'الرئيسية' },
+    {name: 'القران', route: 'alQuran' },
+    {name: 'أذكار المسلم', route: 'azkar' },
+    {name: 'التسبيح', route: 'tasbeeh' },
+    {name: 'ادعية', route: 'dua' },
+  ]
+  const router = useRouter();
+  
+  const selectNavigation = (index: number) => {
+    setSelectedNavigation(index);
+    // router.push(`./pages/name=${navigationMenu[index].route}`);
+  }
+  
   const [hijriDate, setHijriDate] = useState("");
 
   const [prayerTimes, setPrayerTimes] = useState(null);
@@ -144,55 +166,32 @@ export default function HomeScreen() {
           </ThemedView>
         }
       >
-        {/* <View style={styles.pagesContainer}> */}
-        <TouchableOpacity
-          style={styles.containerText}
-          onPress={() => route.navigate("/pages/azkar")}
-        >
-          <MaterialCommunityIcons
-            color={colors.text}
-            size={20}
-            name="book-outline"
-          />
-          <ThemedText style={styles.text}>أذكار المسلم</ThemedText>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.containerText}
-          onPress={() => route.navigate("/pages/dua")}
-        >
-          <MaterialCommunityIcons
-            color={colors.text}
-            size={20}
-            name="hands-pray"
-          />
-          <ThemedText style={styles.text}>الأدعية</ThemedText>
-        </TouchableOpacity>
-        {/* </View> */}
-
-        <TouchableOpacity
-          style={styles.containerText}
-          onPress={() => route.navigate("/pages/tasbeeh")}
-        >
-          <MaterialCommunityIcons
-            color={colors.text}
-            size={20}
-            name="circle-double"
-          />
-          <ThemedText style={styles.text}>المسبحة</ThemedText>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.containerText}
-          onPress={() => route.navigate("/pages/namesOfallah")}
-        >
-          <MaterialCommunityIcons
-            color={colors.text}
-            size={20}
-            name="star-four-points-outline"
-          />
-          <ThemedText style={styles.text}>أسماء الله الحسنى</ThemedText>
-        </TouchableOpacity>
+                    <FlatList
+                        data={navigationMenu}
+                        keyExtractor={(item) => item.name}
+                        horizontal
+                        inverted
+                        showsHorizontalScrollIndicator={false}
+                        contentContainerStyle={styles.dhikrList}
+                        renderItem={({ item, index }) => (
+                            <TouchableOpacity 
+                            onPress={() => router.navigate(`./pages/${navigationMenu[index].route}`)}
+                            // onPress={() => route.navigate("/pages/namesOfallah")}
+                            style={[
+                                styles.dhikrButton,
+                                // selectedNavigation === index && styles.selectedDhikrButton, 
+                            ]}
+                            >
+                                <ThemedText
+                                    style={[
+                                        styles.dhikrText,
+                                        // selectedNavigation === index && styles.selectedDhikrText
+                                    ]}>
+                                    {item.name}
+                                </ThemedText>
+                            </TouchableOpacity>
+                        )}
+                    />
         <ThemedText
           style={{
             paddingTop: 40,
@@ -229,7 +228,7 @@ export default function HomeScreen() {
         </TouchableOpacity>
       </ParallaxScrollView>
     </>
-  );
+  );                                        
 }
 
 const styles = StyleSheet.create({
@@ -277,11 +276,28 @@ const styles = StyleSheet.create({
     shadowOpacity: 5,
     shadowRadius: 5,
   },
+  containerAlQuran: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    height: '10%',
+    width: "100%",
+    padding: 20,
+    borderRadius: 10,
+    backgroundColor: Colors.primary,
+    shadowColor: Colors.primary,
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.5,
+    shadowRadius: 5,
+    marginBottom: 0,
+    borderColor: Colors.dark.maincolor,
+    borderWidth: 1,
+  },
   containerText: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    // height: '70%',
+    height: '15%',
     width: "100%",
     padding: 20,
     borderRadius: 10,
@@ -289,7 +305,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 5,
     shadowRadius: 5,
-    marginBottom: 0,
+    marginBottom: 15,
     borderColor: Colors.primary,
     borderWidth: 1,
   },
@@ -360,4 +376,27 @@ const styles = StyleSheet.create({
     left: 0,
     width: "100%",
   },
+  dhikrList: {
+    paddingVertical: 10,
+},
+dhikrButton: {
+    // backgroundColor: '#fff',
+    borderWidth: 2,
+    borderColor: Colors.primary,
+    borderRadius: 30,
+    paddingVertical: 10,
+    paddingHorizontal: 18,
+    marginHorizontal: 5,
+},
+selectedDhikrButton: {
+    backgroundColor: Colors.primary,
+},
+dhikrText: {
+    fontSize: 16,
+    fontFamily: 'Cairo',
+    color: Colors.primary,
+},
+selectedDhikrText: {
+    color: '#fff',
+},
 });
