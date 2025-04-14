@@ -9,10 +9,12 @@ export type favType = DuaType | ThekrType;
 
 export type FavoStoreType = {
     favourites: favType[];
+   
 };
 
 const useFavouriteStore = create<FavoStoreType>()(persist((set, get) => ({
     favourites: [],
+   
 }),{
     name: 'favo-storage',
     storage: createJSONStorage(() => AsyncStorage), 
