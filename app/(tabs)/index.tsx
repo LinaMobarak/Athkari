@@ -74,25 +74,38 @@ export default function HomeScreen() {
   const [hijriDate, setHijriDate] = useState("");
   const [datey, setDatey] = useState(false);
   const [prayerTimes, setPrayerTimes] = useState(null);
+  const [next, setNext] = useState("");
 
   const getNextPrayer = (prayerTimes: Record<string, string>) => {
     const now = new Date();
 
     const nextPray = Object.entries(prayerTimes).map(([name, time]) => {
       const [hours, minutes] = time.split(":").map(Number);
-      const convertedHours = hours % 12 || 12;
 
       const datetime = new Date();
-      datetime.setHours(convertedHours);
+      datetime.setHours(hours);
       datetime.setMinutes(minutes);
       datetime.setSeconds(0);
 
       return { name, time, datetime };
     });
 
-    console.log("next : ", nextPray);
-    console.log("now : ", now);
+    const next = nextPray
+      .filter((prayer) =>
+        Object.keys(prayerNamesInArabic).includes(prayer.name)
+      )
+      .find((p) => p.datetime > now);
+
+    return next || nextPray[0];
   };
+
+  useEffect(() => {
+    if (prayerTimes) {
+      const nextt = getNextPrayer(prayerTimes);
+      setNext(nextt.name);
+      console.log(nextt);
+    }
+  }, [prayerTimes]);
 
   const convertTo12HourFormat = (time: string) => {
     const [hours, minutes] = time.split(":").map(Number);
@@ -163,22 +176,11 @@ export default function HomeScreen() {
     getHijriDateInArabic();
   }, [date, datey]);
 
-  const resetDate = () => {
-    setDate(new Date());
-  };
-
-  const changeDate = () => {
-    setDatey(!datey);
-  };
-
   const onChange = (event: any, selectedDate?: Date) => {
     if (selectedDate) {
       setDate(selectedDate);
     }
     setShowPicker(false);
-  };
-  const showDatePicker = () => {
-    setShowPicker(true);
   };
 
   const toggleTheme = () => {
@@ -215,14 +217,21 @@ export default function HomeScreen() {
               <BlurView intensity={20} style={styles.blurCon} />
             </View>
 
-            <TouchableOpacity style={styles.date} onPress={changeDate}>
+            <TouchableOpacity
+              style={styles.date}
+              onPress={() => {
+                setDatey(!datey);
+              }}
+            >
               <View>
                 <Text style={styles.textOfDate}>{hijriDate}</Text>
               </View>
             </TouchableOpacity>
             <TouchableOpacity
               style={{ position: "absolute", bottom: 15, left: 15 }}
-              onPress={showDatePicker}
+              onPress={() => {
+                setShowPicker(true);
+              }}
             >
               <Feather name="calendar" size={20} color="white" />
             </TouchableOpacity>
@@ -236,7 +245,9 @@ export default function HomeScreen() {
             )}
 
             <TouchableOpacity
-              onPress={resetDate}
+              onPress={() => {
+                setDate(new Date());
+              }}
               style={{ position: "absolute", bottom: 15, right: 15 }}
             >
               <Feather name="refresh-cw" size={20} color="white" />
@@ -245,8 +256,13 @@ export default function HomeScreen() {
         }
       >
         <View style={styles.nextPrayer}>
-          <ThemedText>الصلاة القادمة</ThemedText>
-          <ThemedText></ThemedText>
+          <ThemedText style={{ fontSize: 20, fontWeight: "bold" }}>
+            الصلاة القادمة
+          </ThemedText>
+          <ThemedText>{`${
+            prayerNamesInArabic[next as keyof typeof prayerNamesInArabic] ||
+            next
+          }`}</ThemedText>
         </View>
         <View style={styles.prayer}>
           {Object.entries(prayerTimes || {})
@@ -394,7 +410,6 @@ const styles = StyleSheet.create({
   },
 
   nextPrayer: {
-    flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
     borderColor: Colors.primary,
