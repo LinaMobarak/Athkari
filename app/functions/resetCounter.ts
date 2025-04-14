@@ -14,7 +14,7 @@ export const checkIf12HoursPassed = async () => {
 
         if (Passed >= 10) {
             resetCounters();
-            console.log('reseted')
+            // cosnsole.log('reseted')
         }
         } 
     
