@@ -186,9 +186,10 @@ export default function HomeScreen() {
 
   useEffect(() => {
     checkIf12HoursPassed();
-    // if (timey === 0) {
-    //   playAdhan();
-    // }
+    console.log(timey);
+    if (timey === 0 && !loading) {
+      playAdhan();
+    }
   }, []);
   useEffect(() => {
     const getHijriDateInArabic = async () => {
@@ -262,7 +263,7 @@ export default function HomeScreen() {
 
             <TouchableOpacity onPress={toggleTheme}>
               <Feather
-                name={newIcon ? "sun" : "moon"}
+                name={newIcon ? "moon" : "sun"}
                 size={24}
                 color="white"
                 style={styles.settingsIcon}
