@@ -5,20 +5,25 @@ import {
   Text,
   TouchableOpacity,
   Platform,
+  ActivityIndicator,
 } from "react-native";
+import AlQibla from "qibla-direction";
+import { Audio } from "expo-av";
 import ParallaxScrollView from "../../components/ParallaxScrollView";
 import React, { useEffect, useState } from "react";
 import Feather from "@expo/vector-icons/Feather";
 import { Stack, useRouter } from "expo-router";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { ThemedView } from "@/components/ThemedView";
 import { useTheme } from "@react-navigation/native";
+import CountDown from "react-native-countdown-component";
 import { Colors } from "@/constants/Colors";
 import { ThemedText } from "@/components/ThemedText";
 import { BlurView } from "expo-blur";
 import { useFonts } from "expo-font";
+import { LogBox } from "react-native";
 import { Appearance } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
+import { Magnetometer } from "expo-sensors";
 import * as Location from "expo-location";
 import { checkIf12HoursPassed } from "@/app/functions/resetCounter";
 import axios from "axios";
@@ -30,6 +35,7 @@ import { FlatList } from "react-native";
 
 import { withTiming } from "react-native-reanimated";
 import { selectionAsync } from "expo-haptics";
+import Modal from "react-native-modal";
 
 const prayerNamesInArabic = {
   Fajr: "الفجر",
@@ -41,7 +47,6 @@ const prayerNamesInArabic = {
   Midnight: "منتصف الليل",
   Lastthird: "الثلث الاخير",
 };
-
 const img = require("@/assets/images/HeaderImage.jpeg");
 
 export default function HomeScreen() {
@@ -50,12 +55,22 @@ export default function HomeScreen() {
     Cairo: require("@/assets/fonts/Cairo.ttf"),
   });
 
+  const [loadingPrayers, setLoadingPrayers] = useState(true);
+  const [loadingHijri, setLoadingHijri] = useState(true);
+  const loading = loadingPrayers || loadingHijri;
   const [date, setDate] = useState(new Date());
   const [showPicker, setShowPicker] = useState(false);
-
+  const [isModalVisible, setIsModalVisible] = useState(false);
   const [theme, setTheme] = useState(Appearance.getColorScheme());
   const [newIcon, setNewIcon] = useState(false);
   const [selectedNavigation, setSelectedNavigation] = useState(0);
+  const [qibla, setQibla] = useState<number>(0);
+  const [hijriDate, setHijriDate] = useState("");
+  const [datey, setDatey] = useState(false);
+  const [prayerTimes, setPrayerTimes] = useState(null);
+  const [next, setNext] = useState("");
+  const [timey, setTimey] = useState<number>(0);
+  const [heading, setHeading] = useState<number>(0);
 
   const navigationMenu = [
     // {name: 'الرئيسية' },
@@ -71,18 +86,13 @@ export default function HomeScreen() {
     // router.push(`./pages/name=${navigationMenu[index].route}`);
   };
 
-  const [hijriDate, setHijriDate] = useState("");
-  const [datey, setDatey] = useState(false);
-  const [prayerTimes, setPrayerTimes] = useState(null);
-  const [next, setNext] = useState("");
-
   const getNextPrayer = (prayerTimes: Record<string, string>) => {
     const now = new Date();
 
     const nextPray = Object.entries(prayerTimes).map(([name, time]) => {
       const [hours, minutes] = time.split(":").map(Number);
 
-      const datetime = new Date();
+      const datetime = new Date(date);
       datetime.setHours(hours);
       datetime.setMinutes(minutes);
       datetime.setSeconds(0);
@@ -99,24 +109,40 @@ export default function HomeScreen() {
     return next || nextPray[0];
   };
 
+  const getNextTimer = (nextPrayerTime: Date) => {
+    const now = new Date();
+    const diffInSeconds = Math.abs(
+      (nextPrayerTime.getTime() - now.getTime()) / 1000
+    );
+    setTimey(diffInSeconds > 0 ? diffInSeconds : 0);
+  };
+
   useEffect(() => {
-    if (prayerTimes) {
-      const nextt = getNextPrayer(prayerTimes);
-      setNext(nextt.name);
-      console.log(nextt);
+    try {
+      if (prayerTimes) {
+        const nextt = getNextPrayer(prayerTimes);
+        if (nextt && nextt.datetime) {
+          setNext(nextt.name);
+          getNextTimer(nextt.datetime);
+        }
+      }
+    } catch (error) {
+      console.log(error);
     }
-  }, [prayerTimes]);
+  }, [prayerTimes, date]);
 
   const convertTo12HourFormat = (time: string) => {
     const [hours, minutes] = time.split(":").map(Number);
     // console.log(hours, minutes);
     const period = hours >= 12 ? "م" : "ص";
     const convertedHours = hours % 12 || 12;
+
     return `${convertedHours}:${minutes.toString().padStart(2, "0")} ${period}`;
   };
 
   useEffect(() => {
     const getPrayingTime = async (date: Date) => {
+      setLoadingPrayers(true);
       try {
         let { status } = await Location.requestForegroundPermissionsAsync();
         if (status !== "granted") {
@@ -132,47 +158,62 @@ export default function HomeScreen() {
         const month = (date.getMonth() + 1).toString().padStart(2, "0");
         const year = date.getFullYear();
 
-        console.log(day);
+        const direction = await AlQibla.getDirection(lat, long);
+        setQibla(direction);
+
         const response = await fetch(
           `https://api.aladhan.com/v1/timings/${day}-${month}-${year}?latitude=${lat}&longitude=${long}&method=${method}`
         );
-
         const json = await response.json();
         const timings = json.data.timings;
         setPrayerTimes(timings);
       } catch (error) {
         console.log(error);
+      } finally {
+        setLoadingPrayers(false);
       }
     };
 
     getPrayingTime(date);
   }, [date]);
 
-  useEffect(() => {
-    checkIf12HoursPassed();
-  }, []);
+  const playAdhan = async () => {
+    const { sound } = await Audio.Sound.createAsync(
+      require("@/assets/sounds/azan1.mp3")
+    );
+    await sound.playAsync();
+  };
 
   useEffect(() => {
+    checkIf12HoursPassed();
+    // if (timey === 0) {
+    //   playAdhan();
+    // }
+  }, []);
+  useEffect(() => {
     const getHijriDateInArabic = async () => {
+      setLoadingHijri(true);
       try {
         const day = date.getDate().toString().padStart(2, "0");
         const month = (date.getMonth() + 1).toString().padStart(2, "0");
         const year = date.getFullYear();
 
-        const Date = `${day}-${month}-${year}`;
-
+        const formattedDate = `${day}-${month}-${year}`;
         const response = await fetch(
-          `https://api.aladhan.com/v1/gToH?date=${Date}`
+          `https://api.aladhan.com/v1/gToH?date=${formattedDate}`
         );
         const json = await response.json();
         const hijri = json.data.hijri;
         setHijriDate(
-          datey ? Date : `${hijri.day} ${hijri.month.ar} ${hijri.year}`
+          datey ? formattedDate : `${hijri.day} ${hijri.month.ar} ${hijri.year}`
         );
       } catch (error) {
         console.error("Error fetching Hijri date in Arabic:", error);
+      } finally {
+        setLoadingHijri(false);
       }
     };
+
     getHijriDateInArabic();
   }, [date, datey]);
 
@@ -181,6 +222,8 @@ export default function HomeScreen() {
       setDate(selectedDate);
     }
     setShowPicker(false);
+
+    setIsModalVisible(!isModalVisible);
   };
 
   const toggleTheme = () => {
@@ -189,6 +232,18 @@ export default function HomeScreen() {
     setNewIcon(!newIcon);
     Appearance.setColorScheme(newTheme);
   };
+
+  LogBox.ignoreLogs([
+    "AppState.removeEventListener", // or the full warning string
+  ]);
+
+  if (loading) {
+    return (
+      <View style={styles.centered}>
+        <ActivityIndicator size="large" color="white" />
+      </View>
+    );
+  }
 
   return (
     <>
@@ -213,9 +268,23 @@ export default function HomeScreen() {
                 style={styles.settingsIcon}
               />
             </TouchableOpacity>
+
             <View style={styles.dateContainer}>
               <BlurView intensity={20} style={styles.blurCon} />
             </View>
+
+            {/* <TouchableOpacity
+              style={{ position: "absolute", bottom: 40, right: 80 }}
+              onPress={() => {}}
+            >
+              <Feather name="arrow-right" size={20} color={Colors.primary} />
+            </TouchableOpacity> */}
+
+            {/* <TouchableOpacity
+              style={{ position: "absolute", bottom: 40, left: 80 }}
+            >
+              <Feather name="arrow-left" size={20} color={Colors.primary} />
+            </TouchableOpacity> */}
 
             <TouchableOpacity
               style={styles.date}
@@ -227,21 +296,47 @@ export default function HomeScreen() {
                 <Text style={styles.textOfDate}>{hijriDate}</Text>
               </View>
             </TouchableOpacity>
+
             <TouchableOpacity
               style={{ position: "absolute", bottom: 15, left: 15 }}
               onPress={() => {
                 setShowPicker(true);
+                setIsModalVisible(!isModalVisible);
               }}
             >
               <Feather name="calendar" size={20} color="white" />
             </TouchableOpacity>
-            {showPicker && (
-              <DateTimePicker
-                value={date}
-                mode="date"
-                display={Platform.OS === "ios" ? "spinner" : "default"}
-                onChange={onChange}
-              />
+
+            {Platform.OS === "ios" ? (
+              <Modal
+                isVisible={isModalVisible}
+                style={{
+                  backgroundColor: Colors.primary,
+                  width: "80%",
+                  maxHeight: "30%",
+                  borderRadius: 20,
+                }}
+              >
+                {showPicker && (
+                  <DateTimePicker
+                    style={{ flex: 1 }}
+                    value={date}
+                    mode="date"
+                    display="spinner"
+                    onChange={onChange}
+                  />
+                )}
+              </Modal>
+            ) : (
+              showPicker && (
+                <DateTimePicker
+                  style={{ flex: 1 }}
+                  value={date}
+                  mode="date"
+                  display="default"
+                  onChange={onChange}
+                />
+              )
             )}
 
             <TouchableOpacity
@@ -256,14 +351,41 @@ export default function HomeScreen() {
         }
       >
         <View style={styles.nextPrayer}>
-          <ThemedText style={{ fontSize: 20, fontWeight: "bold" }}>
+          <ThemedText
+            style={{
+              fontSize: 20,
+              fontWeight: "bold",
+              fontFamily: "Cairo",
+              marginTop: 20,
+            }}
+          >
             الصلاة القادمة
           </ThemedText>
-          <ThemedText>{`${
+          <ThemedText
+            style={{ fontSize: 20, fontWeight: "bold", fontFamily: "Cairo" }}
+          >{`${
             prayerNamesInArabic[next as keyof typeof prayerNamesInArabic] ||
             next
           }`}</ThemedText>
+
+          {timey > 0 && (
+            <View
+              style={{
+                marginTop: 10,
+                backgroundColor: "rgba(255, 255, 255, 0.24)",
+                borderRadius: 10,
+                padding: 5,
+              }}
+            >
+              <CountDown
+                size={10}
+                until={timey}
+                onFinish={() => console.log("Countdown finished")}
+              />
+            </View>
+          )}
         </View>
+
         <View style={styles.prayer}>
           {Object.entries(prayerTimes || {})
             .filter(([name]) => Object.keys(prayerNamesInArabic).includes(name))
@@ -284,6 +406,27 @@ export default function HomeScreen() {
             })}
         </View>
 
+        {/* {qibla && (
+          <View style={{ alignItems: "center", marginTop: 20 }}>
+            <ThemedText
+              style={{ fontFamily: "Cairo", fontSize: 16, marginBottom: 20 }}
+            >
+              اتجاه القبلة
+            </ThemedText>
+            <Image
+              source={require("@/assets/images/qibla.png")}
+              style={{
+                width: 100,
+                height: 100,
+                transform: [
+                  {
+                    rotate: `${(qibla - heading).toFixed(2)}deg`,
+                  },
+                ],
+              }}
+            />
+          </View>
+        )} */}
         {/* Placeholder for future feature */}
         <TouchableOpacity>
           <Text style={styles.shareText}>شارك التطبيق واكسب الأجر 💫</Text>
@@ -294,6 +437,11 @@ export default function HomeScreen() {
 }
 
 const styles = StyleSheet.create({
+  centered: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
   headerContainer: {
     position: "relative",
     width: "100%",
@@ -412,10 +560,10 @@ const styles = StyleSheet.create({
   nextPrayer: {
     justifyContent: "center",
     alignItems: "center",
-    borderColor: Colors.primary,
-    borderWidth: 1,
-    borderTopLeftRadius: 100,
-    borderTopRightRadius: 100,
+    // borderColor: Colors.primary,
+    // borderWidth: 1,
+    // borderTopLeftRadius: 100,
+    // borderTopRightRadius: 100,
     height: 150,
     overflow: "hidden",
     width: "70%",
