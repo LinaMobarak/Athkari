@@ -1,199 +1,90 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, TouchableOpacity, ActivityIndicator, StyleSheet, TextInput } from 'react-native';
-import { Stack } from 'expo-router';
-import { useTheme } from '@react-navigation/native';
-import { Colors } from '@/constants/Colors'
-import { useFonts } from 'expo-font';
-import * as SplashScreen from 'expo-splash-screen';
+import React, { useEffect, useState } from 'react';
+import { View, FlatList, Text, TouchableOpacity, ActivityIndicator, StyleSheet } from 'react-native';
+import { Stack, router } from 'expo-router';
+import { Colors } from '@/constants/Colors';
 
 type Surah = {
     number: number;
     name: string;
     revelationType: string;
     numberOfAyahs: number;
-    page: string;
-    juz: string;
-};
-
-type Ayah = {
-    numberInSurah: number;
-    text: string;
-    page: string;
-};
-
-export default function QuranPage() {
-    const [surahs, setSurahs] = useState<Surah[]>([]);
-    const [ayahs, setAyahs] = useState<Ayah[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [selectedSurah, setSelectedSurah] = useState<number | null>(null);
-    const [searchQuery, setSearchQuery] = useState('');
-    const [filteredSurahs, setFilteredSurahs] = useState<Surah[]>([]);
-
-    const [fontsLoaded] = useFonts({
-        Cairo: require('@/assets/fonts/Cairo.ttf'),
-    })
+    page: string,
+    };
 
     const englishToArabic: { [key: string]: string } = {
-        Meccan: 'مكية',
-        Medinan: 'مدنية',
-    }
+    Meccan: 'مكية',
+    Medinan: 'مدنية',
+    };
 
     const numToArb: { [key: number]: string } = {
-        0: '۰',
-        1: '۱',
-        2: '۲',
-        3: '۳',
-        4: '٤',
-        5: '٥',
-        6: '٦',
-        7: '٧',
-        8: '۸',
-        9: '۹',
-    }
+    0: '۰', 1: '۱', 2: '۲', 3: '۳', 4: '٤',
+    5: '٥', 6: '٦', 7: '٧', 8: '۸', 9: '۹',
+    };
 
     function convertToArabicNumerals(num: number): string {
-        return num
-            .toString()
-            .split('') 
-            .map((digit) => numToArb[parseInt(digit)])
-            .join('')
+    return num.toString().split('').map((d) => numToArb[parseInt(d)]).join('');
     }
 
-    useEffect(() => {
-        const fetchSurahs = async () => {
-            try {
-                const res = await fetch('https://api.alquran.cloud/v1/surah');
-                const json = await res.json();
-                setSurahs(json.data);
-                setFilteredSurahs(json.data); // Initialize filteredSurahs
-            } catch (err) {
-                console.error('Error fetching Surahs:', err);
-            } finally {
-                setLoading(false);
-            }
-        };
+    export default function SurahList() {
+    const [surahs, setSurahs] = useState<Surah[]>([]);
+    const [loading, setLoading] = useState(true);
 
-        fetchSurahs();
+    useEffect(() => {
+        fetch('https://api.alquran.cloud/v1/surah')
+        .then((res) => res.json())
+        .then((data) => setSurahs(data.data))
+        .catch(console.error)
+        .finally(() => setLoading(false));
     }, []);
 
-    const handleSurahSelect = async (surahNumber: number) => {
-        setLoading(true);
-        setSelectedSurah(surahNumber);
-        try {
-            const res = await fetch(`https://api.alquran.cloud/v1/surah/${surahNumber}/ar`);
-            const json = await res.json();
-            setAyahs(json.data.ayahs);
-        } catch (err) {
-            console.error('Error fetching Ayahs:', err);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const handleFilter = (searchText: string) => {
-        setSearchQuery(searchText);
-        const filtered = surahs.filter((item) =>
-            item.name.toLowerCase().includes(searchText.toLowerCase())
-        );
-        setFilteredSurahs(filtered);
-    };
-
     if (loading) {
-        return (
-            <View style={styles.centered}>
-                <ActivityIndicator size="large" color="#000" />
-            </View>
-        );
+        return <ActivityIndicator size="large" style={ styles.loadingIcon } />;
     }
 
     return (
         <>
-            <Stack.Screen
-                options={{
-                    headerTitle: 'القرآن الكريم',
-                    headerTitleAlign: 'center',
-                    headerSearchBarOptions: {
-                        placeholder: 'ابحث',
-                        inputType: 'text',
-                        onChangeText: (e) => handleFilter(e.nativeEvent.text),
-                    },
-                    headerTitleStyle: {
-                        fontWeight: 'bold',
-                        fontSize: 20,
-                    },
-                }}
-            />
-            <View style={styles.container}>
-                {selectedSurah === null ? (
-                    <>
-                        <FlatList
-                            // contentContainerStyle={styles.gridContainer}
-                            data={filteredSurahs}
-                            keyExtractor={(item) => item.number.toString()}
-                            numColumns={2}
-                            columnWrapperStyle={{ justifyContent: 'space-between' }}
-                            renderItem={({ item }) => (
-                                <>
-                                <TouchableOpacity
-                                style={styles.surahItem}
-                                onPress={() => handleSurahSelect(item.number)}
-                                >
-                                <View style={styles.surahNumber}>
-                                    <Text style={styles.surahNumberText}>{convertToArabicNumerals(item.number)}</Text>
-                                </View>
-                                    <View>
-                                        <Text style={styles.surahText}>{item.name}</Text>
-                                        <Text style={styles.surahDetails}>
-                                            {englishToArabic[item.revelationType]} - عدد آياتها: {convertToArabicNumerals(item.numberOfAyahs)}
-                                        </Text>
-                                    </View>
-                                </TouchableOpacity>
-                                </>
-                            )}
-                        />
-                    </>
-                ) : (
-                    <FlatList
-                        data={ayahs}
-                        keyExtractor={(item) => item.numberInSurah.toString()}
-                        renderItem={({ item }) => (
-                            <View style={styles.ayahContainer}>
-                                <Text style={styles.ayahPage}>صفحة: {item.page}</Text>
-                                <Text style={styles.ayahText}>
-                                    {item.text} ﴿{item.numberInSurah}﴾
-                                </Text>
-                            </View>
-                        )}
-                    />
-                )}
-            </View>
+        <Stack.Screen
+            options={{ title: 'القرآن الكريم', headerTitleAlign: 'center' }}
+        />
+        <FlatList
+            contentContainerStyle={{ padding: 15 }}
+            data={surahs}
+            keyExtractor={(item) => item.number.toString()}
+            numColumns={2}
+            columnWrapperStyle={{ justifyContent: 'space-between', flexDirection: 'row-reverse' }}
+            renderItem={({ item }) => (
+            <TouchableOpacity
+                style={styles.surahItem}
+                onPress={() => router.push(`../pages/${item.number}`)}
+            >
+                <View style={styles.surahNumber}>
+                <Text style={styles.surahNumberText}>{convertToArabicNumerals(item.number)}</Text>
+                </View>
+                <View>
+                <Text style={styles.surahText}>{item.name}</Text>
+                <Text style={styles.surahDetails}>
+                    {englishToArabic[item.revelationType]} - عدد آياتها: {convertToArabicNumerals(item.numberOfAyahs)}
+                </Text>
+                </View>
+            </TouchableOpacity>
+            )}
+        />
         </>
     );
-}
+    }
 
 const styles = StyleSheet.create({
-    // gridContainer: {
-    //     marginTop: 150,
-    //     paddingBottom: 30,
-    //     flexDirection: 'row-reverse',
-    // },
-    container: {
-        padding: 10,
-    },
-    centered: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
     surahItem: {
         backgroundColor: '#000',
         // backgroundColor: Colors.primary,
+        
         width: '48%',
         paddingVertical: 20,
         paddingHorizontal: 10,
         justifyContent: 'center',
         alignItems: 'center',
         marginBottom: 15,
+
         borderRadius: 12,
         // elevation: 4, // Android shadow
         // shadowColor: '#000', // iOS shadow
@@ -238,26 +129,15 @@ const styles = StyleSheet.create({
         marginBottom: 4,
     },
     surahDetails: {
-        fontSize: 13,
+        // fontSize: 14,
         color: '#777',
         fontFamily: 'Cairo',
         textAlign: 'center',
     },
-    ayahContainer: {
-        padding: 10,
-        backgroundColor: '#e9ecef',
-        borderRadius: 8,
-        marginBottom: 10,
-    },
-    ayahPage: {
-        fontSize: 14,
-        color: '#555',
-        marginBottom: 5,
-    },
-    ayahText: {
-        fontSize: 16,
-        color: '#000',
-        textAlign: 'center',
+    loadingIcon: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center'
     },
 });
 
