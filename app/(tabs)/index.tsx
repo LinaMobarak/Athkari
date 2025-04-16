@@ -36,6 +36,7 @@ import { FlatList } from "react-native";
 import { withTiming } from "react-native-reanimated";
 import { selectionAsync } from "expo-haptics";
 import Modal from "react-native-modal";
+import { getTimeDiffInSeconds } from "../functions/getNextTime";
 
 const prayerNamesInArabic = {
   Fajr: "الفجر",
@@ -108,25 +109,14 @@ export default function HomeScreen() {
     return next || nextPray[0];
   };
 
-  const getNextTimer = (nextPrayerTime: Date) => {
-    const now = new Date();
-    const diffInSeconds = Math.abs(
-      (nextPrayerTime.getTime() - now.getTime()) / 1000
-    );
-    setTimey(diffInSeconds > 0 ? diffInSeconds : 4);
-  };
-
   useEffect(() => {
-    try {
-      if (prayerTimes) {
-        const nextt = getNextPrayer(prayerTimes);
-        if (nextt && nextt.datetime) {
-          setNext(nextt.name);
-          getNextTimer(nextt.datetime);
-        }
+    if (prayerTimes) {
+      const nextt = getNextPrayer(prayerTimes);
+      if (nextt && nextt.datetime) {
+        setNext(nextt.name);
+        const seconds = getTimeDiffInSeconds(nextt.time);
+        setTimey(seconds);
       }
-    } catch (error) {
-      console.log(error);
     }
   }, [prayerTimes, date]);
 
@@ -182,7 +172,7 @@ export default function HomeScreen() {
   };
 
   useEffect(() => {
-    if (timey === 0 && !loading) {
+    if (timey <= 1 && !loading) {
       playAdhan();
     }
   }, [timey]);
@@ -192,7 +182,7 @@ export default function HomeScreen() {
   }, []);
   useEffect(() => {
     const getHijriDateInArabic = async () => {
-      setLoadingHijri(true);
+      setLoadingHijri(false);
       try {
         const day = date.getDate().toString().padStart(2, "0");
         const month = (date.getMonth() + 1).toString().padStart(2, "0");
@@ -237,13 +227,13 @@ export default function HomeScreen() {
     "AppState.removeEventListener", // or the full warning string
   ]);
 
-  if (loading) {
-    return (
-      <View style={styles.centered}>
-        <ActivityIndicator size="large" color="white" />
-      </View>
-    );
-  }
+  // if (loading) {
+  //   return (
+  //     <View style={styles.centered}>
+  //       <ActivityIndicator size="large" color="white" />
+  //     </View>
+  //   );
+  // }
 
   return (
     <>
