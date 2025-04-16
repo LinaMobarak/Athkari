@@ -44,6 +44,7 @@
     "react-dom": "18.3.1",
     "react-icons": "^5.5.0",
     "react-native": "0.76.9",
+    "react-native-compass-heading": "^2.0.2",
     "react-native-countdown-component": "^2.7.1",
     "react-native-gesture-handler": "~2.20.2",
     "react-native-modal": "^14.0.0-rc.1",

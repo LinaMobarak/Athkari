@@ -22,6 +22,7 @@ export const checkIf12HoursPassed = async () => {
     } catch (error) {
         console.error("Error checking timestamp:", error);
     }
+    
 };
 
 export const resetCounters = () => {
