@@ -70,7 +70,6 @@ export default function HomeScreen() {
   const [prayerTimes, setPrayerTimes] = useState(null);
   const [next, setNext] = useState("");
   const [timey, setTimey] = useState<number>(0);
-  const [heading, setHeading] = useState<number>(0);
 
   const navigationMenu = [
     // {name: 'الرئيسية' },
@@ -114,7 +113,7 @@ export default function HomeScreen() {
     const diffInSeconds = Math.abs(
       (nextPrayerTime.getTime() - now.getTime()) / 1000
     );
-    setTimey(diffInSeconds > 0 ? diffInSeconds : 0);
+    setTimey(diffInSeconds > 0 ? diffInSeconds : 4);
   };
 
   useEffect(() => {
@@ -131,6 +130,7 @@ export default function HomeScreen() {
     }
   }, [prayerTimes, date]);
 
+  console.log(timey);
   const convertTo12HourFormat = (time: string) => {
     const [hours, minutes] = time.split(":").map(Number);
     // console.log(hours, minutes);
@@ -158,9 +158,6 @@ export default function HomeScreen() {
         const month = (date.getMonth() + 1).toString().padStart(2, "0");
         const year = date.getFullYear();
 
-        const direction = await AlQibla.getDirection(lat, long);
-        setQibla(direction);
-
         const response = await fetch(
           `https://api.aladhan.com/v1/timings/${day}-${month}-${year}?latitude=${lat}&longitude=${long}&method=${method}`
         );
@@ -185,11 +182,13 @@ export default function HomeScreen() {
   };
 
   useEffect(() => {
-    checkIf12HoursPassed();
-    console.log(timey);
     if (timey === 0 && !loading) {
       playAdhan();
     }
+  }, [timey]);
+
+  useEffect(() => {
+    checkIf12HoursPassed();
   }, []);
   useEffect(() => {
     const getHijriDateInArabic = async () => {
@@ -273,19 +272,6 @@ export default function HomeScreen() {
             <View style={styles.dateContainer}>
               <BlurView intensity={20} style={styles.blurCon} />
             </View>
-
-            {/* <TouchableOpacity
-              style={{ position: "absolute", bottom: 40, right: 80 }}
-              onPress={() => {}}
-            >
-              <Feather name="arrow-right" size={20} color={Colors.primary} />
-            </TouchableOpacity> */}
-
-            {/* <TouchableOpacity
-              style={{ position: "absolute", bottom: 40, left: 80 }}
-            >
-              <Feather name="arrow-left" size={20} color={Colors.primary} />
-            </TouchableOpacity> */}
 
             <TouchableOpacity
               style={styles.date}
@@ -393,7 +379,13 @@ export default function HomeScreen() {
             .map(([name, time]) => {
               const formattedTime = convertTo12HourFormat(time as string);
               return (
-                <View key={name} style={styles.containerPrayers}>
+                <View
+                  key={name}
+                  style={[
+                    styles.containerPrayers,
+                    name === next && styles.highlightedPrayer,
+                  ]}
+                >
                   <ThemedText style={styles.text}>{`${
                     prayerNamesInArabic[
                       name as keyof typeof prayerNamesInArabic
@@ -569,5 +561,10 @@ const styles = StyleSheet.create({
     overflow: "hidden",
     width: "70%",
     marginLeft: "15%",
+  },
+  highlightedPrayer: {
+    backgroundColor: Colors.primary,
+    borderRadius: 8,
+    padding: 10,
   },
 });
