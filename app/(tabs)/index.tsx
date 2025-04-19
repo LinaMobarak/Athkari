@@ -515,7 +515,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     borderBottomColor: Colors.primary,
     borderRadius: 20,
-    // backgroundColor: "rgba(255,255,255,0.15)",
   },
   textOfDate: {
     fontFamily: "Cairo",
