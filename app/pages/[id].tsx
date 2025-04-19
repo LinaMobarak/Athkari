@@ -16,8 +16,15 @@ return num.toString().split('').map((d) => numToArb[parseInt(d)]).join('');
 export default function SurahDetail() {
 const { id } = useLocalSearchParams();
 const [ayahs, setAyahs] = useState<any[]>([]);
+const [ name, setName ] = useState()
 const [loading, setLoading] = useState(true);
 const fontSizeValue = 20
+
+type Surah = {
+    englishName: string,
+    juz: string,
+    text: string,
+}
 
 useEffect(() => {
     async function fetchAyahs() {
@@ -26,6 +33,8 @@ useEffect(() => {
         const json = await res.json();
 
         const textToRemove = "بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ";
+        const asd = json.data.name
+        setName(asd)
         const cleaned = json.data.ayahs.map((ayah, index) => {
         if (index === 0 && id !== '1') {
             return {
@@ -38,7 +47,7 @@ useEffect(() => {
 
         setAyahs(cleaned);
     } catch (e) {
-        alert 
+        // alert 
     } finally {
         setLoading(false);
     }
@@ -54,45 +63,57 @@ if (loading) {
 return (
     <>
     <Stack.Screen
-        options={{ title: `سورة رقم ${convertToArabicNumerals(Number(id))}`, headerTitleAlign: 'center' }}
+        // options={{ title: `سورة ${}`, headerTitleAlign: 'center' }}
     />
     <ScrollView contentContainerStyle={{ padding: 20 }}>
-        <TouchableOpacity onPress={() => router.back()} style={{ marginBottom: 20 }}>
-        <Text style={{ textAlign: 'center', color: Colors.secondaryColor, fontSize: 18 }}>← الرجوع</Text>
-        </TouchableOpacity>
 
-        <Text style={styles.quranText}>
+        <Text style={styles.surahName}>{name} {'\n'}</Text>
+        <ThemedText style={styles.quranText}>
             {/* {ayahs.page} */}
             ﷽
-        {'\n\n'}
-        {ayahs.map((ayah) => (
-            <ThemedText style={styles.ayahText} key={ayah.numberInSurah}>
-            {ayah.text}
-            <Text style={styles.ayahEnd}> ﴿ {convertToArabicNumerals(ayah.numberInSurah)} ﴾ </Text>{' '}
+        {'\n'}
+
+        {ayahs.map((item) => (
+            <ThemedText style={styles.ayahText} key={item.numberInSurah}>
+            {item.englishName}
+            {item.text}
+            <Text style={styles.ayahEnd}> ﴿ {convertToArabicNumerals(item.numberInSurah)} ﴾ </Text>{' '}
             </ThemedText>
         ))}
-        </Text>
+        </ThemedText>
     </ScrollView>
     </>
 );
 }
 
 const styles = StyleSheet.create({
-quranText: {
-    fontSize: 28,
-    fontFamily: 'Cairo',
-    textAlign: 'center',
-    letterSpacing: 0.5,
-    color: Colors.secondaryColor,
-},
+    quranText: {
+        fontFamily: 'Cairo',
+        fontSize: 30,
+        textAlign: 'center',
+        letterSpacing: 15,
+        // lineHeight: 40,
+      },
+      
 ayahText: {
-    lineHeight: 35,
+    fontFamily: 'Lateef',
+    lineHeight: 30,
+    letterSpacing: 0.5,
     fontSize: 24,
 
 },
 ayahEnd: {
-    // fontSize: 28,
-    // fontFamily: 'Lateef',
+    // fontSize: 28, 
+    fontFamily: 'Lateef',
     color: Colors.secondaryColor,
 },
+surahName: {
+    color: Colors.secondaryColor,
+    marginTop: 15,
+    letterSpacing: 3,
+    textAlign: 'center',
+    fontSize: 30,
+    fontFamily: 'Lateef',
+    fontWeight: '900'
+}
 });
