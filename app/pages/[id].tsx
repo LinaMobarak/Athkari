@@ -87,33 +87,46 @@ return (
 }
 
 const styles = StyleSheet.create({
-    quranText: {
-        fontFamily: 'Cairo',
-        fontSize: 30,
-        textAlign: 'center',
-        letterSpacing: 15,
-        // lineHeight: 40,
+    container: {
+        padding: 20,
+        paddingBottom: 60,
       },
-      
-ayahText: {
-    fontFamily: 'Lateef',
-    lineHeight: 30,
-    letterSpacing: 0.5,
-    fontSize: 24,
-
-},
-ayahEnd: {
-    // fontSize: 28, 
-    fontFamily: 'Lateef',
-    color: Colors.secondaryColor,
-},
-surahName: {
-    color: Colors.secondaryColor,
-    marginTop: 15,
-    letterSpacing: 3,
-    textAlign: 'center',
-    fontSize: 30,
-    fontFamily: 'Lateef',
-    fontWeight: '900'
-}
-});
+      loaderContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+      },
+      headerBox: {
+        marginBottom: 20,
+        alignItems: 'center',
+        borderBottomWidth: 1,
+        borderColor: '#ccc',
+        paddingBottom: 10,
+      },
+      bismillah: {
+        fontSize: 28,
+        fontFamily: 'Lateef',
+        color: Colors.secondaryColor,
+        marginBottom: 10,
+      },
+      surahName: {
+        fontSize: 26,
+        fontFamily: 'Lateef',
+        fontWeight: 'bold',
+        color: Colors.secondaryColor,
+        letterSpacing: 2,
+      },
+      ayahText: {
+        fontFamily: 'Lateef',
+        fontSize: 28,
+        lineHeight: 48,
+        textAlign: 'center',
+        marginBottom: 20,
+        paddingHorizontal: 5,
+      },
+      ayahEnd: {
+        fontFamily: 'Lateef',
+        color: Colors.secondaryColor,
+        fontSize: 24,
+      },
+    });
