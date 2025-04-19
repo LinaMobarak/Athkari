@@ -279,7 +279,7 @@ export default function HomeScreen() {
             </TouchableOpacity>
 
             <View style={styles.dateContainer}>
-              <BlurView intensity={20} style={styles.blurCon} />
+              <BlurView intensity={50} style={styles.blurCon} />
             </View>
 
             <TouchableOpacity
@@ -500,7 +500,7 @@ const styles = StyleSheet.create({
     marginBottom: 75,
   },
   dateContainer: {
-    backgroundColor: "rgba(3, 3, 3, 0.5)",
+    backgroundColor: "rgba(255, 255, 255, 0.15)",
     borderWidth: 0.5,
     position: "absolute",
     bottom: 0,
@@ -510,26 +510,17 @@ const styles = StyleSheet.create({
     borderTopColor: "#B0C4A1",
   },
   date: {
-    backgroundColor: "#151718",
-    position: "absolute",
-    bottom: 20,
-    left: "30%",
-    width: "40%",
-    height: 50,
-    justifyContent: "center",
-    alignItems: "center",
-    borderRadius: 10,
-    borderWidth: 0.5,
-    borderColor: Colors.secondaryColor,
-    paddingLeft: 5,
-    paddingRight: 5,
+    marginTop: 205,
+    paddingVertical: 5,
+    paddingHorizontal: 14,
+    borderBottomColor: Colors.primary,
+    borderRadius: 20,
+    // backgroundColor: "rgba(255,255,255,0.15)",
   },
-
   textOfDate: {
-    color: Colors.secondaryColor,
     fontFamily: "Cairo",
-    fontSize: 14,
-    fontWeight: "bold",
+    color: "white",
+    fontSize: 16,
     textAlign: "center",
   },
 
