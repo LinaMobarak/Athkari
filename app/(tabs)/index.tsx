@@ -347,9 +347,10 @@ export default function HomeScreen() {
             <View
               style={{
                 marginTop: 10,
-                backgroundColor: "rgba(255, 255, 255, 0.24)",
+                // backgroundColor: colors.background,
                 borderRadius: 10,
                 padding: 5,
+                width: "100%",
               }}
             >
               <CountDown
@@ -359,6 +360,30 @@ export default function HomeScreen() {
                   setShowAdhan(true);
                   if (!showAdhan) setDate(new Date());
                 }}
+                digitStyle={{
+                  // backgroundColor: "#FFF",
+                  borderWidth: 1,
+                  borderColor: colors.border,
+                  width: "50%",
+                  marginHorizontal: -15,
+                }}
+                digitTxtStyle={{
+                  color: colors.text,
+                  fontFamily: "Cairo",
+                  fontSize: 10,
+                }}
+                timeLabelStyle={{
+                  color: colors.text,
+                  fontWeight: "bold",
+                  fontFamily: "Cairo",
+                  fontSize: 8,
+                }}
+                separatorStyle={{
+                  color: colors.text,
+                }}
+                timeToShow={["H", "M", "S"]}
+                timeLabels={{ h: "ساعة", m: "دقيقة", s: "ثانية" }}
+                showSeparator
               />
 
               {showAdhan && <ModalAdan onClose={() => setShowAdhan(false)} />}
