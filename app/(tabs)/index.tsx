@@ -5,9 +5,8 @@ import {
   Text,
   TouchableOpacity,
   Platform,
-  ActivityIndicator,
 } from "react-native";
-import AlQibla from "qibla-direction";
+
 import { Audio } from "expo-av";
 import ParallaxScrollView from "../../components/ParallaxScrollView";
 import React, { useEffect, useState } from "react";
@@ -22,10 +21,12 @@ import { BlurView } from "expo-blur";
 import { useFonts } from "expo-font";
 import { LogBox } from "react-native";
 import { Appearance } from "react-native";
+import { registerForPushNotifications } from "@/app/functions/notification";
 import DateTimePicker from "@react-native-community/datetimepicker";
-import { Magnetometer } from "expo-sensors";
+import * as Notifications from "expo-notifications";
 import * as Location from "expo-location";
 import { checkIf12HoursPassed } from "@/app/functions/resetCounter";
+
 import axios from "axios";
 // import { I18nManager } from 'react-native';
 import { FlatList } from "react-native";
@@ -49,6 +50,14 @@ const prayerNamesInArabic = {
   Lastthird: "الثلث الاخير",
 };
 const img = require("@/assets/images/HeaderImage.jpeg");
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: true,
+    shouldSetBadge: false,
+  }),
+});
 
 export default function HomeScreen() {
   const { colors } = useTheme();
@@ -110,27 +119,6 @@ export default function HomeScreen() {
   };
 
   useEffect(() => {
-    if (prayerTimes) {
-      const nextt = getNextPrayer(prayerTimes);
-      if (nextt && nextt.datetime) {
-        setNext(nextt.name);
-        const seconds = getTimeDiffInSeconds(nextt.time);
-        setTimey(seconds);
-      }
-    }
-  }, [prayerTimes, date]);
-
-  console.log(timey);
-  const convertTo12HourFormat = (time: string) => {
-    const [hours, minutes] = time.split(":").map(Number);
-    // console.log(hours, minutes);
-    const period = hours >= 12 ? "م" : "ص";
-    const convertedHours = hours % 12 || 12;
-
-    return `${convertedHours}:${minutes.toString().padStart(2, "0")} ${period}`;
-  };
-
-  useEffect(() => {
     const getPrayingTime = async (date: Date) => {
       setLoadingPrayers(true);
       try {
@@ -164,18 +152,48 @@ export default function HomeScreen() {
     getPrayingTime(date);
   }, [date]);
 
-  const playAdhan = async () => {
-    const { sound } = await Audio.Sound.createAsync(
-      require("@/assets/sounds/azan1.mp3")
-    );
-    await sound.playAsync();
-  };
+  useEffect(() => {
+    if (!prayerTimes) return;
+
+    const nextt = getNextPrayer(prayerTimes);
+    if (!nextt || !nextt.datetime) return;
+
+    setNext(nextt.name);
+  }, [prayerTimes, date]);
 
   useEffect(() => {
-    if (timey <= 1 && !loading) {
-      playAdhan();
+    if (!prayerTimes) return;
+    const nextt = getNextPrayer(prayerTimes);
+    setTimey(getTimeDiffInSeconds(nextt.time));
+  }, [prayerTimes]);
+  const convertTo12HourFormat = (time: string) => {
+    const [hours, minutes] = time.split(":").map(Number);
+    const period = hours >= 12 ? "م" : "ص";
+    const convertedHours = hours % 12 || 12;
+
+    return `${convertedHours}:${minutes.toString().padStart(2, "0")} ${period}`;
+  };
+
+  const playAdhan = async () => {
+    try {
+      await Audio.setAudioModeAsync({
+        allowsRecordingIOS: false,
+        staysActiveInBackground: true,
+        playsInSilentModeIOS: true,
+
+        shouldDuckAndroid: true,
+        playThroughEarpieceAndroid: false,
+      });
+
+      const { sound } = await Audio.Sound.createAsync(
+        require("@/assets/sounds/azan1.mp3")
+      );
+
+      await sound.playAsync();
+    } catch (error) {
+      console.log("Error playing Adhan:", error);
     }
-  }, [timey]);
+  };
 
   useEffect(() => {
     checkIf12HoursPassed();
@@ -212,7 +230,6 @@ export default function HomeScreen() {
       setDate(selectedDate);
     }
     setShowPicker(false);
-
     setIsModalVisible(!isModalVisible);
   };
 
@@ -223,9 +240,11 @@ export default function HomeScreen() {
     Appearance.setColorScheme(newTheme);
   };
 
-  LogBox.ignoreLogs([
-    "AppState.removeEventListener", // or the full warning string
-  ]);
+  useEffect(() => {
+    registerForPushNotifications();
+  }, []);
+
+  LogBox.ignoreLogs(["AppState.removeEventListener"]);
 
   // if (loading) {
   //   return (
@@ -357,7 +376,10 @@ export default function HomeScreen() {
               <CountDown
                 size={10}
                 until={timey}
-                onFinish={() => console.log("Countdown finished")}
+                onFinish={() => {
+                  playAdhan();
+                  setDate(new Date());
+                }}
               />
             </View>
           )}
@@ -389,28 +411,6 @@ export default function HomeScreen() {
             })}
         </View>
 
-        {/* {qibla && (
-          <View style={{ alignItems: "center", marginTop: 20 }}>
-            <ThemedText
-              style={{ fontFamily: "Cairo", fontSize: 16, marginBottom: 20 }}
-            >
-              اتجاه القبلة
-            </ThemedText>
-            <Image
-              source={require("@/assets/images/qibla.png")}
-              style={{
-                width: 100,
-                height: 100,
-                transform: [
-                  {
-                    rotate: `${(qibla - heading).toFixed(2)}deg`,
-                  },
-                ],
-              }}
-            />
-          </View>
-        )} */}
-        {/* Placeholder for future feature */}
         <TouchableOpacity>
           <Text style={styles.shareText}>شارك التطبيق واكسب الأجر 💫</Text>
         </TouchableOpacity>
@@ -543,10 +543,6 @@ const styles = StyleSheet.create({
   nextPrayer: {
     justifyContent: "center",
     alignItems: "center",
-    // borderColor: Colors.primary,
-    // borderWidth: 1,
-    // borderTopLeftRadius: 100,
-    // borderTopRightRadius: 100,
     height: 150,
     overflow: "hidden",
     width: "70%",
@@ -556,5 +552,16 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.primary,
     borderRadius: 8,
     padding: 10,
+  },
+
+  container: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#fff",
+  },
+  textNotification: {
+    fontSize: 18,
+    fontWeight: "bold",
   },
 });
