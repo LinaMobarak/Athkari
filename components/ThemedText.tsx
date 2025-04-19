@@ -1,4 +1,5 @@
 import { Text, type TextProps, StyleSheet } from 'react-native';
+import { useFonts } from "expo-font";
 
 import { useThemeColor } from '@/hooks/useThemeColor';
 
@@ -16,6 +17,10 @@ export function ThemedText({
   ...rest
 }: ThemedTextProps) {
   const color = useThemeColor({ light: lightColor, dark: darkColor }, 'text');
+
+  const loaded = useFonts({
+    Cairo: require("@/assets/fonts/Cairo.ttf"),
+  });
 
   return (
     <Text
@@ -35,24 +40,29 @@ export function ThemedText({
 
 const styles = StyleSheet.create({
   default: {
+    fontFamily: 'Cairo',
     fontSize: 16,
     lineHeight: 24,
   },
   defaultSemiBold: {
+    fontFamily: 'Cairo',
     fontSize: 16,
     lineHeight: 24,
     fontWeight: '600',
   },
   title: {
+    fontFamily: 'Cairo',
     fontSize: 32,
     fontWeight: 'bold',
     lineHeight: 32,
   },
   subtitle: {
+    fontFamily: 'Cairo',
     fontSize: 20,
     fontWeight: 'bold',
   },
   link: {
+    fontFamily: 'Cairo',
     lineHeight: 30,
     fontSize: 16,
     color: '#0a7ea4',

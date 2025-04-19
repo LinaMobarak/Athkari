@@ -121,9 +121,8 @@ setFilteredData(filtered)
 </View>
 
 
-      <View style={{ backgroundColor: 'transparent' }} />
-
-      <Modal isVisible={isModalVisible}>
+      <Modal isVisible={isModalVisible}
+      onBackdropPress={() => setIsModalVisible(false)}>
         <ThemedView style={styles.modal}>
           <ThemedText style={styles.modalTitle}>{selectedItem?.text}</ThemedText>
           <ThemedText style={styles.modalDescription}>{selectedItem?.description}</ThemedText>
