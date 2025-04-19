@@ -4,11 +4,10 @@ import { Stack, router } from 'expo-router';
 import { Colors } from '@/constants/Colors';
 
 type Surah = {
-    number: number;
-    name: string;
-    revelationType: string;
-    numberOfAyahs: number;
-    page: string,
+        number: number;
+        name: string;
+        revelationType: string;
+        numberOfAyahs: number;
     };
 
     const englishToArabic: { [key: string]: string } = {
