@@ -6,8 +6,6 @@ import {
   TouchableOpacity,
   Platform,
 } from "react-native";
-
-import { Audio } from "expo-av";
 import ParallaxScrollView from "../../components/ParallaxScrollView";
 import React, { useEffect, useState } from "react";
 import Feather from "@expo/vector-icons/Feather";
@@ -26,16 +24,7 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 import * as Notifications from "expo-notifications";
 import * as Location from "expo-location";
 import { checkIf12HoursPassed } from "@/app/functions/resetCounter";
-
-import axios from "axios";
-// import { I18nManager } from 'react-native';
-import { FlatList } from "react-native";
-
-// I18nManager.allowRTL(true);
-// I18nManager.forceRTL(true);
-
-import { withTiming } from "react-native-reanimated";
-import { selectionAsync } from "expo-haptics";
+import ModalAdan from "@/app/functions/adan";
 import Modal from "react-native-modal";
 import { getTimeDiffInSeconds } from "../functions/getNextTime";
 
@@ -74,12 +63,14 @@ export default function HomeScreen() {
   const [theme, setTheme] = useState(Appearance.getColorScheme());
   const [newIcon, setNewIcon] = useState(false);
   const [selectedNavigation, setSelectedNavigation] = useState(0);
-  const [qibla, setQibla] = useState<number>(0);
   const [hijriDate, setHijriDate] = useState("");
   const [datey, setDatey] = useState(false);
   const [prayerTimes, setPrayerTimes] = useState(null);
   const [next, setNext] = useState("");
   const [timey, setTimey] = useState<number>(0);
+  const [lastAdhanPrayer, setLastAdhanPrayer] = useState<string | null>(null);
+
+  const [showAdhan, setShowAdhan] = useState(false);
 
   const navigationMenu = [
     // {name: 'الرئيسية' },
@@ -154,18 +145,17 @@ export default function HomeScreen() {
 
   useEffect(() => {
     if (!prayerTimes) return;
-
     const nextt = getNextPrayer(prayerTimes);
     if (!nextt || !nextt.datetime) return;
-
     setNext(nextt.name);
   }, [prayerTimes, date]);
 
   useEffect(() => {
-    if (!prayerTimes) return;
-    const nextt = getNextPrayer(prayerTimes);
-    setTimey(getTimeDiffInSeconds(nextt.time));
-  }, [prayerTimes]);
+    if (!prayerTimes || !next) return;
+    const nextPrayer = getNextPrayer(prayerTimes);
+    setTimey(getTimeDiffInSeconds(nextPrayer.time));
+  }, [prayerTimes, next]);
+  console.log(timey);
   const convertTo12HourFormat = (time: string) => {
     const [hours, minutes] = time.split(":").map(Number);
     const period = hours >= 12 ? "م" : "ص";
@@ -173,31 +163,10 @@ export default function HomeScreen() {
 
     return `${convertedHours}:${minutes.toString().padStart(2, "0")} ${period}`;
   };
-
-  const playAdhan = async () => {
-    try {
-      await Audio.setAudioModeAsync({
-        allowsRecordingIOS: false,
-        staysActiveInBackground: true,
-        playsInSilentModeIOS: true,
-
-        shouldDuckAndroid: true,
-        playThroughEarpieceAndroid: false,
-      });
-
-      const { sound } = await Audio.Sound.createAsync(
-        require("@/assets/sounds/azan1.mp3")
-      );
-
-      await sound.playAsync();
-    } catch (error) {
-      console.log("Error playing Adhan:", error);
-    }
-  };
-
   useEffect(() => {
     checkIf12HoursPassed();
   }, []);
+
   useEffect(() => {
     const getHijriDateInArabic = async () => {
       setLoadingHijri(false);
@@ -346,6 +315,16 @@ export default function HomeScreen() {
           </ThemedView>
         }
       >
+        {/* <TouchableOpacity
+          onPress={() => {
+            setShowAdhan(true);
+          }}
+        >
+          <Text style={{ color: "black" }}>Start</Text>
+        </TouchableOpacity>
+
+        */}
+
         <View style={styles.nextPrayer}>
           <ThemedText
             style={{
@@ -377,10 +356,12 @@ export default function HomeScreen() {
                 size={10}
                 until={timey}
                 onFinish={() => {
-                  playAdhan();
-                  setDate(new Date());
+                  setShowAdhan(true);
+                  if (!showAdhan) setDate(new Date());
                 }}
               />
+
+              {showAdhan && <ModalAdan onClose={() => setShowAdhan(false)} />}
             </View>
           )}
         </View>
