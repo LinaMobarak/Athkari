@@ -2,20 +2,26 @@ import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { Stack } from 'expo-router';
 import React, { useState } from 'react';
-import { StyleSheet, View, ScrollView, Text, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, ScrollView, Text, TouchableOpacity, TextInput, } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
 import Modal from 'react-native-modal';
 import useNamesOfAllahStore from '../stores/namesOfAllah-store';
 import { FlatList } from 'react-native';
 import { Directions } from 'react-native-gesture-handler';
+import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
+import { Colors } from '@/constants/Colors';
+import { useTheme } from "@react-navigation/native";
+// import { SearchBar } from 'react-native';
 
 export default function NamesOfAllah() {
+  const { colors } = useTheme();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const store = useNamesOfAllahStore((state) => state.namesOfAllah);
   const [selectedId, setSelectedId] = useState<number | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const selectedItem = store.find((name) => name.id === selectedId) || null;
   const [filteredData, setFilteredData] = useState(store);
+  const [flag , setFlag] = useState(true)
 
   function handleModalClose() {
     setIsModalVisible(false);
@@ -27,12 +33,15 @@ export default function NamesOfAllah() {
   // }
 
   
-function handleFilter(searchText: string) {
-  setSearchQuery(searchText)
+function handleFilter(input : string) {
+  setSearchQuery(input)
+  
   const filtered = store.filter((item) =>
-    item.text.includes(searchText) 
-  );
-  setFilteredData(filtered)
+    item.text.includes(input) 
+);
+setFilteredData(filtered)
+
+    
 }
 
   return (
@@ -43,11 +52,11 @@ function handleFilter(searchText: string) {
           headerTitle: 'أسماء الله الحسنى',
           headerTitleAlign: 'center',
           headerBlurEffect: 'light',
-          headerSearchBarOptions : {
-            placeholder: 'ابحث',
-            inputType: 'text',
-            onChangeText: (e) => handleFilter(e.nativeEvent.text),
-          },
+          // headerSearchBarOptions : {
+          //   placeholder: 'ابحث',
+          //   inputType: 'text',
+          //   onChangeText: (e) => handleFilter(e.nativeEvent.text),
+          // },
           headerTitleStyle: {
             fontWeight: 'bold',
             fontSize: 20,
@@ -58,7 +67,61 @@ function handleFilter(searchText: string) {
       />
     {/* </ScrollView> */}
 
-      <View style={{ backgroundColor: 'transparent', paddingTop: 150}} />
+    <View
+  style={{
+    flexDirection: 'row',
+    alignItems: 'center',
+    margin: 10,
+    paddingHorizontal: 10,
+    borderRadius: 12,
+    borderColor: '#666666',
+    borderWidth: 1,
+    // backgroundColor: colors.card,
+  }}
+>
+ 
+    { !searchQuery ? 
+    (
+    <Feather
+      name='search'
+      size={20}
+      style={{ color: '#666666' }}
+  />
+    ) : (
+      <TouchableOpacity onPress={() =>{ 
+        setSearchQuery('')
+        setFilteredData(store);
+          }}>
+      <MaterialCommunityIcons
+        name= 'close' 
+        size={20}
+        style={{ color: '#666666' }}
+      />
+  </TouchableOpacity>
+
+    )
+  }
+  
+  <TextInput
+    onChangeText={(input) => {
+      setSearchQuery(input);
+      handleFilter(input);
+    }}
+    placeholder='ابحث'
+    value={searchQuery}
+    placeholderTextColor={'#666666'}
+    style={{
+      flex: 1,
+      color: colors.text,
+      fontSize: 15,
+      textAlign: 'right',
+      paddingVertical: 8,
+    }}
+  />
+</View>
+
+
+      <View style={{ backgroundColor: 'transparent' }} />
 
       <Modal isVisible={isModalVisible}>
         <ThemedView style={styles.modal}>
