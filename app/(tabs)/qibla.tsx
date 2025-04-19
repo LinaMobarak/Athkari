@@ -6,41 +6,19 @@ import {
   Vibration,
 } from "react-native";
 import * as Location from "expo-location";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import { ThemedView } from "@/components/ThemedView";
 import { ThemedText } from "@/components/ThemedText";
-import { Stack } from "expo-router";
+import { Stack, useFocusEffect } from "expo-router"; // <-- import useFocusEffect
 
-export default function qibla() {
+export default function Qibla() {
   const theme = useColorScheme() ?? "light";
   const [heading, setHeading] = useState(0);
   const [qiblaDirection, setQiblaDirection] = useState(0);
-
-  useEffect(() => {
-    (async () => {
-      const { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== "granted") {
-        console.log("Location permission not granted");
-        return;
-      }
-
-      const location = await Location.getCurrentPositionAsync({});
-      const { latitude, longitude } = location.coords;
-
-      const qibla = calculateQiblaDirection(latitude, longitude);
-      setQiblaDirection(qibla);
-
-      const headingSubscription = await Location.watchHeadingAsync(
-        (headingData) => {
-          setHeading(
-            Math.round(headingData.trueHeading ?? headingData.magHeading)
-          );
-        }
-      );
-
-      return () => headingSubscription.remove();
-    })();
-  }, []);
+  const [hasVibrated, setHasVibrated] = useState(false);
+  const headingSubscriptionRef = useRef<Location.LocationSubscription | null>(
+    null
+  );
 
   const calculateQiblaDirection = (lat: number, lon: number): number => {
     const kaabaLat = 21.4225;
@@ -59,12 +37,60 @@ export default function qibla() {
     return (angle + 360) % 360;
   };
 
+  // 🧠 Only start tracking when screen is focused
+  useFocusEffect(
+    useCallback(() => {
+      let isMounted = true;
+
+      const startTracking = async () => {
+        const { status } = await Location.requestForegroundPermissionsAsync();
+        if (status !== "granted") {
+          console.log("Location permission not granted");
+          return;
+        }
+
+        const location = await Location.getCurrentPositionAsync({});
+        const { latitude, longitude } = location.coords;
+
+        const qibla = calculateQiblaDirection(latitude, longitude);
+        if (isMounted) setQiblaDirection(qibla);
+
+        const subscription = await Location.watchHeadingAsync((headingData) => {
+          if (isMounted) {
+            setHeading(
+              Math.round(headingData.trueHeading ?? headingData.magHeading)
+            );
+          }
+        });
+
+        headingSubscriptionRef.current = subscription;
+      };
+
+      startTracking();
+
+      return () => {
+        isMounted = false;
+        if (headingSubscriptionRef.current) {
+          headingSubscriptionRef.current.remove();
+          headingSubscriptionRef.current = null;
+        }
+        setHasVibrated(false); // Reset vibration when leaving page
+      };
+    }, [])
+  );
+
   const getRotation = () => {
-    const diff = qiblaDirection - heading;
-    if (diff < 1) {
+    const diff = Math.abs(qiblaDirection - heading);
+
+    if (diff < 3 && !hasVibrated) {
       Vibration.vibrate(500);
+      setHasVibrated(true);
+    } else if (diff >= 3 && hasVibrated) {
+      setHasVibrated(false);
     }
-    return `${diff}deg`;
+
+    const rotation = qiblaDirection - heading;
+    return `${rotation}deg`;
   };
 
   return (
@@ -72,7 +98,6 @@ export default function qibla() {
       <Stack.Screen
         options={{
           headerTitle: "القبلة",
-
           headerTitleAlign: "center",
           headerTitleStyle: {
             fontWeight: "bold",
@@ -110,7 +135,6 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 20,
-    // marginBottom: ,
     fontWeight: "bold",
   },
   compassContainer: {
