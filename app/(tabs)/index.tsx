@@ -247,6 +247,19 @@ export default function HomeScreen() {
               />
             </TouchableOpacity>
 
+            <TouchableOpacity
+              onPress={() => {
+                router.push("/pages/favourites");
+              }}
+            >
+              <Feather
+                name="heart"
+                size={24}
+                color="white"
+                style={styles.heartIcon}
+              />
+            </TouchableOpacity>
+
             <View style={styles.dateContainer}>
               <BlurView intensity={20} style={styles.blurCon} />
             </View>
@@ -496,6 +509,11 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: 60,
     right: 30,
+  },
+  heartIcon: {
+    position: "absolute",
+    top: 60,
+    left: 30,
   },
   shareText: {
     fontSize: 16,
