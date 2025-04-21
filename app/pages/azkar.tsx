@@ -1,7 +1,7 @@
 import { Collapsible } from "@/components/Collapsible";
 import { ThemedView } from "@/components/ThemedView";
 import { Stack } from "expo-router";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Text, StyleSheet, TouchableOpacity, View } from "react-native";
 import * as Haptics from "expo-haptics";
 import { useAzkarStore, ThekrType } from "@/app/stores/azkarStore";
@@ -12,6 +12,7 @@ import { ThemedText } from "@/components/ThemedText";
 import ShareFunction from "@/app/functions/ShareFunction";
 import { FlatList } from "react-native";
 import useElementStore from "../stores/store";
+import { Adan } from "../functions/popAdan";
 
 function Mycomponents({
   id,
@@ -153,6 +154,7 @@ export default function Azkar() {
           },
         }}
       />
+      <Adan />
       <FlatList
         contentContainerStyle={{ paddingBottom: 200 }}
         data={element}

@@ -398,7 +398,6 @@ export const useAzkarStore = create<AzkarStoreType>()(persist((set, get) => ({
             ],
         },
 
-
         {
             id: 4,
             title: 'أذكـار النوم',
@@ -485,8 +484,7 @@ export const useAzkarStore = create<AzkarStoreType>()(persist((set, get) => ({
                 },
             ],
         },
-        
-    
+
     ],
 
     

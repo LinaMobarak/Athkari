@@ -19,6 +19,7 @@ import { BlurView } from "expo-blur";
 import { useFonts } from "expo-font";
 import { LogBox } from "react-native";
 import { Appearance } from "react-native";
+import useFavouriteStore from "@/app/stores/store";
 import { registerForPushNotifications } from "@/app/functions/notification";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import * as Notifications from "expo-notifications";
@@ -69,17 +70,9 @@ export default function HomeScreen() {
   const [prayerTimes, setPrayerTimes] = useState(null);
   const [next, setNext] = useState("");
   const [timey, setTimey] = useState<number>(0);
-  const [lastAdhanPrayer, setLastAdhanPrayer] = useState<string | null>(null);
 
   const [showAdhan, setShowAdhan] = useState(false);
 
-  const navigationMenu = [
-    // {name: 'الرئيسية' },
-    { name: "القران", route: "alQuran" },
-    { name: "أذكار المسلم", route: "azkar" },
-    { name: "التسبيح", route: "tasbeeh" },
-    { name: "ادعية", route: "dua" },
-  ];
   const router = useRouter();
 
   const selectNavigation = (index: number) => {
@@ -155,7 +148,9 @@ export default function HomeScreen() {
     if (!prayerTimes || !next) return;
     const nextPrayer = getNextPrayer(prayerTimes);
     setTimey(getTimeDiffInSeconds(nextPrayer.time));
+    useFavouriteStore.setState({ timing: timey });
   }, [prayerTimes, next]);
+
   console.log(timey);
   const convertTo12HourFormat = (time: string) => {
     const [hours, minutes] = time.split(":").map(Number);
@@ -245,6 +240,19 @@ export default function HomeScreen() {
                 size={24}
                 color="white"
                 style={styles.settingsIcon}
+              />
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={() => {
+                router.push("/pages/favourites");
+              }}
+            >
+              <Feather
+                name="heart"
+                size={24}
+                color="white"
+                style={styles.heartIcon}
               />
             </TouchableOpacity>
 
@@ -497,6 +505,11 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: 60,
     right: 30,
+  },
+  heartIcon: {
+    position: "absolute",
+    top: 60,
+    left: 30,
   },
   shareText: {
     fontSize: 16,

@@ -8,7 +8,7 @@ import { DuaType, useDuaStore } from "@/app/stores/duaStore";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { ThemedText } from "@/components/ThemedText";
-
+import { Adan } from "@/app/functions/popAdan";
 import ShareFunction from "@/app/functions/ShareFunction";
 import { FlatList } from "react-native";
 
@@ -87,6 +87,7 @@ export default function Azkar() {
           },
         }}
       />
+      <Adan />
       <FlatList
         data={dua}
         renderItem={({ item }) => <MyComponent item={item} />}
