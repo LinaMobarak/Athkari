@@ -26,7 +26,7 @@ export default function ModalAdan({ onClose }: ModalAdanProps) {
       });
 
       const { sound } = await Audio.Sound.createAsync(
-        require("@/assets/sounds/Dubai.mp3")
+        require("@/assets/sounds/dubaiAzan.mp3")
       );
       setSound(sound);
       await sound.playAsync();
