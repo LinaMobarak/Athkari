@@ -9,7 +9,8 @@ import * as Location from "expo-location";
 import { useEffect, useRef, useState, useCallback } from "react";
 import { ThemedView } from "@/components/ThemedView";
 import { ThemedText } from "@/components/ThemedText";
-import { Stack, useFocusEffect } from "expo-router"; // <-- import useFocusEffect
+import { Stack, useFocusEffect } from "expo-router";
+import { Adan } from "@/app/functions/popAdan";
 
 export default function Qibla() {
   const theme = useColorScheme() ?? "light";
@@ -37,7 +38,6 @@ export default function Qibla() {
     return (angle + 360) % 360;
   };
 
-  // 🧠 Only start tracking when screen is focused
   useFocusEffect(
     useCallback(() => {
       let isMounted = true;
@@ -74,11 +74,10 @@ export default function Qibla() {
           headingSubscriptionRef.current.remove();
           headingSubscriptionRef.current = null;
         }
-        setHasVibrated(false); // Reset vibration when leaving page
+        setHasVibrated(false);
       };
     }, [])
   );
-
   const getRotation = () => {
     const diff = Math.abs(qiblaDirection - heading);
 
