@@ -52,6 +52,7 @@ export default function HomeScreen() {
   const { colors } = useTheme();
   const loaded = useFonts({
     Cairo: require("@/assets/fonts/Cairo.ttf"),
+    Uthmani: require("@/assets/fonts/UthmanicHafs.otf"),
   });
 
   const [loadingPrayers, setLoadingPrayers] = useState(true);

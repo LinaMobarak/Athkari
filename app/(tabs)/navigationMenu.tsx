@@ -27,7 +27,7 @@ export default function NavigationMenu() {
         <View style={styles.container}>
             <TouchableOpacity
                 style={styles.containerAlQuran}
-                onPress={() => route.navigate("/pages/alQuran")}
+                onPress={() => route.navigate("/pages/alQuran2")}
             >
                 <MaterialCommunityIcons
                     color={colors.text}
