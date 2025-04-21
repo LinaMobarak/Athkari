@@ -19,6 +19,7 @@ import { BlurView } from "expo-blur";
 import { useFonts } from "expo-font";
 import { LogBox } from "react-native";
 import { Appearance } from "react-native";
+import useFavouriteStore from "@/app/stores/store";
 import { registerForPushNotifications } from "@/app/functions/notification";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import * as Notifications from "expo-notifications";
@@ -68,17 +69,9 @@ export default function HomeScreen() {
   const [prayerTimes, setPrayerTimes] = useState(null);
   const [next, setNext] = useState("");
   const [timey, setTimey] = useState<number>(0);
-  const [lastAdhanPrayer, setLastAdhanPrayer] = useState<string | null>(null);
 
   const [showAdhan, setShowAdhan] = useState(false);
 
-  const navigationMenu = [
-    // {name: 'الرئيسية' },
-    { name: "القران", route: "alQuran" },
-    { name: "أذكار المسلم", route: "azkar" },
-    { name: "التسبيح", route: "tasbeeh" },
-    { name: "ادعية", route: "dua" },
-  ];
   const router = useRouter();
 
   const selectNavigation = (index: number) => {
@@ -154,7 +147,9 @@ export default function HomeScreen() {
     if (!prayerTimes || !next) return;
     const nextPrayer = getNextPrayer(prayerTimes);
     setTimey(getTimeDiffInSeconds(nextPrayer.time));
+    useFavouriteStore.setState({ timing: timey });
   }, [prayerTimes, next]);
+
   console.log(timey);
   const convertTo12HourFormat = (time: string) => {
     const [hours, minutes] = time.split(":").map(Number);

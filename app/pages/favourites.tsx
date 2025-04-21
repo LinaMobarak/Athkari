@@ -14,6 +14,7 @@ import { ThemedView } from "@/components/ThemedView";
 import { Stack } from "expo-router";
 import ShareFunction from "@/app/functions/ShareFunction";
 import { Colors } from "@/constants/Colors";
+import { Adan } from "@/app/functions/popAdan";
 
 export default function Favourites() {
   const theme = useColorScheme() ?? "light";
@@ -106,6 +107,7 @@ export default function Favourites() {
           },
         }}
       />
+      <Adan />
       <ThemedView style={styles.container}>
         {favourites.length === 0 ? (
           <ThemedView
