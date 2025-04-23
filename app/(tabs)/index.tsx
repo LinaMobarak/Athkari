@@ -7,19 +7,17 @@ import {
   Platform,
 } from "react-native";
 import ParallaxScrollView from "../../components/ParallaxScrollView";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import Feather from "@expo/vector-icons/Feather";
 import { Stack, useRouter } from "expo-router";
 import { ThemedView } from "@/components/ThemedView";
 import { useTheme } from "@react-navigation/native";
-import CountDown from "react-native-countdown-component";
 import { Colors } from "@/constants/Colors";
 import { ThemedText } from "@/components/ThemedText";
 import { BlurView } from "expo-blur";
 import { useFonts } from "expo-font";
 import { LogBox } from "react-native";
 import { Appearance } from "react-native";
-import useFavouriteStore from "@/app/stores/store";
 import { registerForPushNotifications } from "@/app/functions/notification";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import * as Notifications from "expo-notifications";
@@ -28,7 +26,8 @@ import { checkIf12HoursPassed } from "@/app/functions/resetCounter";
 import ModalAdan from "@/app/functions/adan";
 import Modal from "react-native-modal";
 import { getTimeDiffInSeconds } from "../functions/getNextTime";
-
+import { CustomCountdown } from "@/app/functions/countdown";
+console.log(CustomCountdown);
 const prayerNamesInArabic = {
   Fajr: "الفجر",
   Sunrise: "الشروق",
@@ -56,29 +55,63 @@ export default function HomeScreen() {
     Uthmani: require("@/assets/fonts/UthmanicHafs.otf"),
   });
 
-  const [loadingPrayers, setLoadingPrayers] = useState(true);
-  const [loadingHijri, setLoadingHijri] = useState(true);
-  const loading = loadingPrayers || loadingHijri;
   const [date, setDate] = useState(new Date());
+  const [hijriDate, setHijriDate] = useState("");
+  const [dateFlag, setDateFlag] = useState(false);
+
   const [showPicker, setShowPicker] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [theme, setTheme] = useState(Appearance.getColorScheme());
   const [newIcon, setNewIcon] = useState(false);
-  const [selectedNavigation, setSelectedNavigation] = useState(0);
-  const [hijriDate, setHijriDate] = useState("");
-  const [datey, setDatey] = useState(false);
-  const [prayerTimes, setPrayerTimes] = useState(null);
-  const [next, setNext] = useState("");
-  const [timey, setTimey] = useState<number>(0);
 
+  const [prayerTimes, setPrayerTimes] = useState<any>(null);
+  const [next, setNext] = useState<string>("");
+  const [timey, setTimey] = useState<number>(0);
   const [showAdhan, setShowAdhan] = useState(false);
 
   const router = useRouter();
 
-  const selectNavigation = (index: number) => {
-    setSelectedNavigation(index);
-    // router.push(`./pages/name=${navigationMenu[index].route}`);
+  const getPrayingTime = async (date: Date) => {
+    try {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== "granted") {
+        alert("Permission to access location was denied");
+        return;
+      }
+      const loc = await Location.getCurrentPositionAsync({});
+      const lat = loc.coords.latitude;
+      const long = loc.coords.longitude;
+      const method = 4;
+
+      const day = date.getDate().toString().padStart(2, "0");
+      const month = (date.getMonth() + 1).toString().padStart(2, "0");
+      const year = date.getFullYear();
+
+      const response = await fetch(
+        `https://api.aladhan.com/v1/timings/${day}-${month}-${year}?latitude=${lat}&longitude=${long}&method=${method}`
+      );
+      const json = await response.json();
+      const timings = json.data.timings;
+      setPrayerTimes(timings);
+      console.log("Prayer Times : ", prayerTimes);
+
+      const nextPrayer = getNextPrayer(timings);
+      console.log("NEXT", nextPrayer);
+
+      setNext(nextPrayer.name);
+      console.log(next);
+
+      const countdownTimer = getTimeDiffInSeconds(nextPrayer.time);
+      setTimey(countdownTimer);
+      console.log(timey);
+    } catch (error) {
+      console.log(error);
+    }
   };
+
+  useEffect(() => {
+    getPrayingTime(date);
+  }, [date]);
 
   const getNextPrayer = (prayerTimes: Record<string, string>) => {
     const now = new Date();
@@ -98,60 +131,16 @@ export default function HomeScreen() {
       .filter((prayer) =>
         Object.keys(prayerNamesInArabic).includes(prayer.name)
       )
-      .find((p) => p.datetime > now);
+      .find((p) => {
+        const prayerTime = new Date(p.datetime).getTime();
+        return prayerTime - now.getTime() > 0;
+      });
+
+    console.log("next : ", next);
 
     return next || nextPray[0];
   };
 
-  useEffect(() => {
-    const getPrayingTime = async (date: Date) => {
-      setLoadingPrayers(true);
-      try {
-        let { status } = await Location.requestForegroundPermissionsAsync();
-        if (status !== "granted") {
-          alert("Permission to access location was denied");
-          return;
-        }
-        const method = 4;
-        const loc = await Location.getCurrentPositionAsync({});
-        const lat = loc.coords.latitude;
-        const long = loc.coords.longitude;
-
-        const day = date.getDate().toString().padStart(2, "0");
-        const month = (date.getMonth() + 1).toString().padStart(2, "0");
-        const year = date.getFullYear();
-
-        const response = await fetch(
-          `https://api.aladhan.com/v1/timings/${day}-${month}-${year}?latitude=${lat}&longitude=${long}&method=${method}`
-        );
-        const json = await response.json();
-        const timings = json.data.timings;
-        setPrayerTimes(timings);
-      } catch (error) {
-        console.log(error);
-      } finally {
-        setLoadingPrayers(false);
-      }
-    };
-
-    getPrayingTime(date);
-  }, [date]);
-
-  useEffect(() => {
-    if (!prayerTimes) return;
-    const nextt = getNextPrayer(prayerTimes);
-    if (!nextt || !nextt.datetime) return;
-    setNext(nextt.name);
-  }, [prayerTimes, date]);
-
-  useEffect(() => {
-    if (!prayerTimes || !next) return;
-    const nextPrayer = getNextPrayer(prayerTimes);
-    setTimey(getTimeDiffInSeconds(nextPrayer.time));
-    useFavouriteStore.setState({ timing: timey });
-  }, [prayerTimes, next]);
-
-  console.log(timey);
   const convertTo12HourFormat = (time: string) => {
     const [hours, minutes] = time.split(":").map(Number);
     const period = hours >= 12 ? "م" : "ص";
@@ -159,13 +148,13 @@ export default function HomeScreen() {
 
     return `${convertedHours}:${minutes.toString().padStart(2, "0")} ${period}`;
   };
+
   useEffect(() => {
     checkIf12HoursPassed();
   }, []);
 
   useEffect(() => {
     const getHijriDateInArabic = async () => {
-      setLoadingHijri(false);
       try {
         const day = date.getDate().toString().padStart(2, "0");
         const month = (date.getMonth() + 1).toString().padStart(2, "0");
@@ -178,17 +167,17 @@ export default function HomeScreen() {
         const json = await response.json();
         const hijri = json.data.hijri;
         setHijriDate(
-          datey ? formattedDate : `${hijri.day} ${hijri.month.ar} ${hijri.year}`
+          dateFlag
+            ? formattedDate
+            : `${hijri.day} ${hijri.month.ar} ${hijri.year}`
         );
       } catch (error) {
         console.error("Error fetching Hijri date in Arabic:", error);
-      } finally {
-        setLoadingHijri(false);
       }
     };
 
     getHijriDateInArabic();
-  }, [date, datey]);
+  }, [date, dateFlag]);
 
   const onChange = (event: any, selectedDate?: Date) => {
     if (selectedDate) {
@@ -211,14 +200,6 @@ export default function HomeScreen() {
 
   LogBox.ignoreLogs(["AppState.removeEventListener"]);
 
-  // if (loading) {
-  //   return (
-  //     <View style={styles.centered}>
-  //       <ActivityIndicator size="large" color="white" />
-  //     </View>
-  //   );
-  // }
-
   return (
     <>
       <Stack.Screen
@@ -237,7 +218,7 @@ export default function HomeScreen() {
             <TouchableOpacity onPress={toggleTheme}>
               <Feather
                 name={newIcon ? "moon" : "sun"}
-                size={24}
+                size={20}
                 color="white"
                 style={styles.settingsIcon}
               />
@@ -250,7 +231,7 @@ export default function HomeScreen() {
             >
               <Feather
                 name="heart"
-                size={24}
+                size={20}
                 color="white"
                 style={styles.heartIcon}
               />
@@ -263,7 +244,7 @@ export default function HomeScreen() {
             <TouchableOpacity
               style={styles.date}
               onPress={() => {
-                setDatey(!datey);
+                setDateFlag(!dateFlag);
               }}
             >
               <View>
@@ -278,7 +259,7 @@ export default function HomeScreen() {
                 setIsModalVisible(!isModalVisible);
               }}
             >
-              <Feather name="calendar" size={20} color="white" />
+              <Feather name="calendar" size={16} color="white" />
             </TouchableOpacity>
 
             {Platform.OS === "ios" ? (
@@ -319,7 +300,7 @@ export default function HomeScreen() {
               }}
               style={{ position: "absolute", bottom: 15, right: 15 }}
             >
-              <Feather name="refresh-cw" size={20} color="white" />
+              <Feather name="refresh-cw" size={16} color="white" />
             </TouchableOpacity>
           </ThemedView>
         }
@@ -356,43 +337,18 @@ export default function HomeScreen() {
             <View
               style={{
                 marginTop: 10,
-                // backgroundColor: colors.background,
                 borderRadius: 10,
                 padding: 5,
                 width: "100%",
               }}
             >
-              <CountDown
-                size={10}
+              <CustomCountdown
                 until={timey}
                 onFinish={() => {
+                  setDate(new Date());
+
                   setShowAdhan(true);
-                  if (!showAdhan) setDate(new Date());
                 }}
-                digitStyle={{
-                  // backgroundColor: "#FFF",
-                  borderWidth: 1,
-                  borderColor: colors.border,
-                  width: "50%",
-                  marginHorizontal: -15,
-                }}
-                digitTxtStyle={{
-                  color: colors.text,
-                  fontFamily: "Cairo",
-                  fontSize: 10,
-                }}
-                timeLabelStyle={{
-                  color: colors.text,
-                  fontWeight: "bold",
-                  fontFamily: "Cairo",
-                  fontSize: 8,
-                }}
-                separatorStyle={{
-                  color: colors.text,
-                }}
-                timeToShow={["H", "M", "S"]}
-                timeLabels={{ h: "ساعة", m: "دقيقة", s: "ثانية" }}
-                showSeparator
               />
 
               {showAdhan && <ModalAdan onClose={() => setShowAdhan(false)} />}
@@ -454,6 +410,7 @@ const styles = StyleSheet.create({
     gap: 8,
     marginBottom: 0,
   },
+
   imgg: {
     height: "100%",
     width: "100%",
@@ -469,6 +426,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     direction: "rtl",
   },
+
   containerPrayers: {
     width: "48%",
     marginBottom: 10,
@@ -478,7 +436,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderWidth: 1,
     borderColor: Colors.primary,
-
     shadowColor: Colors.primary,
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 5,
@@ -535,6 +492,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     borderBottomColor: Colors.primary,
     borderRadius: 20,
+    width: "80%",
+    marginRight: "auto",
+    marginLeft: "auto",
   },
   textOfDate: {
     fontFamily: "Cairo",
