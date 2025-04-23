@@ -1,10 +1,7 @@
 import { useEffect, useState } from "react";
 import { View, StyleSheet } from "react-native";
 import { ThemedText } from "@/components/ThemedText";
-import { Colors } from "@/constants/Colors";
-import { useTheme } from "@react-navigation/native";
 
-// export const { colors } = useTheme();
 export const CustomCountdown = ({
   until,
   onFinish,

@@ -18,7 +18,7 @@ import { BlurView } from "expo-blur";
 import { useFonts } from "expo-font";
 import { LogBox } from "react-native";
 import { Appearance } from "react-native";
-import { registerForPushNotifications } from "@/app/functions/notification";
+import { scheduleNotificationAfter } from "@/app/functions/notification";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import * as Notifications from "expo-notifications";
 import * as Location from "expo-location";
@@ -27,6 +27,7 @@ import ModalAdan from "@/app/functions/adan";
 import Modal from "react-native-modal";
 import { getTimeDiffInSeconds } from "../functions/getNextTime";
 import { CustomCountdown } from "@/app/functions/countdown";
+
 console.log(CustomCountdown);
 const prayerNamesInArabic = {
   Fajr: "الفجر",
@@ -92,18 +93,19 @@ export default function HomeScreen() {
       );
       const json = await response.json();
       const timings = json.data.timings;
-      setPrayerTimes(timings);
-      console.log("Prayer Times : ", prayerTimes);
 
       const nextPrayer = getNextPrayer(timings);
-      console.log("NEXT", nextPrayer);
-
       setNext(nextPrayer.name);
-      console.log(next);
 
       const countdownTimer = getTimeDiffInSeconds(nextPrayer.time);
       setTimey(countdownTimer);
-      console.log(timey);
+
+      console.log("Fetched Prayer Times:", timings);
+      console.log("Next Prayer:", nextPrayer.name, "at", nextPrayer.time);
+      console.log("Time Left (sec):", countdownTimer);
+
+      // Only update state at the end
+      setPrayerTimes(timings);
     } catch (error) {
       console.log(error);
     }
@@ -112,6 +114,14 @@ export default function HomeScreen() {
   useEffect(() => {
     getPrayingTime(date);
   }, [date]);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      scheduleNotificationAfter();
+    }, 60000);
+
+    return () => clearInterval(interval);
+  }, []);
 
   const getNextPrayer = (prayerTimes: Record<string, string>) => {
     const now = new Date();
@@ -194,9 +204,9 @@ export default function HomeScreen() {
     Appearance.setColorScheme(newTheme);
   };
 
-  useEffect(() => {
-    registerForPushNotifications();
-  }, []);
+  // useEffect(() => {
+  //   registerForPushNotifications();
+  // }, []);
 
   LogBox.ignoreLogs(["AppState.removeEventListener"]);
 
@@ -346,7 +356,6 @@ export default function HomeScreen() {
                 until={timey}
                 onFinish={() => {
                   setDate(new Date());
-
                   setShowAdhan(true);
                 }}
               />

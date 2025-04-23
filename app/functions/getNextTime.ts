@@ -6,9 +6,9 @@ export function getTimeDiffInSeconds(nextPrayerTime: string): number {
     target.setHours(hours, minutes, 0, 0);
 
     console.log('target : ',target)
-    if (target < now) {
-      target.setDate(target.getDate() + 1);
-    }
+    // if (target < now) {
+    //   target.setDate(target.getDate() + 1);
+    // }
   
     const diffInMs = target.getTime() - now.getTime();
     console.log('diffInMs : ', Math.floor(diffInMs / 1000));
