@@ -54,15 +54,6 @@ export default function TabLayout() {
             ),
           }}
         />
-        <Tabs.Screen
-          name="favourites"
-          options={{
-            title: "المفضلة",
-            tabBarIcon: ({ color }) => (
-              <MaterialCommunityIcons size={28} name="heart" color={color} />
-            ),
-          }}
-        />
 
         <Tabs.Screen
           name="navigationMenu"
