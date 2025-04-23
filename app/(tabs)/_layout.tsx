@@ -12,7 +12,7 @@ export default function TabLayout() {
   const colorScheme = useColorScheme();
   return (
     <>
-      <Adan />
+      {/* <Adan /> */}
       <Tabs
         screenOptions={{
           tabBarActiveTintColor: Colors[colorScheme ?? "light"].tint,

@@ -15,20 +15,24 @@ export async function scheduleNotificationAfter() {
     return;
   }
 
-
   Notifications.setNotificationHandler({
     handleNotification: async () => ({
       shouldShowAlert: true,
-      shouldPlaySound: false,
+      shouldPlaySound: false, 
       shouldSetBadge: false
     })
   })
+
   await Notifications.scheduleNotificationAsync({
     content: {
-      body: "لا حول ولا قوة الا بالله العلي العظيم "
+      title: "📿 ذكر",
+      body: "لا حول ولا قوة الا بالله العلي العظيم",
+      sound: true,
     },
     trigger: {
-      seconds: 60,
+      seconds: 10,
+      repeats: false,
     },
   });
+
 }
