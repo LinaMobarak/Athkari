@@ -7,9 +7,20 @@ import { Colors } from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { Adan } from "@/app/functions/popAdan";
+import { useFonts } from "expo-font";
+
 export default function TabLayout() {
   const url = require("../../assets/images/kaabaImage-removebg-preview.png");
   const colorScheme = useColorScheme();
+
+  useFonts({
+    Cairo: require("@/assets/fonts/Cairo.ttf"),
+    Uthmani: require("@/assets/fonts/UthmanicHafs.otf"),
+    // Naksh: require("@/assets/fonts/Nakshasd.ttf"),
+    Amiri: require("@/assets/fonts/Amiri-Regular.ttf"),
+    new: require("@/assets/fonts/ScheherazadeNew.ttf"),
+  });
+
   return (
     <>
       <Adan />
