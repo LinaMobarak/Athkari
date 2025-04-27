@@ -1,142 +1,129 @@
-import React, { useEffect, useState } from 'react';
-import { View, FlatList, Text, TouchableOpacity, ActivityIndicator, StyleSheet } from 'react-native';
-import { Stack, router } from 'expo-router';
+import { FlatList, Text, TouchableOpacity, View, StyleSheet } from 'react-native';
+import { Stack, useNavigation, useRouter } from 'expo-router';
+import { ThemedText } from '@/components/ThemedText';
+import QuranCompleteFinalFinal from '@/assets/QuranCompleteFinalFinal.json';
+import type { Ayah, FullQuran } from "../stores/quranJson";
 import { Colors } from '@/constants/Colors';
+import { DarkTheme } from '@react-navigation/native';
 
-type Surah = {
-        number: number;
-        name: string;
-        revelationType: string;
-        numberOfAyahs: number;
-    };
+const fullQuran = QuranCompleteFinalFinal as FullQuran
+// const ayah = quranJson as Ayah
+// export const surahs = fullQuran.data.surahs
+// export const quranTanzil = TheQuran.filter((item) => item.arabic1)
+export const surahs = fullQuran.data.surahs
 
-    const englishToArabic: { [key: string]: string } = {
-    Meccan: 'مكية',
-    Medinan: 'مدنية',
-    };
+const numToArb: { [key: number]: string } = {
+    0: '٠', 1: '١', 2: '٢', 3: '٣', 4: '٤',
+    5: '٥', 6: '٦', 7: '٧', 8: '٨', 9: '٩',
+}
 
-    const numToArb: { [key: number]: string } = {
-    0: '۰', 1: '۱', 2: '۲', 3: '۳', 4: '٤',
-    5: '٥', 6: '٦', 7: '٧', 8: '۸', 9: '۹',
-    };
-
-    function convertToArabicNumerals(num: number): string {
+function convertToArabicNumerals(num: number): string {
     return num.toString().split('').map((d) => numToArb[parseInt(d)]).join('');
+}
+
+// export const ayat = ayah
+
+export default function SurahsList() {
+    const route = useRouter()
+    const navigation = useNavigation();
+    const englishToArabic: { [key: string]: string } = {
+        Meccan: 'مكية',
+        Medinan: 'مدنية',
     }
+    
+    // const numToArb: { [key: number]: string } = {
+    //     0: '۰', 1: '۱', 2: '۲', 3: '۳', 4: '٤',
+    //     5: '٥', 6: '٦', 7: '٧', 8: '۸', 9: '۹',
+    // }
 
-    export default function SurahList() {
-    const [surahs, setSurahs] = useState<Surah[]>([]);
-    const [loading, setLoading] = useState(true);
-
-    useEffect(() => {
-        fetch('https://api.alquran.cloud/v1/surah')
-        .then((res) => res.json())
-        .then((data) => setSurahs(data.data))
-        .catch(console.error)
-        .finally(() => setLoading(false));
-    }, []);
-
-    if (loading) {
-        return <ActivityIndicator size="large" style={ styles.loadingIcon } />;
-    }
-
-    return (
+    // function convertToArabicNumerals(num: number): string {
+    //     return num.toString().split('').map((d) => numToArb[parseInt(d)]).join('');
+    // }
+    return(
         <>
         <Stack.Screen
-            options={{ title: 'القرآن الكريم', headerTitleAlign: 'center' }}
+        options={{
+            headerTitle: "القرآن الكريم",
+            headerTitleAlign: "center",
+            headerBackButtonDisplayMode: "minimal",
+            headerTitleStyle: {
+            fontWeight: "bold",
+            fontSize: 16,
+            fontFamily: "Cairo",
+            },
+        }}
         />
+            <View style={{ margin: 10, }}>
         <FlatList
-            contentContainerStyle={{ padding: 15 }}
             data={surahs}
             keyExtractor={(item) => item.number.toString()}
             numColumns={2}
             columnWrapperStyle={{ justifyContent: 'space-between', flexDirection: 'row-reverse' }}
             renderItem={({ item }) => (
-            <TouchableOpacity
+                <TouchableOpacity
+                
+                onPress={() => route.push(`./${item.number}`)}
+                
                 style={styles.surahItem}
-                onPress={() => router.push(`../pages/${item.number}`)}
-            >
-                <View style={styles.surahNumber}>
-                <Text style={styles.surahNumberText}>{convertToArabicNumerals(item.number)}</Text>
-                </View>
-                <View>
-                <Text style={styles.surahText}>{item.name}</Text>
-                <Text style={styles.surahDetails}>
-                    {englishToArabic[item.revelationType]} - عدد آياتها: {convertToArabicNumerals(item.numberOfAyahs)}
-                </Text>
-                </View>
-            </TouchableOpacity>
+                >
+                    <View style={styles.surahNumber}>
+                        <Text style={styles.surahNumberText}>{convertToArabicNumerals(item.number)}</Text>
+                    </View>
+                    <View>
+                        <Text style={styles.surahText}>{item.name}</Text>
+                        <Text style={styles.surahDetails}>
+                        {englishToArabic[item.revelationType]} - عدد آياتها: {convertToArabicNumerals(item.ayahs.length)}
+                        </Text>
+                        </View>
+                </TouchableOpacity>
             )}
-        />
-        </>
-    );
-    }
+            />
+            </View>
+    </>
+    )
+}
 
 const styles = StyleSheet.create({
     surahItem: {
         backgroundColor: '#000',
-        // backgroundColor: Colors.primary,
-        
         width: '48%',
         paddingVertical: 20,
         paddingHorizontal: 10,
         justifyContent: 'center',
         alignItems: 'center',
         marginBottom: 15,
-
         borderRadius: 12,
-        // elevation: 4, // Android shadow
-        // shadowColor: '#000', // iOS shadow
-        // shadowOffset: { width: 0, height: 2 },
-        // shadowOpacity: 0.1,
-        // shadowRadius: 5,
-        // overflow: 'hidden',
-    },
-    surahNumber: {
-        backgroundColor: Colors.secondaryColor,
-        // backgroundColor: '#d1e7dd',
-        color: '#000',
-        // color: '#0f5132',
-        paddingVertical: 4,
-        paddingHorizontal: 10,
+      },
+      surahNumber: {
+        backgroundColor: '#d1e7dd',
+        padding: 5,
         borderRadius: 20,
+        borderColor: '#000',
+        borderWidth: 1,
         position: 'absolute',
         top: 0,
         right: 0,
-        width: '20%',
-        height: '30%',
-        // textAlign: 'center',
+        width: '25%',
+        height: '25%',
         alignItems: 'center',
         justifyContent: 'center',
-        // overflow: 'hidden',
-    },
-    surahNumberText: {
+      },
+      surahNumberText: {
         fontSize: 12,
         fontWeight: 'bold',
         color: '#000',
-        position: 'absolute',
-        // top: 0,
-        // left: 0,
-    },
-    surahText: {
-        fontSize: 20,
+        fontFamily: 'Cairo',
+      },
+      surahText: {
+        fontSize: 26,
+        letterSpacing: 1,
         textAlign: 'center',
-        fontWeight: 'bold',
-        // fontFamily: 'Cairo',
-        // color: '#111',
-        color: Colors.secondaryColor,
+        fontFamily: 'Uthmani',
+        color: '#d1e7dd',
         marginBottom: 4,
-    },
-    surahDetails: {
-        // fontSize: 14,
+      },
+      surahDetails: {
         color: '#777',
         fontFamily: 'Cairo',
-        textAlign: 'center',
-    },
-    loadingIcon: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center'
-    },
-});
-
+      },
+    });

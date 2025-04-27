@@ -25,11 +25,10 @@ export default function NavigationMenu() {
           },
         }}
       />
-      <Adan />
       <View style={styles.container}>
         <TouchableOpacity
           style={styles.containerAlQuran}
-          onPress={() => route.navigate("/pages/alQuran2")}
+          onPress={() => route.navigate("/pages/alQuran")}
         >
           <MaterialCommunityIcons
             color={colors.text}
