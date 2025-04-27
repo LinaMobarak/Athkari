@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "إطمئن",
-    "slug": "إطمئن",
+    "slug": "itma2in",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/إطمئن-فاينل.jpg",
@@ -10,16 +10,25 @@
     "newArchEnabled": true,
     "ios": {
       "infoPlist": {
-      "NSMicrophoneUsageDescription": "This app uses the microphone to manage audio playback.",
-      "UIBackgroundModes": ["audio"]
-    },
+        "NSMicrophoneUsageDescription": "This app uses the microphone to manage audio playback.",
+        "UIBackgroundModes": [
+          "audio"
+        ]
+      },
       "supportsTablet": true
     },
     "android": {
+    
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/إطمئن-فاينل.jpg",
         "backgroundColor": "#f9fbf8"
-      }
+      },
+      "permissions": [
+        "android.permission.RECORD_AUDIO",
+        "android.permission.MODIFY_AUDIO_SETTINGS"
+      ],
+      "package": "com.salem_alazzawi.itma2in",
+      "useNextNotificationsApi": true
     },
     "web": {
       "bundler": "metro",
@@ -27,19 +36,12 @@
       "favicon": "./assets/images/favicon.png"
     },
     "splash": {
-      "image": "./assets/images/إطمئن-فاينل.jpg", 
+      "image": "./assets/images/إطمئن-فاينل.jpg",
       "imageWidth": 200,
-      "resizeMode": "cover",                    
-      "backgroundColor": "#f8faf7"              
+      "resizeMode": "cover",
+      "backgroundColor": "#f8faf7"
     },
     "plugins": [
-      [
-        "expo-font",
-        {
-          "fonts": "/assets/fonts/Lateef-Bold.ttf"
-
-        }
-      ],
       [
         "expo-av",
         {
@@ -50,14 +52,30 @@
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/إطمئن-فاينل.jpg", 
+          "image": "./assets/images/إطمئن-فاينل.jpg",
           "imageWidth": 200,
           "resizeMode": "cover"
+        }
+      ],
+      [
+        "expo-notifications",
+        {
+          "color": "#ffffff",
+          "defaultChannel": "default",
+          "enableBackgroundRemoteNotifications": true
         }
       ]
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "a3da232b-9ea4-4e41-9951-bd2d067fdd75"
+      }
     }
   }
 }

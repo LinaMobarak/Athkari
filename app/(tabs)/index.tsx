@@ -19,6 +19,10 @@ import { useFonts } from "expo-font";
 import { LogBox } from "react-native";
 import { Appearance } from "react-native";
 import { scheduleNotificationAfter } from "@/app/functions/notification";
+import {
+  setupNotifications,
+  sendLocalNotification,
+} from "@/app/functions/fullNotification";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import * as Notifications from "expo-notifications";
 import * as Location from "expo-location";
@@ -39,7 +43,7 @@ const prayerNamesInArabic = {
   Midnight: "منتصف الليل",
   Lastthird: "الثلث الاخير",
 };
-const img = require("@/assets/images/HeaderImage.jpeg");
+const img = require("../../assets/images/lllllllllllllllllllllllllllllinaaaaaaaaaaaaa.jpg");
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -116,8 +120,11 @@ export default function HomeScreen() {
   }, [date]);
 
   useEffect(() => {
+    setupNotifications();
+  }, []);
+  useEffect(() => {
     const interval = setInterval(() => {
-      scheduleNotificationAfter();
+      sendLocalNotification();
     }, 60000);
 
     return () => clearInterval(interval);
@@ -423,7 +430,7 @@ const styles = StyleSheet.create({
   imgg: {
     height: "100%",
     width: "100%",
-    bottom: 0,
+    bottom: -5,
     left: 0,
     position: "absolute",
   },
@@ -493,7 +500,7 @@ const styles = StyleSheet.create({
     left: 0,
     width: "100%",
     height: 50,
-    borderTopColor: "#B0C4A1",
+    borderTopColor: "#c17387",
   },
   date: {
     marginTop: 205,

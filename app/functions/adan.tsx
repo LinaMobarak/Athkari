@@ -84,7 +84,9 @@ export default function ModalAdan({ onClose }: ModalAdanProps) {
             marginBottom: 20,
           }}
         >
-          حان الآن موعد الآذان
+          من قال حين يسمع النداء: اللهم رب هذه الدعوة التامة، والصلاة القائمة،
+          آت محمدًا الوسيلة، والفضيلة، وابعثه مقامًا محمودًا الذي وعدته إلا حلت
+          له شفاعتي يوم القيامة
         </Text>
 
         <TouchableOpacity

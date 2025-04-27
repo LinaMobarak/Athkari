@@ -6,6 +6,7 @@ import { Stack, useRouter } from "expo-router";
 import { TouchableOpacity, View, StyleSheet } from "react-native";
 import { Colors } from "@/constants/Colors";
 import { useTheme } from "@react-navigation/native";
+import { Adan } from "../functions/popAdan";
 
 export default function NavigationMenu() {
   const { colors } = useTheme();

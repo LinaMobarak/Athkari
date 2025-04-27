@@ -5,10 +5,10 @@
 
 const tintColorLight = '#000 ';
 const tintColorDark = '#fff';
-const primarycolor= '#9caf88';
+const primarycolor= '#826387';
 const secondColor= 'rgb(255, 255, 255)';
-const mainColor= '#3c7280';
-const scndryColor= '#B0C4A1';
+const mainColor= '#b588a7';
+const scndryColor= '#b588a7';
 
 export const Colors = {
   light: {
