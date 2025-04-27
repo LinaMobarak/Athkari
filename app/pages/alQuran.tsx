@@ -22,8 +22,6 @@ function convertToArabicNumerals(num: number): string {
     return num.toString().split('').map((d) => numToArb[parseInt(d)]).join('');
 }
 
-// export const ayat = ayah
-
 export default function SurahsList() {
     const route = useRouter()
     const navigation = useNavigation();

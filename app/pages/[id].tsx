@@ -59,6 +59,7 @@ export default function SurahPage() {
       });
     }
   };
+  // debugging
 
   const handleRemoveBookmark = (surahId: number) => {
     removeBookmark(surahId);
