@@ -2,7 +2,7 @@ import { FlatList, Text, TouchableOpacity, View, StyleSheet } from 'react-native
 import { Stack, useNavigation, useRouter } from 'expo-router';
 import { ThemedText } from '@/components/ThemedText';
 import QuranCompleteFinalFinal from '@/assets/QuranCompleteFinalFinal.json';
-import type { Ayah, FullQuran } from "../stores/quranJson";
+import type { Ayah, FullQuran } from "../types/quranJson";
 import { Colors } from '@/constants/Colors';
 import { DarkTheme } from '@react-navigation/native';
 
