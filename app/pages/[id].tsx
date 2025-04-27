@@ -1,9 +1,10 @@
 import { Stack, useLocalSearchParams } from 'expo-router';
 import { Text, ScrollView, View, StyleSheet, Button } from 'react-native';
 import { useTheme } from "@react-navigation/native";
-import QuranData from '@/assets/QuranCompleteFinalFinal.json';
 import { useEffect, useState } from 'react';
-import { ThemedText } from '@/components/ThemedText';
+import QuranData from '@/assets/QuranCompleteFinalFinal.json';
+import TheQuran from '@/assets/TheQuran.json';
+import { surahs } from './alQuran';
 
 const numToArb = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
 
@@ -12,12 +13,17 @@ const toArabic = (n: number) => n.toString().split('').map(d => numToArb[+d]).jo
 const getPageAyahs = (page: number) => {
   return QuranData.data.surahs
     .flatMap((surah) => 
-      surah.ayahs.map((ayah: any) => ({
-        text: ayah.text,
-        numberInSurah: ayah.numberInSurah,
-        surahName: surah.name,
-        page: ayah.page,
-      }))
+      surah.ayahs.map((ayah: any) => {
+        const correspondingSurah = TheQuran.find((qSurah: any) => qSurah.surahNo === surah.number);
+        const arabicText = correspondingSurah?.arabic1[ayah.numberInSurah - 1] || ayah.text;
+
+        return {
+          text: arabicText,
+          numberInSurah: ayah.numberInSurah,
+          surahName: surah.name,
+          page: ayah.page,
+        };
+      })
     )
     .filter((ayah) => ayah.page === page);
 };
@@ -35,17 +41,27 @@ export default function SurahPage() {
 
   const [page, setPage] = useState(() => getSurahFirstPage(surahNo) || 1);
   const [pageAyahs, setPageAyahs] = useState(() => getPageAyahs(getSurahFirstPage(surahNo) || 1));
-  const [surahName, setSurahName] = useState("")
   
-  const surah = QuranData.data.surahs.find(s => s.number === surahNo);
-  const ayaty = surah?.ayahs
+  const surah = QuranData.data.surahs.find(s => s.number === surahNo);  
+  const arabic1 = TheQuran.find(q => q.surahNo === surahNo)?.arabic1;
+  
+  const updatePageAyahs = (page: number) => {
+    const ayahs = getPageAyahs(page);
+    return ayahs.map((ayah, index) => {
+      // Ensure the Surah name is only added to the first Ayah of the Surah
+      if (ayah.numberInSurah === 1) {
+        const surah = QuranData.data.surahs.find(s => s.name === ayah.surahName);
+        return {
+          ...ayah,
+          surahName: surah?.name || '', // Add Surah name to the first Ayah
+        };
+      }
+      return ayah;
+    });
+  };
   
   useEffect(() => {
-    if (ayaty && ayaty[0]?.numberInSurah === 1) {
-    setSurahName(surah?.name || "");
-    }
-    
-    setPageAyahs(getPageAyahs(page));
+    setPageAyahs(updatePageAyahs(page));
   }, [page]);
 
   const handleNextPage = () => setPage(prev => prev + 1);
@@ -60,47 +76,43 @@ export default function SurahPage() {
   }
 
   return (
+    <>
+    <Stack.Screen
+    options={{
+        headerTitle: "القرآن الكريم",
+        
+    }}
+    />
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContainer}>
-      
-        {/* Display Surah name only on the first page of the Surah */}
-        {page === getSurahFirstPage(surahNo) && (
-          <>
-          <Text style={styles.surahName}>{surahName}</Text>
-          {surahNo !== 9 && ( // Do not display for Surah Al-Tawbah
-            <Text style={styles.bismillah}>بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</Text>
-          )}
-          </>
-        )}
 
-        <Text style={styles.ayahsLine}>
-          {pageAyahs.map((ayah, index) => (
-            <Text key={index}>
-              {ayah.text} {toArabic(ayah.numberInSurah)}{' '}
-            </Text>
-          ))}
-        </Text>
+      <Text style={styles.ayahsLine}>
+        {pageAyahs.map((ayah, index) => (
+          <Text key={index}>
+            {ayah.numberInSurah === 1 && ayah.surahName && (
+              <Text style={styles.surahName}>
+                {ayah.surahName}{' '}
+              </Text>
+            )}
+            {ayah.text} {toArabic(ayah.numberInSurah)}{' '}
+          </Text>
+        ))}
+      </Text>
       </ScrollView>
 
       <View style={styles.pagination}>
         <Button color="#000" title="السابق" onPress={handlePreviousPage} disabled={page <= 1} />
         <Text style={{ fontSize: 18, color: '#000', marginHorizontal: 10 }}>{toArabic(page)}</Text>
-        <Button color="#000" title="التالي" onPress={handleNextPage} />
+        <Button color="#000" title="التالي" onPress={handleNextPage} disabled={page >= 604} />
       </View>
     </View>
+    </>
   );
 }
 
 
 
 const styles = StyleSheet.create({
-  bismillah: {
-    fontSize: 24,
-    fontFamily: 'Uthmani',
-    color: '#000',
-    textAlign: 'center',
-    marginBottom: 20,
-  },
   container: {
     flex: 1,
     backgroundColor: '#fff',
@@ -121,7 +133,7 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   surahName: {
-    fontSize: 28,
+    fontSize: 32,
     fontWeight: 'bold',
     fontFamily: 'Uthmani',
     color: '#000',
