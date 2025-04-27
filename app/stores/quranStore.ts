@@ -1,33 +1,23 @@
-// import { create } from 'zustand';
-// import { persist } from 'zustand/middleware';
-// import AsyncStorage from '@react-native-async-storage/async-storage';
+import { create } from 'zustand';
 
-// interface SurahInfo {
-//     surahId: number;
-//     surahName: string;
-//     revelationType: string;
-// }
+interface QuranStore {
+  lastRead: number | null;
+  bookmarks: Array<{ surahId: number; surahName: string; revelationType: string; text: string }>;
+  setLastRead: (ayah: number) => void;
+  addBookmark: (bookmark: { surahId: number; surahName: string; revelationType: string; text: string }) => void;
+  removeBookmark: (surahId: number) => void;
+}
 
-// interface QuranStore {
-//     lastRead: SurahInfo | null;
-//     setLastRead: (surahInfo: SurahInfo) => void;
-//     clearLastRead: () => void;
-// }
+const useQuranStore = create<QuranStore>((set) => ({
+  lastRead: null,
+  bookmarks: [],
+  setLastRead: (ayah) => set({ lastRead: ayah }),
+  addBookmark: (bookmark) =>
+    set((state) => ({ bookmarks: [...state.bookmarks, bookmark] })),
+  removeBookmark: (surahId) =>
+    set((state) => ({
+      bookmarks: state.bookmarks.filter((b) => b.surahId !== surahId),
+    })),
+}));
 
-// const useQuranStore = create<QuranStore>()(
-//     persist(
-//         (set) => ({
-//             lastRead: null,
-
-//             setLastRead: (surahInfo: SurahInfo) => set({ lastRead: surahInfo }),
-
-//             clearLastRead: () => set({ lastRead: null }),
-//         }),
-//         {
-//             name: 'quran-storage',
-//             storage: AsyncStorage,
-//         }
-//     )
-// );
-
-// export default useQuranStore;
+export default useQuranStore;
