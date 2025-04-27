@@ -80,7 +80,7 @@ export default function SurahPage() {
     <Stack.Screen
     options={{
         headerTitle: "القرآن الكريم",
-        
+        // a
     }}
     />
     <View style={styles.container}>

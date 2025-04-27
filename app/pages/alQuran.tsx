@@ -39,6 +39,8 @@ export default function SurahsList() {
     // function convertToArabicNumerals(num: number): string {
     //     return num.toString().split('').map((d) => numToArb[parseInt(d)]).join('');
     // }
+
+    // debugger;
     return(
         <>
         <Stack.Screen
