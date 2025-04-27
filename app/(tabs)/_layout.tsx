@@ -17,13 +17,13 @@ export default function TabLayout() {
     Cairo: require("@/assets/fonts/Cairo.ttf"),
     Uthmani: require("@/assets/fonts/UthmanicHafs.otf"),
     // Naksh: require("@/assets/fonts/Nakshasd.ttf"),
-    Amiri: require("@/assets/fonts/Amiri-Regular.ttf"),
-    new: require("@/assets/fonts/ScheherazadeNew.ttf"),
+    // Amiri: require("@/assets/fonts/Amiri-Regular.ttf"),
+    // new: require("@/assets/fonts/ScheherazadeNew.ttf"),
   });
 
   return (
     <>
-      <Adan />
+      {/* <Adan /> */}
       <Tabs
         screenOptions={{
           tabBarActiveTintColor: Colors[colorScheme ?? "light"].tint,
