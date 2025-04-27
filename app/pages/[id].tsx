@@ -61,8 +61,11 @@ export default function SurahPage() {
   };
   // debugging
 
+  // asdjaiosjdoakjsdjoiasdhj9
   const handleRemoveBookmark = (surahId: number) => {
     removeBookmark(surahId);
+    console.log('Bookmark removed:', surahId);
+    
   };
 
   const updatePageAyahs = (page: number) => {
