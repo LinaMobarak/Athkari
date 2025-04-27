@@ -8,7 +8,7 @@ import { useColorScheme } from "@/hooks/useColorScheme";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { Adan } from "@/app/functions/popAdan";
 export default function TabLayout() {
-  const url = require("../../assets/images/kaabaImage-removebg-preview.png");
+  const url = require("../../assets/images/KaabaTab.png");
   const colorScheme = useColorScheme();
   return (
     <>
@@ -48,7 +48,13 @@ export default function TabLayout() {
               <View>
                 <Image
                   source={url}
-                  style={{ width: 100, height: 100, marginBottom: 50 }}
+                  style={{
+                    width: 100,
+                    height: 100,
+                    marginBottom: 50,
+                    // borderWidth: 1,
+                    // borderColor: "white",
+                  }}
                 />
               </View>
             ),

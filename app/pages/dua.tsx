@@ -2,7 +2,7 @@ import { Collapsible } from "@/components/Collapsible";
 import { ThemedView } from "@/components/ThemedView";
 import { Stack } from "expo-router";
 import React from "react";
-import { StyleSheet, TouchableOpacity } from "react-native";
+import { StyleSheet, TouchableOpacity, View } from "react-native";
 import useElementStore from "../stores/store";
 import { DuaType, useDuaStore } from "@/app/stores/duaStore";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
@@ -88,7 +88,9 @@ export default function Azkar() {
         }}
       />
       <Adan />
+
       <FlatList
+        // style={{ marginBottom: 200 }}
         data={dua}
         renderItem={({ item }) => <MyComponent item={item} />}
         keyExtractor={(item) => item.id.toString()}

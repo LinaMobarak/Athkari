@@ -6,6 +6,7 @@ import { Stack, useRouter } from "expo-router";
 import { TouchableOpacity, View, StyleSheet } from "react-native";
 import { Colors } from "@/constants/Colors";
 import { useTheme } from "@react-navigation/native";
+import { Adan } from "../functions/popAdan";
 
 export default function NavigationMenu() {
   const { colors } = useTheme();
@@ -13,29 +14,30 @@ export default function NavigationMenu() {
 
   return (
     <>
-            <Stack.Screen
-                options={{
-                    headerTitle: 'الصفحات',
-                    headerTitleAlign: 'center',
-                    headerTitleStyle: {
-                        fontWeight: 'bold',
-                        fontSize: 20,
-                        fontFamily: 'Cairo',
-                    },
-                }}
-            />
-        <View style={styles.container}>
-            <TouchableOpacity
-                style={styles.containerAlQuran}
-                onPress={() => route.navigate("/pages/alQuran2")}
-            >
-                <MaterialCommunityIcons
-                    color={colors.text}
-                    size={20}
-                    name="star-four-points-outline"
-                />
-                <ThemedText style={styles.text}>المصحف</ThemedText>
-            </TouchableOpacity>
+      <Stack.Screen
+        options={{
+          headerTitle: "الصفحات",
+          headerTitleAlign: "center",
+          headerTitleStyle: {
+            fontWeight: "bold",
+            fontSize: 20,
+            fontFamily: "Cairo",
+          },
+        }}
+      />
+      <Adan />
+      <View style={styles.container}>
+        <TouchableOpacity
+          style={styles.containerAlQuran}
+          onPress={() => route.navigate("/pages/alQuran2")}
+        >
+          <MaterialCommunityIcons
+            color={colors.text}
+            size={20}
+            name="star-four-points-outline"
+          />
+          <ThemedText style={styles.text}>المصحف</ThemedText>
+        </TouchableOpacity>
         <View>
           <TouchableOpacity
             style={styles.containerText}

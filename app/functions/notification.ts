@@ -15,24 +15,20 @@ export async function scheduleNotificationAfter() {
     return;
   }
 
+  
   Notifications.setNotificationHandler({
     handleNotification: async () => ({
       shouldShowAlert: true,
       shouldPlaySound: false, 
-      shouldSetBadge: false
+      shouldSetBadge: false,
+      priority: Notifications.AndroidNotificationPriority.HIGH, // Add this for Android
+    presentation: { // Add this for iOS
+      banner: true,
+      badge: false, 
+      sound: true,
+    },
     })
   })
 
-  await Notifications.scheduleNotificationAsync({
-    content: {
-      title: "📿 ذكر",
-      body: "لا حول ولا قوة الا بالله العلي العظيم",
-      sound: true,
-    },
-    trigger: {
-      seconds: 10,
-      repeats: false,
-    },
-  });
-
+  
 }
