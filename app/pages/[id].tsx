@@ -1,9 +1,10 @@
 import { Stack, useLocalSearchParams } from 'expo-router';
-import { Text, ScrollView, View, StyleSheet, Button } from 'react-native';
+import { Text, ScrollView, View, StyleSheet, Button, TouchableOpacity } from 'react-native';
 import { useTheme } from "@react-navigation/native";
 import { useEffect, useState } from 'react';
 import QuranData from '@/assets/QuranCompleteFinalFinal.json';
 import TheQuran from '@/assets/TheQuran.json';
+import useQuranStore from '../stores/quranStore';
 import { surahs } from './alQuran';
 
 const numToArb = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
@@ -45,6 +46,24 @@ export default function SurahPage() {
   const surah = QuranData.data.surahs.find(s => s.number === surahNo);  
   const arabic1 = TheQuran.find(q => q.surahNo === surahNo)?.arabic1;
   
+  const { lastRead, setLastRead, bookmarks, addBookmark, removeBookmark } = useQuranStore();
+
+  const handleAddBookmark = (ayahText: string) => {
+    const ayah = QuranData.data.surahs.flatMap(s => s.ayahs).find(a => a.text === ayahText);
+    if (ayah) {
+      addBookmark({
+        surahId: surahNo,
+        surahName: surah?.name || '',
+        revelationType: surah?.revelationType || '',
+        text: ayah.text,
+      });
+    }
+  };
+
+  const handleRemoveBookmark = (surahId: number) => {
+    removeBookmark(surahId);
+  };
+
   const updatePageAyahs = (page: number) => {
     const ayahs = getPageAyahs(page);
     return ayahs.map((ayah, index) => {
@@ -84,21 +103,27 @@ export default function SurahPage() {
     }}
     />
     <View style={styles.container}>
-      <ScrollView contentContainerStyle={styles.scrollContainer}>
 
+    <ScrollView contentContainerStyle={styles.scrollContainer}>
       <Text style={styles.ayahsLine}>
         {pageAyahs.map((ayah, index) => (
           <Text key={index}>
             {ayah.numberInSurah === 1 && ayah.surahName && (
               <Text style={styles.surahName}>
-                {ayah.surahName}{' '}
+                {'\n\n'}{ayah.surahName}{' '}{'\n\n'}
               </Text>
             )}
-            {ayah.text} {toArabic(ayah.numberInSurah)}{' '}
+            <Text
+              onPress={() => handleAddBookmark()}
+              style={styles.pressableAyah}
+            >
+              {ayah.text} {toArabic(ayah.numberInSurah)}{' '}
+            </Text>
           </Text>
         ))}
       </Text>
-      </ScrollView>
+    </ScrollView>
+
 
       <View style={styles.pagination}>
         <Button color="#000" title="السابق" onPress={handlePreviousPage} disabled={page <= 1} />
@@ -140,13 +165,17 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: 20,
   },
+  // ayahs: {
+  //   fontSize: 54,
+  //   alignItems: 'center',
+  //   fontFamily: 'Uthmani',
+  //   textAlign: 'right',
+  // },
   ayahsLine: {
-    fontSize: 28,
-    textAlign: 'right',
+    fontSize: 24,
     fontFamily: 'Uthmani',
     color: '#000',
-    writingDirection: 'rtl',
-    lineHeight: 50,
+    lineHeight: 40,
   },
   center: {
     flex: 1,
@@ -158,4 +187,10 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     padding: 20,
   },
+  pressableAyah: {
+    // color: '#999', // normal color
+    textAlign: 'center',
+    // direction: 'rtl',
+  },
+  
 });

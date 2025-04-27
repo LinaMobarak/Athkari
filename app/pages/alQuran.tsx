@@ -4,7 +4,8 @@ import { ThemedText } from '@/components/ThemedText';
 import QuranCompleteFinalFinal from '@/assets/QuranCompleteFinalFinal.json';
 import type { FullQuran } from "../types/quranJson";
 import { Colors } from '@/constants/Colors';
-import { DarkTheme } from '@react-navigation/native';
+import { DarkTheme, useTheme } from '@react-navigation/native';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 const fullQuran = QuranCompleteFinalFinal as FullQuran
 // const ayah = quranJson as Ayah
@@ -35,6 +36,7 @@ export default function SurahsList() {
     //     0: '۰', 1: '۱', 2: '۲', 3: '۳', 4: '٤',
     //     5: '٥', 6: '٦', 7: '٧', 8: '۸', 9: '۹',
     // }
+    const { colors } = useTheme();
 
     // function convertToArabicNumerals(num: number): string {
     //     return num.toString().split('').map((d) => numToArb[parseInt(d)]).join('');
@@ -53,6 +55,17 @@ export default function SurahsList() {
             },
         }}
         />
+        <TouchableOpacity
+        style={styles.containerText}
+        onPress={() => route.navigate("/pages/azkar")}
+        >
+            <MaterialCommunityIcons
+                color={colors.text}
+                size={20}
+                name="book-outline"
+            />
+            <ThemedText style={styles.text}>أذكار المسلم</ThemedText>
+        </TouchableOpacity>
             <View style={{ margin: 10, }}>
         <FlatList
             data={surahs}
@@ -125,5 +138,26 @@ const styles = StyleSheet.create({
       surahDetails: {
         color: '#777',
         fontFamily: 'Cairo',
+      },
+      containerText: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
+        // height: '15%',
+        width: "100%",
+        padding: 20,
+        borderRadius: 10,
+        shadowColor: Colors.primary,
+        shadowOffset: { width: 0, height: 0 },
+        shadowOpacity: 5,
+        shadowRadius: 5,
+        marginBottom: 15,
+        borderColor: Colors.primary,
+        borderWidth: 2,
+      },
+      text: {
+        fontSize: 16,
+        fontWeight: "bold",
+        fontFamily: "Cairo",
       },
     });
