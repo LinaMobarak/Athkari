@@ -125,7 +125,7 @@ export default function HomeScreen() {
   useEffect(() => {
     const interval = setInterval(() => {
       sendLocalNotification();
-    }, 60000);
+    }, 900000);
 
     return () => clearInterval(interval);
   }, []);

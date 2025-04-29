@@ -9,12 +9,14 @@ import {
   ScrollView,
   Image,
   Platform,
+  SafeAreaView,
 } from "react-native";
 import { useTheme } from "@react-navigation/native";
 import { useEffect, useState, useRef, useMemo } from "react";
 import QuranData from "@/assets/QuranCompleteFinalFinal.json";
 import TheQuran from "@/assets/TheQuran.json";
 import useQuranStore from "../stores/quranStore";
+import { Appearance } from "react-native";
 
 const numToArb = ["٠", "١", "٢", "٣", "٤", "٥", "٦", "٧", "٨", "٩"];
 const { width } = Dimensions.get("window");
@@ -28,7 +30,8 @@ const toArabic = (n: number) =>
     .join("");
 
 export default function SurahPage() {
-  const { theme } = getColorScheme();
+  const theme = Appearance.getColorScheme();
+  const { width: screenWidth } = Dimensions.get("window"); // Get the screen width dynamically
 
   const { colors } = useTheme();
   const { id } = useLocalSearchParams();
@@ -126,7 +129,7 @@ export default function SurahPage() {
             </Text>
           </View>
         ) : (
-          <ScrollView>
+          <SafeAreaView style={{ paddingBottom: 100, paddingTop: 30 }}>
             <View style={styles.scrollContainer}>
               <Text style={[styles.ayahsLine, { color: colors.text }]}>
                 {pageAyahs.map((ayah, index) => (
@@ -135,7 +138,34 @@ export default function SurahPage() {
                     {ayah.numberInSurah === 1 && (
                       <Text style={[styles.surahName, { color: colors.text }]}>
                         {index !== 0 && "\n\n"}
-                        {ayah.surahName} {"\n\n"}
+                        <View style={{ alignItems: "center" }}>
+                          {/* Surah Name */}
+                          <Text
+                            style={{
+                              fontSize: 22,
+                              fontFamily: "Uthmani",
+                              color: "#000",
+                              textAlign: "center",
+                              // marginTop: 30, // Adjust spacing to overlap the image slightly
+                              marginBottom: -50, // Adjust spacing to overlap the image slightly
+                              zIndex: 2, // Ensure the text is above the image
+                            }}
+                          >
+                            {ayah.surahName}
+                          </Text>
+
+                          {/* Border Image */}
+                          <Image
+                            source={require("../../assets/images/borderOfSurahName.png")}
+                            style={{
+                              width: Dimensions.get("window").width * 0.95, // Dynamically adjust width to fit the screen
+                              height: 60, // Adjust height to fit proportionally
+                              resizeMode: "stretch", // Stretch the image to fit the container
+                              zIndex: 1, // Ensure the image is below the text
+                            }}
+                          />
+                        </View>
+                        {"\n"}
                         {ayah.surahNumber !== 1 &&
                           ayah.surahNumber !== 9 &&
                           (Platform.OS === "android" ? (
@@ -147,7 +177,7 @@ export default function SurahPage() {
                               }
                               style={{
                                 width: "55%",
-                                height: "10%",
+                                height: 30,
                                 marginRight: "auto",
                                 marginLeft: "auto",
                               }}
@@ -156,11 +186,12 @@ export default function SurahPage() {
                             <Text
                               style={{
                                 textAlign: "center",
-                                marginVertical: 10,
+                                marginTop: 50,
+                                marginBottom: 50,
                                 fontSize: 25,
                               }}
                             >
-                              ﷽ {"\n"}
+                              {"\n"} ﷽
                             </Text>
                           ))}
                         {"\n"}
@@ -177,7 +208,7 @@ export default function SurahPage() {
                 ))}
               </Text>
             </View>
-          </ScrollView>
+          </SafeAreaView>
         )}
       </View>
     );
@@ -297,22 +328,22 @@ const styles = StyleSheet.create({
     // flex: 1,
   },
   scrollContainer: {
-    padding: 16,
-    flex: 1,
+    padding: 5,
+    // flex: 1,
+    justifyContent: "center",
   },
   surahName: {
-    fontSize: 30,
+    marginTop: 20,
+    fontSize: 25,
     // fontWeight: "bold",
     fontFamily: "Uthmani",
     textAlign: "center",
-    marginBottom: 20,
+    // marginBottom: 20,
   },
   ayahsLine: {
-    fontSize: 24,
+    fontSize: 22,
     fontFamily: "Uthmani",
-
-    lineHeight: 40,
-    // textAlign: "center",
+    lineHeight: 38,
   },
   center: {
     flex: 1,
@@ -328,6 +359,3 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
 });
-function getColorScheme(): { theme: any } {
-  throw new Error("Function not implemented.");
-}
