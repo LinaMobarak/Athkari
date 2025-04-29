@@ -6,8 +6,9 @@ import {
   FlatList,
   Dimensions,
   ActivityIndicator,
-  TouchableOpacity,
   ScrollView,
+  Image,
+  Platform,
 } from "react-native";
 import { useTheme } from "@react-navigation/native";
 import { useEffect, useState, useRef, useMemo } from "react";
@@ -19,7 +20,6 @@ const numToArb = ["٠", "١", "٢", "٣", "٤", "٥", "٦", "٧", "٨", "٩"];
 const { width } = Dimensions.get("window");
 const TOTAL_QURAN_PAGES = 604;
 
-// Helper function to convert numbers to Arabic numerals
 const toArabic = (n: number) =>
   n
     .toString()
@@ -28,9 +28,11 @@ const toArabic = (n: number) =>
     .join("");
 
 export default function SurahPage() {
+  const { theme } = getColorScheme();
+
+  const { colors } = useTheme();
   const { id } = useLocalSearchParams();
   const surahNo = parseInt(String(id), 10);
-  const { colors } = useTheme();
   const flatListRef = useRef<FlatList>(null);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState<number | null>(null);
@@ -126,28 +128,42 @@ export default function SurahPage() {
         ) : (
           <ScrollView>
             <View style={styles.scrollContainer}>
-              <Text style={styles.ayahsLine}>
+              <Text style={[styles.ayahsLine, { color: colors.text }]}>
                 {pageAyahs.map((ayah, index) => (
                   <Text key={index}>
                     {/* Show surah header for first ayah */}
                     {ayah.numberInSurah === 1 && (
-                      <Text style={styles.surahName}>
+                      <Text style={[styles.surahName, { color: colors.text }]}>
                         {index !== 0 && "\n\n"}
                         {ayah.surahName} {"\n\n"}
-                        <Text style={styles.surahName}>
-                          {ayah.surahNumber !== 1 && ayah.surahNumber !== 9 && (
+                        {ayah.surahNumber !== 1 &&
+                          ayah.surahNumber !== 9 &&
+                          (Platform.OS === "android" ? (
+                            <Image
+                              source={
+                                theme === "dark"
+                                  ? require("../../assets/images/darkModeBism.png")
+                                  : require("../../assets/images/whiteModeBism.png")
+                              }
+                              style={{
+                                width: "55%",
+                                height: "10%",
+                                marginRight: "auto",
+                                marginLeft: "auto",
+                              }}
+                            />
+                          ) : (
                             <Text
                               style={{
-                                fontFamily: "Uthmani",
-                                fontSize: 28,
-                                color: "#000",
                                 textAlign: "center",
+                                marginVertical: 10,
+                                fontSize: 25,
                               }}
                             >
                               ﷽ {"\n"}
                             </Text>
-                          )}
-                        </Text>
+                          ))}
+                        {"\n"}
                       </Text>
                     )}
                     <Text
@@ -274,30 +290,29 @@ export default function SurahPage() {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: "#fff",
+    // flex: 1,
+    // backgroundColor: "#fff",
   },
   pageContainer: {
-    flex: 1,
+    // flex: 1,
   },
   scrollContainer: {
     padding: 16,
     flex: 1,
   },
   surahName: {
-    fontSize: 28,
-    fontWeight: "bold",
+    fontSize: 30,
+    // fontWeight: "bold",
     fontFamily: "Uthmani",
-    color: "#000",
     textAlign: "center",
     marginBottom: 20,
   },
   ayahsLine: {
     fontSize: 24,
     fontFamily: "Uthmani",
-    color: "#000",
+
     lineHeight: 40,
-    textAlign: "right",
+    // textAlign: "center",
   },
   center: {
     flex: 1,
@@ -313,3 +328,6 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
 });
+function getColorScheme(): { theme: any } {
+  throw new Error("Function not implemented.");
+}

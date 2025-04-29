@@ -282,6 +282,7 @@ export default function HomeScreen() {
             {Platform.OS === "ios" ? (
               <Modal
                 isVisible={isModalVisible}
+                onBackdropPress={() => setIsModalVisible(false)}
                 style={{
                   backgroundColor: Colors.primary,
                   width: "80%",
