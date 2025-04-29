@@ -124,13 +124,13 @@ export default function SurahsList() {
           style={{ marginTop: 7 }}
         />
       </TouchableOpacity>
-      <View style={{ marginRight: 10, marginLeft: 10 }}>
+      <View style={{ margin: 10 }}>
         <FlatList
           data={surahs}
           keyExtractor={(item) => item.number.toString()}
           numColumns={2}
           contentContainerStyle={{
-            paddingBottom: 250, // Adjust padding for better scrolling behavior
+            paddingBottom: 100, // Adjust padding for better scrolling behavior
           }}
           columnWrapperStyle={{
             justifyContent: "space-between",
@@ -139,14 +139,7 @@ export default function SurahsList() {
           renderItem={({ item }) => (
             <TouchableOpacity
               onPress={() => route.push(`./${item.number}`)}
-              style={[
-                styles.surahItem,
-                {
-                  backgroundColor: colors.card,
-                  borderColor: colors.border,
-                  borderWidth: 1,
-                },
-              ]}
+              style={styles.surahItem}
             >
               <View style={styles.surahNumber}>
                 <Text style={styles.surahNumberText}>
@@ -154,9 +147,7 @@ export default function SurahsList() {
                 </Text>
               </View>
               <View>
-                <Text style={[styles.surahText, { color: colors.text }]}>
-                  {item.name}
-                </Text>
+                <Text style={styles.surahText}>{item.name}</Text>
                 <Text style={styles.surahDetails}>
                   {englishToArabic[item.revelationType]} - عدد آياتها:{" "}
                   {convertToArabicNumerals(item.ayahs.length)}
