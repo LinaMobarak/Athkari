@@ -229,10 +229,10 @@ export default function SurahPage() {
                               bookmark.idd ===
                               `${ayah.surahNumber}-${ayah.numberInSurah}`
                           )
-                            ? "lightblue" // Highlight color for bookmarked Ayahs
+                            ? "rgba(207, 99, 254, 0.09)" // Highlight color for bookmarked Ayahs
                             : selectedAyah ===
                               `${ayah.surahNumber}-${ayah.numberInSurah}`
-                            ? "yellow" // Highlight color for the selected Ayah
+                            ? "rgba(207, 99, 254, 0.09)" // Highlight color for the selected Ayah
                             : undefined,
                         },
                       ]}
