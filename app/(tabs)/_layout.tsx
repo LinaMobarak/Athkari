@@ -14,10 +14,10 @@ export default function TabLayout() {
   const colorScheme = useColorScheme();
 
   useFonts({
-    Cairo: require("@/assets/fonts/Cairo.ttf"),
+    // Cairo: require("@/assets/fonts/Cairo.ttf"),
     Uthmani: require("@/assets/fonts/UthmanicHafs.otf"),
     // Naksh: require("@/assets/fonts/Nakshasd.ttf"),
-    // Amiri: require("@/assets/fonts/Amiri-Regular.ttf"),
+    Amiri: require("@/assets/fonts/Amiri-Regular.ttf"),
     // new: require("@/assets/fonts/ScheherazadeNew.ttf"),
   });
 

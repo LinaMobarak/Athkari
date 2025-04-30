@@ -6,20 +6,22 @@ import {
   FlatList,
   Dimensions,
   ActivityIndicator,
-  TouchableOpacity,
   ScrollView,
+  Image,
+  Platform,
+  SafeAreaView,
 } from "react-native";
 import { useTheme } from "@react-navigation/native";
 import { useEffect, useState, useRef, useMemo } from "react";
 import QuranData from "@/assets/QuranCompleteFinalFinal.json";
 import TheQuran from "@/assets/TheQuran.json";
 import useQuranStore from "../stores/quranStore";
+import { Appearance } from "react-native";
 
 const numToArb = ["٠", "١", "٢", "٣", "٤", "٥", "٦", "٧", "٨", "٩"];
 const { width } = Dimensions.get("window");
 const TOTAL_QURAN_PAGES = 604;
 
-// Helper function to convert numbers to Arabic numerals
 const toArabic = (n: number) =>
   n
     .toString()
@@ -28,13 +30,17 @@ const toArabic = (n: number) =>
     .join("");
 
 export default function SurahPage() {
+  const theme = Appearance.getColorScheme();
+  const { width: screenWidth } = Dimensions.get("window"); // Get the screen width dynamically
+
+  const { colors } = useTheme();
   const { id } = useLocalSearchParams();
   const surahNo = parseInt(String(id), 10);
-  const { colors } = useTheme();
   const flatListRef = useRef<FlatList>(null);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState<number | null>(null);
   const initialRenderRef = useRef(true);
+  const [selectedAyah, setSelectedAyah] = useState<string | null>(null);
 
   // Cache for page ayahs to improve performance
   const pageAyahsCache = useRef<Record<number, any[]>>({});
@@ -93,22 +99,37 @@ export default function SurahPage() {
     pageAyahsCache.current[page] = result;
     return result;
   };
-
+  useEffect(() => {
+    if (currentPage) {
+      const pageAyahs = getPageAyahs(currentPage);
+      if (pageAyahs.length > 0) {
+        const firstAyah = pageAyahs[0];
+        if (firstAyah.numberInSurah === 1) {
+          console.log("Surah Name:", firstAyah.surahName);
+        }
+      }
+    }
+  }, [currentPage]);
   // Handle bookmark functions
-  const handleAddBookmark = (ayahText: string) => {
+  const handleAddBookmark = (
+    ayahText: string,
+    surahNumber: number,
+    ayahNumber: number
+  ) => {
+    setSelectedAyah(`${surahNumber}-${ayahNumber}`); // Set the selected Ayah's unique identifier
+    const pageAyahs = currentPage ? getPageAyahs(currentPage) : [];
+    const firstAyah = pageAyahs.length > 0 ? pageAyahs[0] : null;
+
     addBookmark({
-      surahId: surahNo,
-      surahName:
-        QuranData.data.surahs.find((s) => s.number === surahNo)?.name || "",
-      revelationType:
-        QuranData.data.surahs.find((s) => s.number === surahNo)
-          ?.revelationType || "",
+      surahName: firstAyah?.surahName || "", // Use the Surah name from the current page
+      revelationType: firstAyah?.revelationType || "",
       text: ayahText,
+      idd: `${surahNumber}-${ayahNumber}`, // Unique ID combining Surah and Ayah numbers
     });
   };
 
-  const handleRemoveBookmark = (surahId: number) => {
-    removeBookmark(surahId);
+  const handleRemoveBookmark = (text: string) => {
+    removeBookmark(text);
   };
 
   // Render each page
@@ -124,36 +145,97 @@ export default function SurahPage() {
             </Text>
           </View>
         ) : (
-          <ScrollView>
+          <ScrollView style={{ paddingBottom: 100, paddingTop: 30 }}>
             <View style={styles.scrollContainer}>
-              <Text style={styles.ayahsLine}>
+              <Text style={[styles.ayahsLine, { color: colors.text }]}>
                 {pageAyahs.map((ayah, index) => (
                   <Text key={index}>
                     {/* Show surah header for first ayah */}
                     {ayah.numberInSurah === 1 && (
-                      <Text style={styles.surahName}>
+                      <Text style={[styles.surahName, { color: colors.text }]}>
                         {index !== 0 && "\n\n"}
-                        {ayah.surahName} {"\n\n"}
-                        <Text style={styles.surahName}>
-                          {ayah.surahNumber !== 1 && ayah.surahNumber !== 9 && (
+                        <View style={{ alignItems: "center" }}>
+                          {/* Surah Name */}
+                          <Text
+                            style={{
+                              fontSize: 22,
+                              fontFamily: "Uthmani",
+                              color: "#000",
+                              textAlign: "center",
+                              // marginTop: 30, // Adjust spacing to overlap the image slightly
+                              marginBottom: -50, // Adjust spacing to overlap the image slightly
+                              zIndex: 2, // Ensure the text is above the image
+                            }}
+                          >
+                            {ayah.surahName}
+                          </Text>
+
+                          {/* Border Image */}
+                          <Image
+                            source={require("../../assets/images/borderOfSurahName.png")}
+                            style={{
+                              width: Dimensions.get("window").width * 0.95, // Dynamically adjust width to fit the screen
+                              height: 60, // Adjust height to fit proportionally
+                              resizeMode: "stretch", // Stretch the image to fit the container
+                              zIndex: 1, // Ensure the image is below the text
+                            }}
+                          />
+                        </View>
+                        {"\n"}
+                        {ayah.surahNumber !== 1 &&
+                          ayah.surahNumber !== 9 &&
+                          (Platform.OS === "android" ? (
+                            <Image
+                              source={
+                                theme === "dark"
+                                  ? require("../../assets/images/darkModeBism.png")
+                                  : require("../../assets/images/whiteModeBism.png")
+                              }
+                              style={{
+                                width: "55%",
+                                height: 30,
+                                marginRight: "auto",
+                                marginLeft: "auto",
+                              }}
+                            />
+                          ) : (
                             <Text
                               style={{
-                                fontFamily: "Uthmani",
-                                fontSize: 28,
-                                color: "#000",
                                 textAlign: "center",
+                                marginTop: 50,
+                                marginBottom: 50,
+                                fontSize: 25,
                               }}
                             >
-                              ﷽ {"\n"}
+                              {"\n"} ﷽
                             </Text>
-                          )}
-                        </Text>
+                          ))}
+                        {"\n"}
                       </Text>
                     )}
                     <Text
-                      onPress={() => handleAddBookmark(ayah.text)}
-                      onLongPress={() => handleRemoveBookmark(surahNo)}
-                      style={styles.pressableAyah}
+                      onLongPress={() =>
+                        handleAddBookmark(
+                          ayah.text,
+                          ayah.surahNumber,
+                          ayah.numberInSurah
+                        )
+                      }
+                      style={[
+                        styles.pressableAyah,
+                        {
+                          backgroundColor: bookmarks.some(
+                            (bookmark) =>
+                              bookmark.idd ===
+                              `${ayah.surahNumber}-${ayah.numberInSurah}`
+                          )
+                            ? "rgba(207, 99, 254, 0.09)" // Highlight color for bookmarked Ayahs
+                            : selectedAyah ===
+                              `${ayah.surahNumber}-${ayah.numberInSurah}`
+                            ? "rgba(207, 99, 254, 0.09)" // Highlight color for the selected Ayah
+                            : undefined,
+                        },
+                      ]}
                     >
                       {ayah.text} {toArabic(ayah.numberInSurah)}{" "}
                     </Text>
@@ -274,30 +356,29 @@ export default function SurahPage() {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: "#fff",
+    // flex: 1,
+    // backgroundColor: "#fff",
   },
   pageContainer: {
-    flex: 1,
+    // flex: 1,
   },
   scrollContainer: {
-    padding: 16,
-    flex: 1,
+    padding: 5,
+    // flex: 1,
+    justifyContent: "center",
   },
   surahName: {
-    fontSize: 28,
-    fontWeight: "bold",
+    marginTop: 20,
+    fontSize: 25,
+    // fontWeight: "bold",
     fontFamily: "Uthmani",
-    color: "#000",
     textAlign: "center",
-    marginBottom: 20,
+    // marginBottom: 20,
   },
   ayahsLine: {
-    fontSize: 24,
+    fontSize: 22,
     fontFamily: "Uthmani",
-    color: "#000",
-    lineHeight: 40,
-    textAlign: "right",
+    lineHeight: 38,
   },
   center: {
     flex: 1,

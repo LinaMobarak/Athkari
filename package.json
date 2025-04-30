@@ -15,6 +15,7 @@
     "preset": "jest-expo"
   },
   "dependencies": {
+    
     "@expo/prebuild-config": "^8.2.0",
     "@expo/vector-icons": "^14.0.2",
     "@react-native-async-storage/async-storage": "^1.23.1",
@@ -59,6 +60,7 @@
     "react-native-webview": "13.12.5",
     "zero-degree": "^3.1.6",
     "zustand": "^5.0.3"
+    
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",

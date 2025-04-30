@@ -6,12 +6,13 @@ import {
   StyleSheet,
 } from "react-native";
 import { Stack, useNavigation, useRouter } from "expo-router";
-import { ThemedText } from "@/components/ThemedText";
+
 import QuranCompleteFinalFinal from "@/assets/QuranCompleteFinalFinal.json";
-import type { Ayah, FullQuran } from "../types/quranJson";
-import { Colors } from "@/constants/Colors";
-import { DarkTheme } from "@react-navigation/native";
-import { Platform } from "react-native";
+import type { FullQuran } from "../types/quranJson";
+import { Colors } from "react-native/Libraries/NewAppScreen";
+import { useTheme } from "@react-navigation/native";
+import { Feather } from "@expo/vector-icons";
+import useQuranStore from "../stores/quranStore";
 
 const fullQuran = QuranCompleteFinalFinal as FullQuran;
 // const ayah = quranJson as Ayah
@@ -40,24 +41,15 @@ function convertToArabicNumerals(num: number): string {
     .join("");
 }
 
-// export const ayat = ayah
-
 export default function SurahsList() {
   const route = useRouter();
-  const navigation = useNavigation();
+  const { colors } = useTheme();
+  const { bookmarks, removeBookmark } = useQuranStore();
   const englishToArabic: { [key: string]: string } = {
     Meccan: "مكية",
     Medinan: "مدنية",
   };
 
-  // const numToArb: { [key: number]: string } = {
-  //     0: '۰', 1: '۱', 2: '۲', 3: '۳', 4: '٤',
-  //     5: '٥', 6: '٦', 7: '٧', 8: '۸', 9: '۹',
-  // }
-
-  // function convertToArabicNumerals(num: number): string {
-  //     return num.toString().split('').map((d) => numToArb[parseInt(d)]).join('');
-  // }
   return (
     <>
       <Stack.Screen
@@ -72,13 +64,48 @@ export default function SurahsList() {
           },
         }}
       />
-      <View style={{ margin: 10 }}>
+
+      <TouchableOpacity
+        onPress={() => route.push("./bookmarks")}
+        style={{
+          backgroundColor: colors.card,
+          borderColor: colors.border,
+          borderWidth: 1,
+          marginRight: 10,
+          marginLeft: 10,
+          paddingVertical: 10,
+          paddingHorizontal: 20,
+          borderRadius: 12,
+          marginTop: 5,
+          width: "95%",
+          marginBottom: 10,
+          alignItems: "flex-end",
+          flexDirection: "row-reverse",
+          justifyContent: "space-between",
+        }}
+      >
+        <Text
+          style={{ fontSize: 20, color: colors.text, fontFamily: "Uthmani" }}
+        >
+          المحفوظات
+        </Text>
+
+        <Feather
+          name="bookmark"
+          size={20}
+          color={colors.text}
+          style={{ marginBottom: 8 }}
+        />
+      </TouchableOpacity>
+      <View>
         <FlatList
           data={surahs}
           keyExtractor={(item) => item.number.toString()}
           numColumns={2}
           contentContainerStyle={{
-            paddingBottom: 100, // Adjust padding for better scrolling behavior
+            paddingBottom: 170, // Adjust padding for better scrolling behavior
+            paddingRight: 10,
+            paddingLeft: 10,
           }}
           columnWrapperStyle={{
             justifyContent: "space-between",
@@ -87,7 +114,14 @@ export default function SurahsList() {
           renderItem={({ item }) => (
             <TouchableOpacity
               onPress={() => route.push(`./${item.number}`)}
-              style={styles.surahItem}
+              style={[
+                styles.surahItem,
+                {
+                  backgroundColor: colors.card,
+                  borderWidth: 1,
+                  borderColor: colors.border,
+                },
+              ]}
             >
               <View style={styles.surahNumber}>
                 <Text style={styles.surahNumberText}>
@@ -95,7 +129,9 @@ export default function SurahsList() {
                 </Text>
               </View>
               <View>
-                <Text style={styles.surahText}>{item.name}</Text>
+                <Text style={[styles.surahText, { color: colors.text }]}>
+                  {item.name}
+                </Text>
                 <Text style={styles.surahDetails}>
                   {englishToArabic[item.revelationType]} - عدد آياتها:{" "}
                   {convertToArabicNumerals(item.ayahs.length)}
@@ -111,7 +147,6 @@ export default function SurahsList() {
 
 const styles = StyleSheet.create({
   surahItem: {
-    backgroundColor: "#000",
     width: "48%",
     paddingVertical: 20,
     paddingHorizontal: 10,
@@ -123,21 +158,20 @@ const styles = StyleSheet.create({
   surahNumber: {
     backgroundColor: "#d1e7dd",
     padding: 5,
-    borderRadius: 20,
-    borderColor: "#000",
-    borderWidth: 1,
+    width: 30,
+    borderRadius: 12,
+    // borderColor: "transparent",
+    // borderWidth: 1,
     position: "absolute",
     top: 0,
     right: 0,
-    width: "25%",
-    height: "25%",
     alignItems: "center",
     justifyContent: "center",
   },
   surahNumberText: {
     fontSize: 12,
     fontWeight: "bold",
-    color: "#000",
+    color: "black",
     fontFamily: "Cairo",
   },
   surahText: {
@@ -145,7 +179,7 @@ const styles = StyleSheet.create({
     letterSpacing: 1,
     textAlign: "center",
     fontFamily: "Uthmani",
-    color: "#d1e7dd",
+    color: "white",
     marginBottom: 4,
   },
   surahDetails: {

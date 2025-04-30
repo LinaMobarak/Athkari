@@ -125,7 +125,7 @@ export default function HomeScreen() {
   useEffect(() => {
     const interval = setInterval(() => {
       sendLocalNotification();
-    }, 60000);
+    }, 900000);
 
     return () => clearInterval(interval);
   }, []);
@@ -282,6 +282,7 @@ export default function HomeScreen() {
             {Platform.OS === "ios" ? (
               <Modal
                 isVisible={isModalVisible}
+                onBackdropPress={() => setIsModalVisible(false)}
                 style={{
                   backgroundColor: Colors.primary,
                   width: "80%",
