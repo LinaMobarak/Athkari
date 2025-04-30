@@ -12,6 +12,7 @@ import type { FullQuran } from "../types/quranJson";
 import { Colors } from "react-native/Libraries/NewAppScreen";
 import { useTheme } from "@react-navigation/native";
 import { Feather } from "@expo/vector-icons";
+import useQuranStore from "../stores/quranStore";
 
 const fullQuran = QuranCompleteFinalFinal as FullQuran;
 // const ayah = quranJson as Ayah
@@ -43,8 +44,7 @@ function convertToArabicNumerals(num: number): string {
 export default function SurahsList() {
   const route = useRouter();
   const { colors } = useTheme();
-
-  const navigation = useNavigation();
+  const { bookmarks, removeBookmark } = useQuranStore();
   const englishToArabic: { [key: string]: string } = {
     Meccan: "مكية",
     Medinan: "مدنية",
@@ -64,47 +64,20 @@ export default function SurahsList() {
           },
         }}
       />
-      <TouchableOpacity
-        // onPress={() => navigation.navigate("")}
-        style={{
-          backgroundColor: colors.card,
-          borderColor: colors.border,
-          borderWidth: 1,
-          paddingVertical: 10,
-          paddingHorizontal: 20,
-          borderRadius: 12,
-          marginTop: 5,
-          width: "100%",
-          marginBottom: 5,
-          alignItems: "flex-end",
-          flexDirection: "row-reverse",
-          justifyContent: "space-between",
-        }}
-      >
-        <Text
-          style={{ fontSize: 20, color: colors.text, fontFamily: "Uthmani" }}
-        >
-          انتقل الى اخر اية قراتها
-        </Text>
 
-        <Feather
-          name="arrow-right"
-          size={20}
-          color={colors.text}
-          style={{ marginTop: 7 }}
-        />
-      </TouchableOpacity>
       <TouchableOpacity
-        // onPress={() => navigation.navigate("")}
+        onPress={() => route.push("./bookmarks")}
         style={{
           backgroundColor: colors.card,
           borderColor: colors.border,
           borderWidth: 1,
+          marginRight: 10,
+          marginLeft: 10,
           paddingVertical: 10,
           paddingHorizontal: 20,
           borderRadius: 12,
           marginTop: 5,
-          width: "100%",
+          width: "95%",
           marginBottom: 10,
           alignItems: "flex-end",
           flexDirection: "row-reverse",
@@ -121,16 +94,18 @@ export default function SurahsList() {
           name="bookmark"
           size={20}
           color={colors.text}
-          // style={{ marginTop: 5 }}
+          style={{ marginBottom: 8 }}
         />
       </TouchableOpacity>
-      <View style={{ marginBottom: 150 }}>
+      <View>
         <FlatList
           data={surahs}
           keyExtractor={(item) => item.number.toString()}
           numColumns={2}
           contentContainerStyle={{
-            paddingBottom: 100, // Adjust padding for better scrolling behavior
+            paddingBottom: 170, // Adjust padding for better scrolling behavior
+            paddingRight: 10,
+            paddingLeft: 10,
           }}
           columnWrapperStyle={{
             justifyContent: "space-between",

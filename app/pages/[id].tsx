@@ -40,6 +40,7 @@ export default function SurahPage() {
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState<number | null>(null);
   const initialRenderRef = useRef(true);
+  const [selectedAyah, setSelectedAyah] = useState<string | null>(null);
 
   // Cache for page ayahs to improve performance
   const pageAyahsCache = useRef<Record<number, any[]>>({});
@@ -98,22 +99,37 @@ export default function SurahPage() {
     pageAyahsCache.current[page] = result;
     return result;
   };
-
+  useEffect(() => {
+    if (currentPage) {
+      const pageAyahs = getPageAyahs(currentPage);
+      if (pageAyahs.length > 0) {
+        const firstAyah = pageAyahs[0];
+        if (firstAyah.numberInSurah === 1) {
+          console.log("Surah Name:", firstAyah.surahName);
+        }
+      }
+    }
+  }, [currentPage]);
   // Handle bookmark functions
-  const handleAddBookmark = (ayahText: string) => {
+  const handleAddBookmark = (
+    ayahText: string,
+    surahNumber: number,
+    ayahNumber: number
+  ) => {
+    setSelectedAyah(`${surahNumber}-${ayahNumber}`); // Set the selected Ayah's unique identifier
+    const pageAyahs = currentPage ? getPageAyahs(currentPage) : [];
+    const firstAyah = pageAyahs.length > 0 ? pageAyahs[0] : null;
+
     addBookmark({
-      surahId: surahNo,
-      surahName:
-        QuranData.data.surahs.find((s) => s.number === surahNo)?.name || "",
-      revelationType:
-        QuranData.data.surahs.find((s) => s.number === surahNo)
-          ?.revelationType || "",
+      surahName: firstAyah?.surahName || "", // Use the Surah name from the current page
+      revelationType: firstAyah?.revelationType || "",
       text: ayahText,
+      idd: `${surahNumber}-${ayahNumber}`, // Unique ID combining Surah and Ayah numbers
     });
   };
 
-  const handleRemoveBookmark = (surahId: number) => {
-    removeBookmark(surahId);
+  const handleRemoveBookmark = (text: string) => {
+    removeBookmark(text);
   };
 
   // Render each page
@@ -129,7 +145,7 @@ export default function SurahPage() {
             </Text>
           </View>
         ) : (
-          <SafeAreaView style={{ paddingBottom: 100, paddingTop: 30 }}>
+          <ScrollView style={{ paddingBottom: 100, paddingTop: 30 }}>
             <View style={styles.scrollContainer}>
               <Text style={[styles.ayahsLine, { color: colors.text }]}>
                 {pageAyahs.map((ayah, index) => (
@@ -198,9 +214,28 @@ export default function SurahPage() {
                       </Text>
                     )}
                     <Text
-                      onPress={() => handleAddBookmark(ayah.text)}
-                      onLongPress={() => handleRemoveBookmark(surahNo)}
-                      style={styles.pressableAyah}
+                      onLongPress={() =>
+                        handleAddBookmark(
+                          ayah.text,
+                          ayah.surahNumber,
+                          ayah.numberInSurah
+                        )
+                      }
+                      style={[
+                        styles.pressableAyah,
+                        {
+                          backgroundColor: bookmarks.some(
+                            (bookmark) =>
+                              bookmark.idd ===
+                              `${ayah.surahNumber}-${ayah.numberInSurah}`
+                          )
+                            ? "lightblue" // Highlight color for bookmarked Ayahs
+                            : selectedAyah ===
+                              `${ayah.surahNumber}-${ayah.numberInSurah}`
+                            ? "yellow" // Highlight color for the selected Ayah
+                            : undefined,
+                        },
+                      ]}
                     >
                       {ayah.text} {toArabic(ayah.numberInSurah)}{" "}
                     </Text>
@@ -208,7 +243,7 @@ export default function SurahPage() {
                 ))}
               </Text>
             </View>
-          </SafeAreaView>
+          </ScrollView>
         )}
       </View>
     );
