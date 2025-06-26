@@ -18,7 +18,6 @@
       "supportsTablet": true
     },
     "android": {
-    
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/إطمئن-فاينل.jpg",
         "backgroundColor": "#f9fbf8"
@@ -64,7 +63,9 @@
           "defaultChannel": "default",
           "enableBackgroundRemoteNotifications": true
         }
-      ]
+      ],
+      "expo-font",
+      "expo-web-browser"
     ],
     "experiments": {
       "typedRoutes": true
